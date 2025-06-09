@@ -20,9 +20,9 @@ const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
   }
   try {
     const data = matchedData(req);
-    const { email, password } = data;
+    const { email, password, firstName, lastName } = data;
     await connectDb();
-    await handleSignup(email, password);
+    await handleSignup(email, password, firstName, lastName);
     res.status(200).json({
       message: "Verify your account using the OTP sent to your email",
     });
@@ -91,6 +91,7 @@ const signOut = async (res: Response) => {
 
 const handleRefresh = async (req: Request, res: Response) => {
   const cookies = req.cookies as { tjwt: string };
+
   if (!cookies || !cookies.tjwt)
     return res.status(401).send({ message: "Invalid or missing cookies." });
   try {
@@ -99,15 +100,22 @@ const handleRefresh = async (req: Request, res: Response) => {
       cookies.tjwt,
       process.env.JWT_REFRESH_SECRET!,
       async (err, decoded) => {
-        const payload = decoded as JwtPayload;
+        const payload = decoded as {id: string};
         const user = await User.findById(payload.id);
         if (!user) return res.status(403).json({ message: "No user found" });
+        const userDetails = {
+          id: user._id.toString(),
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+        };
         if (err) {
           res.sendStatus(403);
           throw new Error("Invalid cookies.");
         }
         const accessToken = jwt.sign(
-          { id: payload.id },
+          { UserInfo: userDetails },
           process.env.JWT_ACCESS_SECRET!,
           { expiresIn: "5m" }
         );

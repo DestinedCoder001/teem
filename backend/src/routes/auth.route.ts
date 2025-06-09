@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { handlePasswordReset, handleRefresh, login, signOut, signUp } from "../controllers/auth.controller";
-import { authValidation, emailValidation } from "../lib/validations/auth.validation";
+import { authValidation, emailValidation, loginValidation } from "../lib/validations/auth.validation";
 import { verifyOtp } from "../controllers/otp.controller";
 
 const router = Router();
@@ -9,7 +9,7 @@ router.post("/sign-up", authValidation, (req: Request, res: Response) => {
   signUp(req, res);
 });
 
-router.post("/login", authValidation, (req: Request, res: Response) => {
+router.post("/login", loginValidation, (req: Request, res: Response) => {
   login(req, res);
 });
 

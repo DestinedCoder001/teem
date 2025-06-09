@@ -3,8 +3,11 @@ import { model, Schema, models } from "mongoose";
 const userSchema = new Schema(
   {
     email: { type: String, required: true, unique: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
+    role: { type: String, default: "user" },
   },
   {
     timestamps: true

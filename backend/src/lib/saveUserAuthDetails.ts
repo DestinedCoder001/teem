@@ -1,9 +1,20 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import { Types } from "mongoose";
-export const saveUserAuthDetails = (res: Response, user: { _id: string }) => {
+import { User } from "./types";
+
+export const saveUserAuthDetails = (res: Response, user: User) => {
+  const userDetails = {
+    id: user._id.toString(),
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    role: user.role,
+  };
+
   const accessToken = jwt.sign(
-    { id: user._id },
+    {
+      UserInfo: userDetails,
+    },
     process.env.JWT_ACCESS_SECRET!,
     { expiresIn: "5m" }
   );

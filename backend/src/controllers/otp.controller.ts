@@ -5,39 +5,6 @@ import { connectDb } from "../lib/connectDb";
 import { saveUserAuthDetails } from "../lib/saveUserAuthDetails";
 import bcrypt from "bcrypt";
 
-// export const sendOtp = async (req: Request, res: Response) => {
-//   const { email } = req.body;
-//   if (!email) return res.status(400).json({ message: "Email is required" });
-
-//   const existingOtp = await Otp.findOne({ email });
-
-//   if (existingOtp && !canRequestOtp(existingOtp.updatedAt)) {
-//     const retryIn = Math.ceil(
-//       60 - (Date.now() - existingOtp.updatedAt.getTime()) / 1000
-//     );
-//     return res.status(429).json({
-//       message: `Please wait ${retryIn} seconds before requesting another OTP.`,
-//     });
-//   }
-
-//   const otpCode = generateOtp();
-//   const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
-//   await Otp.findOneAndUpdate(
-//     { email },
-//     { code: otpCode, expiresAt: otpExpiresAt },
-//     { upsert: true, new: true, setDefaultsOnInsert: true }
-//   );
-
-//   try {
-//     await sendOtpEmail(email, otpCode, "signup");
-//     res.status(200).json({ message: "OTP sent successfully" });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Failed to send OTP" });
-//   }
-// };
-
 export const verifyOtp = async (
   req: Request,
   res: Response,

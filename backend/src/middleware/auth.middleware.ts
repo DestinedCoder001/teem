@@ -3,10 +3,14 @@ import jwt from "jsonwebtoken";
 import { JwtPayload } from "../lib/types";
 
 const verifyToken = (req: Request, res: Response, next: Function) => {
+  const cookie = req.cookies["tjwt"];
+  if (!cookie) return res.status(401).send({ message: "Invalid or missing cookies" });
+
   const headers = req.headers["authorization"];
   if (!headers) {
     return res.status(400).send({ message: "No headers provided" });
   }
+  
   const token = headers.split(" ")[1];
   if (!token) {
     return res.status(400).send({ message: "No token provided" });
@@ -18,7 +22,7 @@ const verifyToken = (req: Request, res: Response, next: Function) => {
       return res.status(401).send({ message: "Invalid token" });
     }
     const payload = decoded as JwtPayload;
-    req.user = payload;
+    req.user = payload.UserInfo;
     next();
   });
 };

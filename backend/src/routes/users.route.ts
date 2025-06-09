@@ -5,9 +5,6 @@ import { connectDb } from "../lib/connectDb";
 
 const router = Router();
 
-router.use((req, res, next) => {
-    verifyToken(req, res, next);
-})
 router.get("/", async (req: Request, res: Response) => {
     console.log(req.user)
     await connectDb();
