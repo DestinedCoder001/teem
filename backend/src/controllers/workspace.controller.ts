@@ -204,8 +204,7 @@ const removeUser = async (req: Request, res: Response) => {
       { $pull: { users: userToBeRemoved._id } },
       { new: true }
     );
-    // i didn't check if user exists so they can be removed even if they deleted their account
-    res.status(200).json({ message: "User with email removed successfully" });
+    res.status(200).json({ message: "User removed successfully" });
   } catch (error: any) {
     console.log(error);
     res.status(500).json("Error in removing user from workspace: " + error);

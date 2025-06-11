@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { JwtPayload, SignUpBody } from "../lib/types";
+import { SignUpBody } from "../lib/types";
 import { matchedData, validationResult } from "express-validator";
 import { connectDb } from "../lib/connectDb";
 import { handleSignup } from "../lib/handleSignUp";
@@ -10,6 +10,10 @@ import { saveUserAuthDetails } from "../lib/saveUserAuthDetails";
 import { sendOtpEmail } from "../lib/sendOtpEmail";
 import { canRequestOtp, generateOtp } from "../lib/otpHelpers";
 import { Otp } from "../models/otp.model";
+import WorkspaceInvite from "../models/workspaceInvite.model";
+import Workspace from "../models/workspace.model";
+import { Types } from "mongoose";
+import generatePassword from "password-generator";
 
 const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
   const result = validationResult(req);
@@ -64,6 +68,10 @@ const login = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found." });
     }
 
+    if (user.authProvider === "google") {
+      return res.status(401).json({ message: "Please log in using Google." });
+    }
+
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!user.isVerified) {
@@ -100,7 +108,7 @@ const handleRefresh = async (req: Request, res: Response) => {
       cookies.tjwt,
       process.env.JWT_REFRESH_SECRET!,
       async (err, decoded) => {
-        const payload = decoded as {id: string};
+        const payload = decoded as { id: string };
         const user = await User.findById(payload.id);
         if (!user) return res.status(403).json({ message: "No user found" });
         const userDetails = {
@@ -189,4 +197,29 @@ const handlePasswordReset = async (req: Request, res: Response) => {
   }
 };
 
-export { signUp, handleRefresh, login, signOut, handlePasswordReset };
+const deleteAccount = async (req: Request, res: Response) => {
+  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    await connectDb();
+    const userId = new Types.ObjectId(req.user.id);
+
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser)
+      return res.status(404).json({ message: "User not found" });
+
+    await Otp.deleteMany({ email: req.user.email });
+    await WorkspaceInvite.deleteMany({ receiver: userId });
+    await Workspace.updateMany({ users: userId }, { $pull: { users: userId } });
+    await Workspace.deleteMany({ createdBy: userId });
+
+    return res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(500).json({
+      message: "Error in deleting account: " + error.message,
+    });
+  }
+};
+
+export { signUp, handleRefresh, login, signOut, handlePasswordReset, deleteAccount };

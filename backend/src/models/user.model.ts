@@ -7,6 +7,7 @@ const userSchema = new Schema(
     lastName: { type: String, required: true },
     password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
+    authProvider: { type: String, default: "local" },
     role: { type: String, default: "user" },
   },
   {
