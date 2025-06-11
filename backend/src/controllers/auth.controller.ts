@@ -14,6 +14,7 @@ import WorkspaceInvite from "../models/workspaceInvite.model";
 import Workspace from "../models/workspace.model";
 import { Types } from "mongoose";
 import generatePassword from "password-generator";
+import { client, verifyGoogleToken } from "../lib/googleAuthHelper";
 
 const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
   const result = validationResult(req);
@@ -92,6 +93,70 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
+const googleSignup = async (req: Request, res: Response) => {
+
+  try {
+    const { idToken } = req.body;
+    const payload = await verifyGoogleToken(idToken);
+
+    if (!payload?.email || !payload.given_name || !payload.family_name) {
+      return res.status(400).json({ message: "Invalid Google token" });
+    }
+
+    const existingUser = await User.findOne({ email: payload.email });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+
+    const newUser = await User.create({
+      email: payload.email,
+      firstName: payload.given_name,
+      lastName: payload.family_name,
+      password: generatePassword(8, false),
+      isVerified: true,
+      authProvider: "google",
+    });
+
+    saveUserAuthDetails(res, newUser);
+
+    return res.status(201).json({
+      message: "Account created successfully",
+      user: newUser,
+    });
+  } catch (err) {
+    console.error("Register Error:", err);
+    res.status(500).json({ message: "Server error during registration" });
+  }
+};
+
+ const googleLogin = async (req: Request, res: Response) => {
+  try {
+    const { idToken } = req.body;
+    const payload = await verifyGoogleToken(idToken);
+
+    if (!payload?.email) {
+      return res.status(400).json({ message: "Invalid Google token" });
+    }
+
+    const user = await User.findOne({ email: payload.email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found. Please register." });
+    }
+
+    saveUserAuthDetails(res, user);
+
+    return res.status(200).json({
+      message: "Login successful",
+      user,
+    });
+  } catch (err) {
+    console.error("google login Error:", err);
+    res.status(500).json({ message: "Server error during login (google)" });
+  }
+};
+
 const signOut = async (res: Response) => {
   res.clearCookie("tjwt");
   return res.status(200).json({ message: "Signed out successfully." });
@@ -143,6 +208,7 @@ const handlePasswordReset = async (req: Request, res: Response) => {
       results: result.array(),
     });
   }
+  
   try {
     await connectDb();
     const { email } = matchedData(req);
@@ -155,6 +221,10 @@ const handlePasswordReset = async (req: Request, res: Response) => {
       throw new Error(
         "Verify your account first before requesting a password reset."
       );
+    }
+
+    if(user.authProvider === "google") {
+      throw new Error("Password reset not supported for Google users.");
     }
 
     const existingOtp = await Otp.findOne({ email });
@@ -222,4 +292,4 @@ const deleteAccount = async (req: Request, res: Response) => {
   }
 };
 
-export { signUp, handleRefresh, login, signOut, handlePasswordReset, deleteAccount };
+export { signUp, handleRefresh, login, signOut, googleSignup, googleLogin, handlePasswordReset, deleteAccount };
