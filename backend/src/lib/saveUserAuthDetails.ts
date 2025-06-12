@@ -16,14 +16,14 @@ export const saveUserAuthDetails = (res: Response, user: User) => {
       UserInfo: userDetails,
     },
     process.env.JWT_ACCESS_SECRET!,
-    { expiresIn: "5m" }
+    { expiresIn: "20m" }
   );
 
   const refreshToken = jwt.sign(
     { id: user._id },
     process.env.JWT_REFRESH_SECRET!,
     {
-      expiresIn: "24h",
+      expiresIn: "7d",
     }
   );
   res.cookie("tjwt", refreshToken, {

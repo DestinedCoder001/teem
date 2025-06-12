@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { deleteAccount, handlePasswordReset, handleRefresh, login, signOut, signUp } from "../controllers/auth.controller";
+import { deleteAccount, googleLogin, googleSignup, handlePasswordReset, handleRefresh, login, signOut, signUp } from "../controllers/auth.controller";
 import { authValidation, emailValidation, loginValidation } from "../lib/validations/auth.validation";
 import { verifyOtp } from "../controllers/otp.controller";
 
@@ -9,8 +9,15 @@ router.post("/sign-up", authValidation, (req: Request, res: Response) => {
   signUp(req, res);
 });
 
+router.post("/google-sign-up", (req: Request, res: Response) => {
+  googleSignup(req, res);
+});
+
 router.post("/login", loginValidation, (req: Request, res: Response) => {
   login(req, res);
+});
+router.post("/google-login", loginValidation, (req: Request, res: Response) => {
+  googleLogin(req, res);
 });
 
 router.get("/logout", (_, res: Response) => {

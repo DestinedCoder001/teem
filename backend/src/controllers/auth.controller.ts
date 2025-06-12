@@ -14,7 +14,7 @@ import WorkspaceInvite from "../models/workspaceInvite.model";
 import Workspace from "../models/workspace.model";
 import { Types } from "mongoose";
 import generatePassword from "password-generator";
-import { client, verifyGoogleToken } from "../lib/googleAuthHelper";
+import { verifyGoogleToken } from "../lib/googleAuthHelper";
 
 const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
   const result = validationResult(req);
@@ -94,15 +94,17 @@ const login = async (req: Request, res: Response) => {
 };
 
 const googleSignup = async (req: Request, res: Response) => {
-
   try {
     const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ message: "Missing Google token" });
+    }
     const payload = await verifyGoogleToken(idToken);
 
     if (!payload?.email || !payload.given_name || !payload.family_name) {
       return res.status(400).json({ message: "Invalid Google token" });
     }
-
+    await connectDb();
     const existingUser = await User.findOne({ email: payload.email });
 
     if (existingUser) {
@@ -118,11 +120,11 @@ const googleSignup = async (req: Request, res: Response) => {
       authProvider: "google",
     });
 
-    saveUserAuthDetails(res, newUser);
+    const accessToken = saveUserAuthDetails(res, newUser);
 
     return res.status(201).json({
       message: "Account created successfully",
-      user: newUser,
+      data: { newUser, accessToken },
     });
   } catch (err) {
     console.error("Register Error:", err);
@@ -130,7 +132,7 @@ const googleSignup = async (req: Request, res: Response) => {
   }
 };
 
- const googleLogin = async (req: Request, res: Response) => {
+const googleLogin = async (req: Request, res: Response) => {
   try {
     const { idToken } = req.body;
     const payload = await verifyGoogleToken(idToken);
@@ -139,17 +141,21 @@ const googleSignup = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid Google token" });
     }
 
+    await connectDb();
+
     const user = await User.findOne({ email: payload.email });
 
     if (!user) {
-      return res.status(404).json({ message: "User not found. Please register." });
+      return res
+        .status(404)
+        .json({ message: "User not found. Please register." });
     }
 
-    saveUserAuthDetails(res, user);
+    const accessToken = saveUserAuthDetails(res, user);
 
     return res.status(200).json({
-      message: "Login successful",
-      user,
+      message: "Google login successful",
+      data: { user, accessToken },
     });
   } catch (err) {
     console.error("google login Error:", err);
@@ -181,7 +187,6 @@ const handleRefresh = async (req: Request, res: Response) => {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          role: user.role,
         };
         if (err) {
           res.sendStatus(403);
@@ -190,7 +195,7 @@ const handleRefresh = async (req: Request, res: Response) => {
         const accessToken = jwt.sign(
           { UserInfo: userDetails },
           process.env.JWT_ACCESS_SECRET!,
-          { expiresIn: "5m" }
+          { expiresIn: "20m" }
         );
         return res.send({ accessToken });
       }
@@ -208,7 +213,7 @@ const handlePasswordReset = async (req: Request, res: Response) => {
       results: result.array(),
     });
   }
-  
+
   try {
     await connectDb();
     const { email } = matchedData(req);
@@ -223,7 +228,7 @@ const handlePasswordReset = async (req: Request, res: Response) => {
       );
     }
 
-    if(user.authProvider === "google") {
+    if (user.authProvider === "google") {
       throw new Error("Password reset not supported for Google users.");
     }
 
@@ -292,4 +297,13 @@ const deleteAccount = async (req: Request, res: Response) => {
   }
 };
 
-export { signUp, handleRefresh, login, signOut, googleSignup, googleLogin, handlePasswordReset, deleteAccount };
+export {
+  signUp,
+  handleRefresh,
+  login,
+  signOut,
+  googleSignup,
+  googleLogin,
+  handlePasswordReset,
+  deleteAccount,
+};

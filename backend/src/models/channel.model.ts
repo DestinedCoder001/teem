@@ -5,12 +5,13 @@ const channelSchema = new Schema(
     users: [{ type: Schema.Types.ObjectId, ref: "User" }],
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
     messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
+    workspace: [{ type: Schema.Types.ObjectId, ref: "Workspace" }],
   },
   {
     timestamps: true
   }
 );
 
-const User = models.User || model("User", channelSchema);
+const Channel = models.Channel || model("Channel", channelSchema);
 
-export default User;
+export default Channel;

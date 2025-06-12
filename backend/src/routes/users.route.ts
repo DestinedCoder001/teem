@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import User from "../models/user.model";
-import { verifyToken } from "../middleware/auth.middleware";
 import { connectDb } from "../lib/connectDb";
 
 const router = Router();
