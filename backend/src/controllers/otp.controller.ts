@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { Otp } from "../models/otp.model";
 import User from "../models/user.model";
 import { connectDb } from "../lib/connectDb";
-import { saveUserAuthDetails } from "../lib/saveUserAuthDetails";
+import { saveUserAuthDetails } from "../utils/saveUserAuthDetails";
 import bcrypt from "bcrypt";
 
 export const verifyOtp = async (

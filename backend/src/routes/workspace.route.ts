@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
-import { verifyToken } from "../middleware/auth.middleware";
-import { acceptInvite, createWs, removeUser, sendInvite } from "../controllers/workspace.controller";
+import { acceptInvite, createWs, deleteWs, removeUser, sendInvite } from "../controllers/workspace.controller";
 import { workspaceCreateValidation } from "../lib/validations/worskspace.validation";
 import { emailValidation } from "../lib/validations/auth.validation";
 
@@ -10,6 +9,9 @@ router.post("/create", workspaceCreateValidation, (req: Request, res: Response) 
     createWs(req, res);
 });
 
+router.post("/delete/:workspaceId", emailValidation, (req: Request, res: Response) => {
+    deleteWs(req, res);
+});
 router.post("/send-invite/:workspaceId", emailValidation, (req: Request, res: Response) => {
     sendInvite(req, res);
 });

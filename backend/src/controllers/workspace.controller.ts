@@ -3,7 +3,7 @@ import { matchedData, validationResult } from "express-validator";
 import { connectDb } from "../lib/connectDb";
 import Workspace from "../models/workspace.model";
 import User from "../models/user.model";
-import { User as UserType } from "../lib/types";
+import { User as UserType } from "../utils/types";
 import { Types } from "mongoose";
 import WorkspaceInvite from "../models/workspaceInvite.model";
 
@@ -147,7 +147,7 @@ const acceptInvite = async (req: Request, res: Response) => {
       { $push: { users: invite.receiver } }
     );
 
-    await WorkspaceInvite.deleteMany({ _id: invite._id });
+    await WorkspaceInvite.deleteOne({ _id: invite._id });
     res.status(200).json({ message: "Invite accepted successfully" });
   } catch (error: any) {
     console.log(error);
@@ -202,7 +202,6 @@ const removeUser = async (req: Request, res: Response) => {
     await Workspace.findOneAndUpdate(
       { _id: workspaceId },
       { $pull: { users: userToBeRemoved._id } },
-      { new: true }
     );
     res.status(200).json({ message: "User removed successfully" });
   } catch (error: any) {
@@ -211,4 +210,38 @@ const removeUser = async (req: Request, res: Response) => {
   }
 };
 
-export { createWs, sendInvite, removeUser, acceptInvite };
+const deleteWs = async (req: Request, res: Response) => {
+
+  const { workspaceId } = req.params;
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    await connectDb();
+
+    const workspace = await Workspace.findOne({ _id: workspaceId });
+
+    if (!workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
+
+    if (workspace.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Action not permitted." });
+    }
+
+    const deletedWorkspace = await Workspace.findOneAndDelete(
+      { _id: workspaceId },
+    );
+    res.status(200).json({ message: "Workspace deleted successfully", data: deletedWorkspace });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json("Error in deleting from workspace: " + error);
+  }
+};
+
+export { createWs, sendInvite, removeUser, acceptInvite, deleteWs };

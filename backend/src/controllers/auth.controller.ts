@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-import { SignUpBody } from "../lib/types";
+import { SignUpBody } from "../utils/types";
 import { matchedData, validationResult } from "express-validator";
 import { connectDb } from "../lib/connectDb";
 import { handleSignup } from "../lib/handleSignUp";
 import User from "../models/user.model";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { saveUserAuthDetails } from "../lib/saveUserAuthDetails";
-import { sendOtpEmail } from "../lib/sendOtpEmail";
-import { canRequestOtp, generateOtp } from "../lib/otpHelpers";
+import { saveUserAuthDetails } from "../utils/saveUserAuthDetails";
+import { sendOtpEmail } from "../utils/sendOtpEmail";
+import { canRequestOtp, generateOtp } from "../utils/otpHelpers";
 import { Otp } from "../models/otp.model";
 import WorkspaceInvite from "../models/workspaceInvite.model";
 import Workspace from "../models/workspace.model";

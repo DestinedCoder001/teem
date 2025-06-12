@@ -1,8 +1,8 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.model";
-import { sendOtpEmail } from "./sendOtpEmail";
+import { sendOtpEmail } from "../utils/sendOtpEmail";
 import { Otp } from "../models/otp.model";
-import { canRequestOtp, generateOtp } from "./otpHelpers";
+import { canRequestOtp, generateOtp } from "../utils/otpHelpers";
 
 export const handleSignup = async (email: string, password: string, firstName: string, lastName: string) => {
   const existingUser = await User.findOne({ email });
