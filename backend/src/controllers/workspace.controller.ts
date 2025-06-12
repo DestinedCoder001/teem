@@ -6,6 +6,7 @@ import User from "../models/user.model";
 import { User as UserType } from "../utils/types";
 import { Types } from "mongoose";
 import WorkspaceInvite from "../models/workspaceInvite.model";
+import Channel from "../models/channel.model";
 
 const createWs = async (req: Request, res: Response) => {
   const validationResults = validationResult(req);
@@ -262,6 +263,7 @@ const deleteWs = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
+    await WorkspaceInvite.deleteMany({ workspace: workspaceId });
     const deletedWorkspace = await Workspace.findOneAndDelete(
       { _id: workspaceId },
     );
