@@ -38,6 +38,34 @@ const createWs = async (req: Request, res: Response) => {
   }
 };
 
+const getWsDetails = async (req: Request, res: Response) => {
+  const { workspaceId } = req.params;
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    await connectDb();
+    const workspace = await Workspace.findById(workspaceId).populate({
+      path: "users createdBy",
+      select: "firstName lastName email createdAt",
+    });
+
+    if (!workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
+
+    res.status(200).json({ data: workspace });
+  } catch (error: any) {
+    console.log("Error in getting workspace details: ", error);
+    res.status(500).json(error.message);
+  }
+};
+
 const sendInvite = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
   if (!Types.ObjectId.isValid(workspaceId)) {
@@ -244,4 +272,4 @@ const deleteWs = async (req: Request, res: Response) => {
   }
 };
 
-export { createWs, sendInvite, removeUser, acceptInvite, deleteWs };
+export { createWs, getWsDetails, sendInvite, removeUser, acceptInvite, deleteWs };
