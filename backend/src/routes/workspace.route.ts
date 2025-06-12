@@ -16,15 +16,15 @@ router.get("/:workspaceId", (req: Request, res: Response) => {
 router.post("/:workspaceId/delete", (req: Request, res: Response) => {
     deleteWs(req, res);
 });
-router.post("/send-invite/:workspaceId", emailValidation, (req: Request, res: Response) => {
+router.post("/:workspaceId/send-invite", emailValidation, (req: Request, res: Response) => {
     sendInvite(req, res);
 });
 
-router.post("/accept-invite/:workspaceId", (req: Request, res: Response) => {
+router.post("/:workspaceId/accept-invite", (req: Request, res: Response) => {
     acceptInvite(req, res);
 });
 
-router.post("/remove-user/:workspaceId", emailValidation, (req: Request, res: Response) => {
+router.post("/:workspaceId/remove-user", emailValidation, (req: Request, res: Response) => {
     removeUser(req, res);
 });
 
