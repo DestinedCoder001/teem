@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { Types } from "mongoose";
 import { connectDb } from "../lib/connectDb";
 import Channel from "../models/channel.model";
+import Workspace from "../models/workspace.model";
+import { User } from "../utils/types";
 
 const createChannel = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
@@ -23,12 +25,28 @@ const createChannel = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
+    const workspace = await Workspace.findOne({ _id: workspaceId });
+    if (!workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
+
+    const isUserInWorkspace = workspace.users.find((user: User) => {
+      return user._id.toString() === req.user?.id;
+    });
+
+    if (!isUserInWorkspace) {
+      return res.status(403).json({ message: "Action not permitted." });
+    }
+
     const newChannel = await Channel.create({
       name,
       description,
       workspace: workspaceId,
       createdBy: req.user.id,
+      members: [req.user.id],
     });
+    await workspace.channels.push(newChannel._id);
+    await workspace.save();
     res.status(201).json({
       message: "Channel created successfully",
       data: { channel: newChannel },
@@ -39,16 +57,18 @@ const createChannel = async (req: Request, res: Response) => {
   }
 };
 
-const addMembers = async (req: Request, res: Response) => {
-  const { payload } = req.body;
+const editChannelDetails = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
+  const { name, description } = req.body;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (!payload || !payload.newUsers) {
-    return res.status(400).json({ message: "Payload is required" });
+  if (!name || !description) {
+    return res
+      .status(400)
+      .json({ message: "Channel name and description is required" });
   }
 
   if (!Types.ObjectId.isValid(workspaceId)) {
@@ -59,21 +79,18 @@ const addMembers = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid channel id" });
   }
 
-  payload.newUsers.map((id: string) => {
-    if (!Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid user id", data: id });
-    }
-  });
-
-  const userIds = payload.newUsers.map((id: string) => {
-    return new Types.ObjectId(id);
-  });
-
   try {
     await connectDb();
     const updatedChannel = await Channel.findOneAndUpdate(
-      { _id: channelId },
-      { $addToSet: { users: { $each: userIds } } },
+      {
+        _id: channelId,
+        workspace: workspaceId,
+        members: { $in: [req.user.id] },
+      },
+      {
+        name,
+        description,
+      },
       { new: true }
     );
 
@@ -82,25 +99,79 @@ const addMembers = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({
-      message: "Channel member added successfully",
+      message: "Channel details updated successfully",
+      data: { channel: updatedChannel },
+    });
+  } catch (error: any) {
+    console.log("Error in updating channel details: ", error);
+    res.status(500).json(error.message);
+  }
+};
+
+const addMembers = async (req: Request, res: Response) => {
+  const { newMembers } = req.body;
+  const { channelId, workspaceId } = req.params;
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!newMembers) {
+    return res.status(400).json({ message: "newMembers is required" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  if (!Types.ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: "Invalid channel id" });
+  }
+
+  newMembers.map((id: string) => {
+    if (!Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid user id", data: id });
+    }
+  });
+
+  const userIds = newMembers.map((id: string) => {
+    return new Types.ObjectId(id);
+  });
+
+  try {
+    await connectDb();
+    const updatedChannel = await Channel.findOneAndUpdate(
+      { _id: channelId },
+      { $addToSet: { members: { $each: userIds } } },
+      { new: true }
+    ).populate({
+      path: "members",
+      select: "firstName lastName",
+    });
+
+    if (!updatedChannel) {
+      return res.status(404).json({ message: "Channel not found" });
+    }
+
+    res.status(200).json({
+      message: "Channel member(s) added successfully",
       data: updatedChannel,
     });
   } catch (error: any) {
-    console.log("Error in adding channel member: ", error);
+    console.log("Error in adding channel member(s): ", error);
     res.status(500).json(error.message);
   }
 };
 
 const removeMembers = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
-  const {payload} = req.body;
+  const { toBeRemoved } = req.body;
 
-  
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (!payload || !payload.members) {
+  if (!toBeRemoved) {
     return res.status(400).json({ message: "Payload is required" });
   }
 
@@ -112,44 +183,49 @@ const removeMembers = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid channel id" });
   }
 
-  payload.members.map((id: string) => {
+  toBeRemoved.map((id: string) => {
     if (!Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: "Invalid user id", data: id });
     }
   });
 
-  const userIds = payload.members.map((id: string) => {
+  const userIds = toBeRemoved.map((id: string) => {
     return new Types.ObjectId(id);
   });
 
   try {
     await connectDb();
-    const channel = await Channel.findOne({_id: channelId, workspace: workspaceId});
+    const channel = await Channel.findOne({
+      _id: channelId,
+      workspace: workspaceId,
+    });
     if (channel.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({message: "Action not permitted"})
+      return res.status(403).json({ message: "Action not permitted" });
     }
 
-    if(!channel) {
-      return res.status(404).json({message: "Channel not found"})
+    if (!channel) {
+      return res.status(404).json({ message: "Channel not found" });
     }
 
-    await Channel.findOneAndUpdate(
+    const updatedChannel = await Channel.findOneAndUpdate(
       { _id: channelId, workspace: workspaceId },
-      { $pull: { users: {$each: userIds} } }
+      { $pull: { members: { $in: userIds } } },
+      { new: true }
     );
 
-
-    res.status(200).json({ message: "Member(s) removed successfully" });
-
+    res.status(200).json({
+      message: "Member(s) removed successfully",
+      data: updatedChannel,
+    });
   } catch (error: any) {
     console.log(error);
     res.status(500).json("Error in removing member(s) from channel: " + error);
   }
 };
 
-const deleteChannel = async (req: Request, res: Response) => {
+const leaveChannel = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
-  
+
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -162,10 +238,53 @@ const deleteChannel = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid channel id" });
   }
 
+  try {
+    await connectDb();
+
+    const updatedChannel = await Channel.findOneAndUpdate(
+      {
+        _id: channelId,
+        workspace: workspaceId,
+        members: { $in: [req.user.id] },
+      },
+      { $pull: { members: req.user.id } },
+      { new: true }
+    );
+
+    if (!updatedChannel) {
+      return res.status(404).json({ message: "Channel not found" });
+    }
+
+    res.status(200).json({
+      message: "You have left the channel successfully",
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json("Error in leaving channel: " + error.message + " ");
+  }
+};
+
+const deleteChannel = async (req: Request, res: Response) => {
+  const { channelId, workspaceId } = req.params;
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  if (!Types.ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: "Invalid channel id" });
+  }
 
   try {
     await connectDb();
-    const channel = await Channel.findOne({ _id: channelId, workspace: workspaceId });
+    const channel = await Channel.findOne({
+      _id: channelId,
+      workspace: workspaceId,
+    });
     if (!channel) {
       return res.status(404).json({ message: "Channel not found" });
     }
@@ -180,6 +299,13 @@ const deleteChannel = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json(error.message);
   }
-}
+};
 
-export { createChannel, addMembers, removeMembers, deleteChannel };
+export {
+  createChannel,
+  editChannelDetails,
+  addMembers,
+  leaveChannel,
+  removeMembers,
+  deleteChannel,
+};

@@ -13,7 +13,7 @@ router.get("/:workspaceId", (req: Request, res: Response) => {
     getWsDetails(req, res);
 });
 
-router.post("/:workspaceId/delete", (req: Request, res: Response) => {
+router.delete("/:workspaceId/delete", (req: Request, res: Response) => {
     deleteWs(req, res);
 });
 router.post("/:workspaceId/send-invite", emailValidation, (req: Request, res: Response) => {

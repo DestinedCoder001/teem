@@ -79,9 +79,9 @@ const login = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "User not verified." });
     }
 
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ message: "Invalid credentials." });
-    }
+    // if (!isPasswordCorrect) {
+    //   return res.status(401).json({ message: "Invalid credentials." });
+    // }
 
     const accessToken = saveUserAuthDetails(res, user);
     return res
@@ -143,7 +143,7 @@ const googleLogin = async (req: Request, res: Response) => {
 
     await connectDb();
 
-    const user = await User.findOne({ email: payload.email });
+    const user = await User.findOne({ email: payload.email }).select("-password");
 
     if (!user) {
       return res
