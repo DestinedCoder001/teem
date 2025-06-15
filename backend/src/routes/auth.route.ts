@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { deleteAccount, googleLogin, googleSignup, handlePasswordReset, handleRefresh, login, signOut, signUp } from "../controllers/auth.controller";
+import { googleLogin, googleSignup, handlePasswordReset, handleRefresh, login, signOut, signUp } from "../controllers/auth.controller";
 import { authValidation, emailValidation, loginValidation } from "../lib/validations/auth.validation";
 import { verifyOtp } from "../controllers/otp.controller";
 
@@ -37,9 +37,6 @@ router.get("/refresh-token", (req: Request, res: Response) => {
 
 router.post("/forgot-password", emailValidation, (req: Request, res: Response) => {
   handlePasswordReset(req, res);
-})
-router.post("/delete-account", (req: Request, res: Response) => {
-  deleteAccount(req, res);
 })
 
 export default router;

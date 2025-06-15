@@ -79,9 +79,9 @@ const login = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "User not verified." });
     }
 
-    // if (!isPasswordCorrect) {
-    //   return res.status(401).json({ message: "Invalid credentials." });
-    // }
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: "Invalid credentials." });
+    }
 
     const accessToken = saveUserAuthDetails(res, user);
     return res
@@ -272,31 +272,6 @@ const handlePasswordReset = async (req: Request, res: Response) => {
   }
 };
 
-const deleteAccount = async (req: Request, res: Response) => {
-  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-
-  try {
-    await connectDb();
-    const userId = new Types.ObjectId(req.user.id);
-
-    const deletedUser = await User.findByIdAndDelete(userId);
-    if (!deletedUser)
-      return res.status(404).json({ message: "User not found" });
-
-    await Otp.deleteMany({ email: req.user.email });
-    await WorkspaceInvite.deleteMany({ receiver: userId });
-    await Workspace.updateMany({ users: userId }, { $pull: { users: userId } });
-    await Workspace.deleteMany({ createdBy: userId });
-
-    return res.status(200).json({ message: "Account deleted successfully" });
-  } catch (error: any) {
-    console.log(error.message);
-    return res.status(500).json({
-      message: "Error in deleting account: " + error.message,
-    });
-  }
-};
-
 export {
   signUp,
   handleRefresh,
@@ -305,5 +280,4 @@ export {
   googleSignup,
   googleLogin,
   handlePasswordReset,
-  deleteAccount,
 };
