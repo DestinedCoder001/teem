@@ -3,16 +3,17 @@ import { model, Schema, models } from "mongoose";
 const messageSchema = new Schema(
   {
     sender: { type: Schema.Types.ObjectId, ref: "User" },
-    receiver: { type: Schema.Types.ObjectId, ref: "User" },
     content: { type: String, required: true },
     workspace: { type: Schema.Types.ObjectId, ref: "Workspace" },
     channel: { type: Schema.Types.ObjectId, ref: "Channel" },
+    edited: {type: Boolean, default: false},
+    deleted: {type: Boolean, default: false}
   },
   {
     timestamps: true
   }
 );
 
-const User = models.User || model("User", messageSchema);
+const Message = models.Message || model("Message", messageSchema);
 
-export default User;
+export default Message;

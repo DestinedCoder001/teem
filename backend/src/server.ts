@@ -4,6 +4,7 @@ import authRoute from "./routes/auth.route";
 import usersRoute from "./routes/user.route";
 import workspacesRoute from "./routes/workspace.route";
 import channelsRoute from "./routes/channel.route";
+import messagesRoute from "./routes/message.route";
 import dotenv from "dotenv";
 import { verifyToken } from "./middleware/auth.middleware";
 
@@ -24,6 +25,7 @@ app.use("/api/users", usersRoute);
 
 app.use("/api/workspaces", workspacesRoute);
 app.use("/api/:workspaceId/channels", channelsRoute);
+app.use("/api/:workspaceId/:channelId", messagesRoute);
 
 app.listen(3001, () => {
   console.log("Server is running on port 3001");
