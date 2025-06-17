@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { deleteAccount, editUserDetails, getUser } from "../controllers/user.controller";
+import { deleteAccount, editUserDetails, getUser, getUserTasks } from "../controllers/user.controller";
 
 const router = Router();
 
 router.get("/:userId", async (req, res) => {
     getUser(req, res);
+});
+
+router.get("/:userId/tasks", async (req, res) => {
+    getUserTasks(req, res);
 });
 
 router.patch("/:userId/edit", async (req, res) => {

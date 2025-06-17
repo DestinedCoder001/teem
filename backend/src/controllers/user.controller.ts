@@ -6,6 +6,7 @@ import { Otp } from "../models/otp.model";
 import WorkspaceInvite from "../models/workspaceInvite.model";
 import Workspace from "../models/workspace.model";
 import Channel from "../models/channel.model";
+import { Task } from "../models/task.model";
 
 const getUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -46,7 +47,9 @@ const editUserDetails = async (req: Request, res: Response) => {
   }
 
   if (!firstName || !lastName) {
-    return res.status(400).json({ message: "First name and last name required" });
+    return res
+      .status(400)
+      .json({ message: "First name and last name required" });
   }
 
   try {
@@ -111,4 +114,30 @@ const deleteAccount = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, editUserDetails, deleteAccount };
+// TASKS
+
+const getUserTasks = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user id." });
+  }
+
+  try {
+    await connectDb();
+    const tasks = await Task.find({ assignedTo: userId });
+
+    if (!tasks) {
+      return res.status(404).json({ message: "Task(s) not found" });
+    }
+
+    return res.status(200).json({ message: "Request successful", data: tasks });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export { getUser, editUserDetails, deleteAccount, getUserTasks }; 
