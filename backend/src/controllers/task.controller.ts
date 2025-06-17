@@ -3,38 +3,62 @@ import { connectDb } from "../lib/connectDb";
 import { Task } from "../models/task.model";
 import Workspace from "../models/workspace.model";
 import { Types } from "mongoose";
-import { User } from "../utils/types";
+import { matchedData, validationResult } from "express-validator";
 
 const createTask = async (req: Request, res: Response) => {
-  const { title, summary } = req.body;
-  const { workspaceId } = req.params;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+  const result = validationResult(req);
+
+  if (!result.isEmpty()) {
+    return res.status(400).send({
+      results: result.array(),
+    });
+  }
+
+  const { workspaceId } = req.params;
+  const { assignedTo } = req.body;
+  const { title, summary, dueDate } = matchedData(req);
+
+
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
   }
 
-  if (!title || !summary) {
-    return res.status(400).json({ message: "All fields are required" });
+  if (!assignedTo) {
+    return res.status(400).json({ message: "Assignee is required" });
   }
+  
+  if (!Types.ObjectId.isValid(assignedTo)) {
+    return res.status(400).json({ message: "Invalid user id (body)" });
+  }
+
+
 
   try {
     await connectDb();
     const workspace = await Workspace.findOne({ _id: workspaceId });
     const isUserInWorkspace = workspace.users.includes(req.user.id);
+    const isAssigneeInWorkspace = workspace.users.includes(assignedTo);
 
     if (!isUserInWorkspace) {
       return res.status(403).json({ message: "Action not permitted." });
+    }
+
+    if (!isAssigneeInWorkspace) {
+      return res.status(404).json({ message: "Assignee not in workspace" });
     }
 
     const newTask = await Task.create({
       title,
       summary,
       assignedBy: req.user.id,
+      assignedTo,
       workspace: workspace._id,
+      dueDate,
     });
 
     res.status(201).json({
@@ -97,13 +121,16 @@ const updateTaskStatus = async (req: Request, res: Response) => {
   try {
     await connectDb();
 
-    const task = await Task.findOne({_id: taskId,});
+    const task = await Task.findOne({ _id: taskId });
 
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
 
-    if (task.assignedTo.toString() !== req.user.id || task.assignedBy.toString() !== req.user.id) {
+    if (
+      task.assignedTo.toString() !== req.user.id &&
+      task.assignedBy.toString() !== req.user.id
+    ) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
