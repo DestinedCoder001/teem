@@ -4,27 +4,6 @@ import Channel from "../models/channel.model";
 import Message from "../models/message.model";
 import { Request, Response } from "express";
 
-const getChannelMessages = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
-
-  if(!req.user){
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  if (!Types.ObjectId.isValid(channelId)) {
-    return res.status(400).json({ message: "Invalid channel id" });
-  }
-
-  try {
-    await connectDb();
-    const messages = await Message.find({
-      channel: channelId,
-    })
-    res.status(200).json(messages);
-  } catch (error: any) {
-    res.status(500).json(error.message);
-  }
-};
 
 const sendMessage = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
@@ -138,4 +117,4 @@ const deleteMessage = async (req: Request, res: Response) => {
   }
 };
 
-export { getChannelMessages, sendMessage, editMessage, deleteMessage };
+export { sendMessage, editMessage, deleteMessage };

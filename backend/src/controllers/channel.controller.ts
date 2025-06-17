@@ -4,6 +4,7 @@ import { connectDb } from "../lib/connectDb";
 import Channel from "../models/channel.model";
 import Workspace from "../models/workspace.model";
 import { User } from "../utils/types";
+import Message from "../models/message.model";
 
 const createChannel = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
@@ -223,6 +224,28 @@ const removeMembers = async (req: Request, res: Response) => {
   }
 };
 
+const getChannelMessages = async (req: Request, res: Response) => {
+  const { channelId } = req.params;
+
+  if(!req.user){
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!Types.ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: "Invalid channel id" });
+  }
+
+  try {
+    await connectDb();
+    const messages = await Message.find({
+      channel: channelId,
+    })
+    res.status(200).json(messages);
+  } catch (error: any) {
+    res.status(500).json(error.message);
+  }
+};
+
 const leaveChannel = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
 
@@ -306,6 +329,7 @@ export {
   editChannelDetails,
   addMembers,
   leaveChannel,
+  getChannelMessages,
   removeMembers,
   deleteChannel,
 };
