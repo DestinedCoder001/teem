@@ -4,7 +4,28 @@ import Channel from "../models/channel.model";
 import Message from "../models/message.model";
 import { Request, Response } from "express";
 
-// FOR MESSAGES
+const getChannelMessages = async (req: Request, res: Response) => {
+  const { channelId } = req.params;
+
+  if(!req.user){
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!Types.ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: "Invalid channel id" });
+  }
+
+  try {
+    await connectDb();
+    const messages = await Message.find({
+      channel: channelId,
+    })
+    res.status(200).json(messages);
+  } catch (error: any) {
+    res.status(500).json(error.message);
+  }
+};
+
 const sendMessage = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
   const { message } = req.body;
@@ -58,7 +79,9 @@ const editMessage = async (req: Request, res: Response) => {
   }
 
   if (!message || !messageId) {
-    return res.status(400).json({ message: "Message id and content are required" });
+    return res
+      .status(400)
+      .json({ message: "Message id and content are required" });
   }
 
   if (!Types.ObjectId.isValid(messageId)) {
@@ -108,11 +131,11 @@ const deleteMessage = async (req: Request, res: Response) => {
     if (!deletedMessage || deletedMessage.matchedCount === 0) {
       return res.status(404).json({ message: "Message not found" });
     }
-    
+
     res.status(200).json({ message: "Message deleted successfully" });
   } catch (error: any) {
     res.status(500).json("Error deleting message: " + error.message);
   }
 };
 
-export { sendMessage, editMessage, deleteMessage };
+export { getChannelMessages, sendMessage, editMessage, deleteMessage };
