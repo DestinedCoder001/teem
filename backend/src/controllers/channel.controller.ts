@@ -227,7 +227,7 @@ const removeMembers = async (req: Request, res: Response) => {
 const getChannelMessages = async (req: Request, res: Response) => {
   const { channelId } = req.params;
 
-  if(!req.user){
+  if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -239,10 +239,74 @@ const getChannelMessages = async (req: Request, res: Response) => {
     await connectDb();
     const messages = await Message.find({
       channel: channelId,
-    })
+    });
     res.status(200).json(messages);
   } catch (error: any) {
     res.status(500).json(error.message);
+  }
+};
+
+const joinChannel = async (req: Request, res: Response) => {
+  const { channelId, workspaceId } = req.params;
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  if (!Types.ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: "Invalid channel id" });
+  }
+
+  try {
+    await connectDb();
+
+    const isUserInWorkspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: req.user.id,
+    });
+
+    if (!isUserInWorkspace) {
+      return res.status(403).json({ message: "Action not permitted" });
+    }
+
+    const channel = await Channel.findOne(
+      {
+        _id: channelId,
+        workspace: workspaceId,
+      },
+    );
+
+    if (!channel) {
+      return res.status(404).json({ message: "Channel not found" });
+    }
+
+    if (channel.members.includes(req.user.id)) {
+      return res.status(400).json({ message: "User already in channel" });
+    }
+
+    const updatedChannel = await Channel.findOneAndUpdate(
+      {
+        _id: channelId,
+        workspace: workspaceId,
+      },
+      { $addToSet: { members: req.user.id } },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "Joined channel successfully",
+      data: updatedChannel,
+    });
+  } catch (error: any) {
+    console.log("Error in joining channel: ", error);
+    res.status(500).json({
+      message: "Error in joining channel",
+      error: error.message,
+    });
   }
 };
 
@@ -328,6 +392,7 @@ export {
   createChannel,
   editChannelDetails,
   addMembers,
+  joinChannel,
   leaveChannel,
   getChannelMessages,
   removeMembers,
