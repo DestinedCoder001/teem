@@ -42,11 +42,6 @@ const sendMessage = async (req: Request, res: Response) => {
       workspace: workspaceId,
     });
 
-    await Channel.findOneAndUpdate(
-      { _id: channelId, workspace: workspaceId },
-      { $push: { messages: newMessage._id } }
-    );
-
     res.status(200).json({
       message: "Message sent successfully",
     });

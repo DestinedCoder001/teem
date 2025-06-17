@@ -6,7 +6,6 @@ const channelSchema = new Schema(
     description: { type: String, required: true },
     members: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
-    messages: { type: [Schema.Types.ObjectId], ref: "Message", default: [] },
     workspace: { type: Schema.Types.ObjectId, ref: "Workspace" },
   },
   {
