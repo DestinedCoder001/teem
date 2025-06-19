@@ -10,9 +10,6 @@ import { saveUserAuthDetails } from "../utils/saveUserAuthDetails";
 import { sendOtpEmail } from "../utils/sendOtpEmail";
 import { canRequestOtp, generateOtp } from "../utils/otpHelpers";
 import { Otp } from "../models/otp.model";
-import WorkspaceInvite from "../models/workspaceInvite.model";
-import Workspace from "../models/workspace.model";
-import { Types } from "mongoose";
 import generatePassword from "password-generator";
 import { verifyGoogleToken } from "../lib/googleAuthHelper";
 
@@ -79,9 +76,9 @@ const login = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "User not verified." });
     }
 
-    // if (!isPasswordCorrect) {
-    //   return res.status(401).json({ message: "Invalid credentials." });
-    // }
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: "Invalid credentials." });
+    }
 
     const accessToken = saveUserAuthDetails(res, user);
     return res

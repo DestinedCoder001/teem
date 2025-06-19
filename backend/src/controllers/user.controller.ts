@@ -7,6 +7,7 @@ import WorkspaceInvite from "../models/workspaceInvite.model";
 import Workspace from "../models/workspace.model";
 import Channel from "../models/channel.model";
 import { Task } from "../models/task.model";
+import bcrypt from "bcrypt";
 
 const getUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -75,29 +76,41 @@ const editUserDetails = async (req: Request, res: Response) => {
 };
 
 const deleteAccount = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const password = req.body?.password;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+  
+  const userId = req.user.id;
+  
   if (!Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user id." });
   }
-
-  if (userId !== req.user.id) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
+  
   try {
     await connectDb();
-
-    const deletedUser = await User.findOneAndDelete({ _id: userId });
-
-    if (!deletedUser) {
+    const user = await User.findOne({ _id: userId });
+    
+    console.log(user._id.toString(), userId);
+    
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    
+    
+    if (user.authProvider === "local") {   
+      if (!password) {
+        return res.status(400).json({ message: "Password is required" });
+      }
+      const isPasswordCorrect = await bcrypt.compare(password, user.password);
+      if (!isPasswordCorrect) {
+        return res.status(403).json({ message: "Invalid credentials" });
+      }
+    }
 
+    await User.findOneAndDelete({ _id: userId });
     await Otp.deleteMany({ email: req.user.email });
     await WorkspaceInvite.deleteMany({ receiver: userId });
     await Workspace.updateMany({ users: userId }, { $pull: { users: userId } });
@@ -140,4 +153,4 @@ const getUserTasks = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, editUserDetails, deleteAccount, getUserTasks }; 
+export { getUser, editUserDetails, deleteAccount, getUserTasks };
