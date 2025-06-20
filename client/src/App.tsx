@@ -1,14 +1,16 @@
-import { useState } from "react";
-import { Button } from "./components/ui/button";
 import { Route, Routes } from "react-router-dom";
+import SignUp from "./pages/auth/SignUp";
+import AuthLayout from "./components/layout/AuthLayout";
+import Login from "./pages/auth/Login";
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <Routes>
-      <Route path="/" element={<h1>Hello /</h1>} />
-      <Route path="/channels" element={<h1>Hello channels</h1>} />
+      <Route element={<AuthLayout />}>
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/login" element={<Login />} />
+      </Route>
     </Routes>
   );
 }
