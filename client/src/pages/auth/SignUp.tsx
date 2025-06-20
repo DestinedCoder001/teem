@@ -166,6 +166,7 @@ const SignUp = () => {
 
               <Button
                 variant="outline"
+                type="button"
                 className="text-[#333333] border border-black rounded-full py-5 font-normal text-md"
               >
                 <img src={googleIcon} className="w-4 h-4 mr-2" />

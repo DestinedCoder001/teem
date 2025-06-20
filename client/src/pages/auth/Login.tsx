@@ -32,7 +32,9 @@ const Login = () => {
 
               <span className="text-[0.8rem] block text-center text-[#333333]">
                 Don't have an account?{" "}
-                <Link to="/signup" className="text-sm text-[#ddd] underline text-black">sign up</Link>
+                <Link to="/signup" className="text-sm underline text-black">
+                  sign up
+                </Link>
               </span>
             </div>
 
@@ -40,7 +42,6 @@ const Login = () => {
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col gap-4"
             >
-
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-[#666666] font-normal">
                   Email
@@ -119,6 +120,7 @@ const Login = () => {
 
               <Button
                 variant="outline"
+                type="button"
                 className="text-[#333333] border border-black rounded-full py-5 font-normal text-md"
               >
                 <img src={googleIcon} className="w-4 h-4 mr-2" />
