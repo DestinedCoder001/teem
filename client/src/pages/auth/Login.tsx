@@ -5,7 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import googleIcon from "@/assets/google.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLogin } from "@/lib/hooks/useLogin";
+import { toast } from "sonner";
+import { LoaderCircle } from "lucide-react";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,10 +17,29 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<{ email: string; password: string }>();
+  const { mutate, isPending } = useLogin();
+  const navigate = useNavigate();
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    console.log("first");
+    mutate(
+      { email, password },
+      {
+        onSuccess: () => navigate("/"),
+        onError: () => {
+          toast("Login failed. Please try again.", {
+            position: "top-center",
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -107,9 +129,10 @@ const Login = () => {
 
               <Button
                 type="submit"
+                disabled={isPending}
                 className="rounded-full py-6 font-normal text-md"
               >
-                Log in
+                {isPending ? <LoaderCircle className="mr-2 animate-spin" /> : "Log in"}
               </Button>
 
               <div className="flex items-center gap-4">

@@ -8,10 +8,15 @@ import messagesRoute from "./routes/message.route";
 import tasksRoute from "./routes/tasks.route";
 import dotenv from "dotenv";
 import { verifyToken } from "./middleware/auth.middleware";
-
+import cors from "cors";
 dotenv.config();
 const app = express();
-
+app.use(cors(
+  {
+    origin: "http://localhost:5173",
+    credentials: true
+  }
+))
 app.use(cookieParser());
 app.use(express.json());
 
