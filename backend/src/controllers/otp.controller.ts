@@ -33,7 +33,7 @@ export const verifyOtp = async (
     const isOtpCorrect = bcrypt.compareSync(code, record.code);
 
     if (!isOtpCorrect) {
-      return res.status(403).send("Invalid OTP");
+      return res.status(403).send({message: "Invalid OTP"});
     }
 
     let user;
@@ -45,9 +45,7 @@ export const verifyOtp = async (
         { new: true }
       );
       const accessToken = saveUserAuthDetails(res, user);
-      return res
-        .status(200)
-        .json({ message: "OTP verified", data: accessToken });
+      return res.status(200).json({ message: "OTP verified", accessToken });
     } else if (type === "reset" && password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       user = await User.findOneAndUpdate(

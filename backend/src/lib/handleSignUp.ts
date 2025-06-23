@@ -7,7 +7,7 @@ import { canRequestOtp, generateOtp } from "../utils/otpHelpers";
 export const handleSignup = async (email: string, password: string, firstName: string, lastName: string) => {
   const existingUser = await User.findOne({ email });
   if (existingUser && existingUser.isVerified) {
-    throw new Error("User already exists");
+    throw new Error("User already exists.");
   }
 
   if (existingUser && !existingUser.isVerified) {

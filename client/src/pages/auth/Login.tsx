@@ -9,6 +9,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "@/lib/hooks/useLogin";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
+import type { LoginDetails } from "@/lib/types";
+import type { AxiosError } from "axios";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,26 +19,23 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<{ email: string; password: string }>();
+  } = useForm<LoginDetails>();
   const { mutate, isPending } = useLogin();
   const navigate = useNavigate();
 
-  const onSubmit = ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    console.log("first");
+  const onSubmit = ({ email, password }: LoginDetails) => {
     mutate(
       { email, password },
       {
         onSuccess: () => navigate("/"),
-        onError: () => {
-          toast("Login failed. Please try again.", {
-            position: "top-center",
-          });
+        onError: (err) => {
+          const error = err as AxiosError<{ message: string }>;
+          toast(
+            error.response?.data?.message || "Login failed. Please try again.",
+            {
+              position: "top-center",
+            }
+          );
         },
       }
     );
@@ -132,7 +131,11 @@ const Login = () => {
                 disabled={isPending}
                 className="rounded-full py-6 font-normal text-md"
               >
-                {isPending ? <LoaderCircle className="mr-2 animate-spin" /> : "Log in"}
+                {isPending ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  "Log in"
+                )}
               </Button>
 
               <div className="flex items-center gap-4">
