@@ -140,7 +140,9 @@ const googleLogin = async (req: Request, res: Response) => {
 
     await connectDb();
 
-    const user = await User.findOne({ email: payload.email }).select("-password");
+    const user = await User.findOne({ email: payload.email }).select(
+      "-password"
+    );
 
     if (!user) {
       return res
@@ -233,7 +235,7 @@ const handlePasswordReset = async (req: Request, res: Response) => {
 
     if (existingOtp && !canRequestOtp(existingOtp.updatedAt)) {
       const retryIn = Math.ceil(
-        60 - (Date.now() - existingOtp.updatedAt.getTime()) / 1000
+        300 - (Date.now() - existingOtp.updatedAt.getTime()) / 1000
       );
       throw new Error(`Please wait ${retryIn}s before requesting another OTP`);
     }
@@ -247,9 +249,11 @@ const handlePasswordReset = async (req: Request, res: Response) => {
       });
 
       await sendOtpEmail(newOtp.email, code, "forgotPassword");
-      return res.status(200).json({ message: "OTP sent successfully" });
+      return res
+        .status(200)
+        .json({ message: "OTP sent successfully", email: newOtp.email });
     } else {
-      Otp.findOneAndUpdate(
+      await Otp.findOneAndUpdate(
         { email },
         {
           code: bcrypt.hashSync(code, 10),
@@ -259,13 +263,50 @@ const handlePasswordReset = async (req: Request, res: Response) => {
         { upsert: true, new: true }
       );
       await sendOtpEmail(existingOtp.email, code, "forgotPassword");
-      return res.status(200).json({ message: "OTP sent successfully" });
+      return res
+        .status(200)
+        .json({ message: "OTP sent successfully", email: existingOtp.email });
     }
   } catch (error: any) {
-    console.log(error.message);
     return res.status(500).json({
-      message: "Error in password reset controller: " + error.message,
+      message: error.message,
     });
+  }
+};
+
+const changePassword = async (req: Request, res: Response) => {
+  const results = validationResult(req);
+
+  if (!results.isEmpty()) {
+    return res.status(400).send({
+      results: results.array(),
+    });
+  }
+
+  const { email, newPassword } = matchedData(req);
+
+  try {
+    await connectDb();
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.authProvider === "local") {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await User.findOneAndUpdate(
+        { email },
+        {
+          password: hashedPassword,
+        }
+      );
+      return res.status(200).json({ message: "Password changed successfully" });
+    } else {
+      return res.status(400).json({ message: "Cannot change password" });
+    }
+  } catch (error: any) {
+      return res.status(500).json({ message: error?.message });
   }
 };
 
@@ -277,4 +318,5 @@ export {
   googleSignup,
   googleLogin,
   handlePasswordReset,
+  changePassword,
 };

@@ -5,20 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import googleIcon from "@/assets/google.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import type { SignUpDetails } from "@/lib/types";
+import type { CustomAxiosError, SignUpDetails } from "@/lib/types";
 import { LoaderCircle } from "lucide-react";
 import { useSignUp } from "@/lib/hooks/useSignUp";
-import type { AxiosError } from "axios";
 import OTPDialog from "@/components/custom/OtpDialog";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(true);
   const [otpEmail, setOtpEmail] = useState("");
   const { mutate, isPending } = useSignUp();
-  const navigate = useNavigate();
 
   const {
     register,
@@ -39,7 +37,7 @@ const SignUp = () => {
         setDialogOpen(true);
       },
       onError: (err) => {
-        const error = err as AxiosError<{ message: string }>;
+        const error = err as CustomAxiosError;
         toast(error.response?.data?.message || "Counldn't sign up. Try again", {
           position: "top-center",
         });
@@ -50,10 +48,9 @@ const SignUp = () => {
   return (
     <>
       <OTPDialog
+        action="signup"
         email={otpEmail}
-        onOpenChange={() => {
-          setDialogOpen(!dialogOpen);
-        }}
+        onOpenChange={setDialogOpen}
         open={dialogOpen}
       />
       <div className="px-4">

@@ -9,17 +9,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "@/lib/hooks/useLogin";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
-import type { LoginDetails } from "@/lib/types";
-import type { AxiosError } from "axios";
+import type { CustomAxiosError, LoginDetails } from "@/lib/types";
+import { RequestResetOtpDialog } from "@/components/custom/RequestResetOtpDialog";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginDetails>();
+
   const { mutate, isPending } = useLogin();
   const navigate = useNavigate();
 
@@ -29,7 +31,7 @@ const Login = () => {
       {
         onSuccess: () => navigate("/"),
         onError: (err) => {
-          const error = err as AxiosError<{ message: string }>;
+          const error = err as CustomAxiosError;
           toast(
             error.response?.data?.message || "Login failed. Please try again.",
             {
@@ -42,6 +44,8 @@ const Login = () => {
   };
 
   return (
+    <>
+    <RequestResetOtpDialog open={resetDialogOpen} onOpenChange={setResetDialogOpen} />
     <div className="px-4">
       <div className="h-[calc(100vh-100px)] lg:h-full lg:pb-8">
         <div className="flex justify-center items-center h-full w-full">
@@ -124,6 +128,9 @@ const Login = () => {
                     Show password
                   </label>
                 </div>
+                <div className="flex justify-end">
+                  <Button variant="link" onClick={() => setResetDialogOpen(true)}>I forgot my password</Button>
+                </div>
               </div>
 
               <Button
@@ -157,6 +164,7 @@ const Login = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

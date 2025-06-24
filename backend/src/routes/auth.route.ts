@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import { googleLogin, googleSignup, handlePasswordReset, handleRefresh, login, signOut, signUp } from "../controllers/auth.controller";
-import { authValidation, emailValidation, loginValidation } from "../lib/validations/auth.validation";
+import { changePassword, googleLogin, googleSignup, handlePasswordReset, handleRefresh, login, signOut, signUp } from "../controllers/auth.controller";
+import { authValidation, emailValidation, loginValidation, newPasswordValidation } from "../lib/validations/auth.validation";
 import { verifyOtp } from "../controllers/otp.controller";
 
 const router = Router();
@@ -37,6 +37,10 @@ router.get("/refresh-token", (req: Request, res: Response) => {
 
 router.post("/forgot-password", emailValidation, (req: Request, res: Response) => {
   handlePasswordReset(req, res);
+})
+
+router.post("/change-password", newPasswordValidation, (req: Request, res: Response) => {
+  changePassword(req, res);
 })
 
 export default router;
