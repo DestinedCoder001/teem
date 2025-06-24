@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -75,6 +75,17 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --primary: oklch(0.496 0.223 282.5);
+  --primary-foreground: oklch(1 0 0);
+  --primary-hover: oklch(0.413 0.215 282.3);
+  --primary-disabled: oklch(0.78 0.111 282.6);
+
+  --secondary: oklch(0.725 0.244 342.1);
+  --secondary-foreground: oklch(1 0 0);
+  --secondary-hover: oklch(0.634 0.246 342.6);
+  --secondary-disabled: oklch(0.845 0.154 342.1);
+  --ring: oklch(0.91 0.08 342.1);
 }
 
 .dark {
@@ -122,5 +133,5 @@
 
 body {
   @apply font-sans;
-  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
 }

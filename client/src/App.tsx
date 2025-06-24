@@ -3,6 +3,7 @@ import SignUp from "./pages/auth/SignUp";
 import AuthLayout from "./components/custom/AuthLayout";
 import Login from "./pages/auth/Login";
 import { Toaster } from "sonner";
+import DefaultHome from "./pages/main/DefaultHome";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
         </Route>
+        <Route path="/" element={<DefaultHome />} />
       </Routes>
     </>
   );

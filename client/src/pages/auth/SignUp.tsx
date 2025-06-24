@@ -61,7 +61,7 @@ const SignUp = () => {
           <div className="flex justify-center items-center h-full w-full">
             <div className="w-full md:w-1/2 lg:w-1/3">
               <div className="mb-6">
-                <h1 className="text-2xl text-[#333333] font-[500] text-center">
+                <h1 className="text-2xl text-primary font-[500] text-center">
                   Create an account
                 </h1>
 
