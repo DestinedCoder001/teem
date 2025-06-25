@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import googleIcon from "@/assets/google.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLogin } from "@/lib/hooks/useLogin";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
@@ -19,6 +19,7 @@ import { NewPasswordDialog } from "@/components/custom/NewPasswordDialog";
 import OTPDialog from "@/components/custom/OtpDialog";
 import { RequestResetOtpDialog } from "@/components/custom/RequestResetOtpDialog";
 import type { AxiosError } from "axios";
+import { useAuthStore } from "@/lib/store/authStore";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,6 +29,7 @@ const Login = () => {
     useOtpDialogStore();
   const { isOpen: isResetOtpDialogOpen, setOpen: setisResetOtpDialogOpen } =
     useReqResetDialogStore();
+  const { setAccessToken } = useAuthStore();
 
   const {
     register,
@@ -36,13 +38,14 @@ const Login = () => {
   } = useForm<LoginDetails>();
 
   const { mutate, isPending } = useLogin();
-  const navigate = useNavigate();
 
   const onSubmit = ({ email, password }: LoginDetails) => {
     mutate(
       { email, password },
       {
-        onSuccess: () => navigate("/"),
+        onSuccess: (data: { accessToken: string }) => {
+          setAccessToken(data.accessToken);
+        },
         onError: (error) => {
           const err = error as AxiosError<{ message: string }>;
           let message = "";
@@ -162,6 +165,7 @@ const Login = () => {
                   <div className="flex justify-end">
                     <Button
                       variant="link"
+                      type="button"
                       onClick={() => setisResetOtpDialogOpen()}
                     >
                       I forgot my password

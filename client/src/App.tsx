@@ -4,6 +4,7 @@ import AuthLayout from "./components/custom/AuthLayout";
 import Login from "./pages/auth/Login";
 import { Toaster } from "sonner";
 import DefaultHome from "./pages/main/DefaultHome";
+import ProtectRoutes from "./components/custom/ProtectRoutes";
 
 function App() {
   return (
@@ -14,7 +15,9 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
         </Route>
-        <Route path="/" element={<DefaultHome />} />
+        <Route element={<ProtectRoutes />}>
+            <Route path="/" element={<DefaultHome />} />
+        </Route>
       </Routes>
     </>
   );

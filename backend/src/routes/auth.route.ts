@@ -31,7 +31,7 @@ router.post("/verify-reset", (req: Request, res: Response) => {
   verifyOtp(req, res, "reset");
 });
 
-router.get("/refresh-token", (req: Request, res: Response) => {
+router.post("/refresh-token", (req: Request, res: Response) => {
   handleRefresh(req, res);
 });
 

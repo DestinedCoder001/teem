@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/input-otp";
 import { useVerifySignupOtp } from "@/lib/hooks/useVerifySignupOtp";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import type { CustomAxiosError } from "@/lib/types";
 import {
@@ -25,6 +24,7 @@ import {
   useOtpDialogStore,
 } from "@/lib/store/dialogStore";
 import { useVerifyResetOtp } from "@/lib/hooks/useVerifyResetOtp";
+import { useAuthStore } from "@/lib/store/authStore";
 
 interface OTPDialogProps {
   open: boolean;
@@ -41,7 +41,7 @@ export default function OTPDialog({
   const { mutate, isPending } = useVerifySignupOtp();
   const { setEmail, setOpen: setNewPwdOpen } = useNewPwdDialogStore();
   const { mutate: resetMutate, isPending: resetPending } = useVerifyResetOtp();
-  const navigate = useNavigate();
+  const {setAccessToken} = useAuthStore();
   const { email } = useOtpDialogStore();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,8 +50,8 @@ export default function OTPDialog({
       mutate(
         { code: otp, email },
         {
-          onSuccess: () => {
-            navigate("/");
+          onSuccess: (data: { accessToken: string }) => {
+            setAccessToken(data.accessToken);
           },
           onError(err) {
             const error = err as CustomAxiosError;

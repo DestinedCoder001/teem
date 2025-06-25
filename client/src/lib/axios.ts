@@ -1,29 +1,29 @@
 import axios from "axios";
+import { useAuthStore } from "@/lib/store/authStore";
+import { toast } from "sonner";
 
 const api = axios.create({
   baseURL: "http://localhost:3001/api",
   withCredentials: true,
 });
 
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem("access_token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().accessToken;
+  if (token) config.headers.authorization = `Bearer ${token}`;
   return config;
 });
 
 api.interceptors.response.use(
-  res => res,
-  async err => {
+  (res) => res,
+  async (err) => {
     const original = err.config;
     const res = err.response;
 
-    // checking for expired access token here
-    const isExpiredToken =
+    const isExpired =
       res?.status === 401 && res?.data?.message === "Invalid token";
 
-    if (isExpiredToken && !original._retry) {
+    if (isExpired && !original._retry) {
       original._retry = true;
-
       try {
         const { data } = await axios.post(
           "http://localhost:3001/api/auth/refresh-token",
@@ -31,13 +31,14 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
 
-        localStorage.setItem("access_token", data.accessToken);
+        useAuthStore.getState().setAccessToken(data.accessToken);
         original.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(original);
-      } catch (refreshErr) {
-        localStorage.removeItem("access_token");
+      } catch {
+        useAuthStore.getState().setAccessToken(null);
+        toast.error("Session expired. Please log in again.");
         window.location.href = "/login";
-        return Promise.reject(refreshErr);
+        return Promise.reject(err);
       }
     }
 

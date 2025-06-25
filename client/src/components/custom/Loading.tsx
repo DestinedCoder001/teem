@@ -1,0 +1,11 @@
+import { LoaderCircle } from "lucide-react"
+
+const Loading = () => {
+  return (
+    <div className="h-screen flex items-center justify-center">
+        <div className="text-xl font-semibold animate-spin"><LoaderCircle size={36} color="#EC4899" className="font-bold" /></div>
+      </div>
+  )
+}
+
+export default Loading

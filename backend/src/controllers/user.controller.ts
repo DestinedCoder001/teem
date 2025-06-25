@@ -9,6 +9,14 @@ import Channel from "../models/channel.model";
 import { Task } from "../models/task.model";
 import bcrypt from "bcrypt";
 
+
+const me = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  return res.status(200).json({ message: "Request successful", data: req.user });
+}
+
 const getUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   if (!req.user) {
@@ -153,4 +161,4 @@ const getUserTasks = async (req: Request, res: Response) => {
   }
 };
 
-export { getUser, editUserDetails, deleteAccount, getUserTasks };
+export { me, getUser, editUserDetails, deleteAccount, getUserTasks };

@@ -196,11 +196,11 @@ const handleRefresh = async (req: Request, res: Response) => {
           process.env.JWT_ACCESS_SECRET!,
           { expiresIn: "20m" }
         );
-        return res.send({ accessToken });
+        return res.json({ accessToken });
       }
     );
   } catch (error: any) {
-    res.send(error.message);
+    res.status(500).json({message: error.message});
   }
 };
 

@@ -1,11 +1,10 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRefresh } from "@/lib/hooks/useRefresh";
-import { useEffect, useState } from "react";
-import logo from "@/assets/teem.png";
 import Loading from "./Loading";
 
-const AuthLayout = () => {
+const ProtectRoutes = () => {
   const { accessToken, setAccessToken } = useAuthStore();
   const [checked, setChecked] = useState(false);
   const { data, isPending, isError } = useRefresh();
@@ -14,31 +13,24 @@ const AuthLayout = () => {
     if (!accessToken && data?.accessToken) {
       setAccessToken(data.accessToken);
       setChecked(true);
-    } else if (accessToken || isError) {
+    } else if (!accessToken && isError) {
+      setChecked(true);
+    } else if (accessToken) {
       setChecked(true);
     }
   }, [accessToken, data?.accessToken, isError, setAccessToken]);
 
-  if (isPending || !checked) {
+  if (!checked || isPending) {
     return (
       <Loading />
     );
   }
 
-  if (useAuthStore.getState().accessToken) {
-    return <Navigate to="/" replace />;
+  if (!useAuthStore.getState().accessToken) {
+    return <Navigate to="/login" replace />;
   }
 
-  return (
-    <>
-      <nav className="px-4 md:px-8 sticky top-0 bg-white z-50">
-        <div className="py-2">
-          <img src={logo} className="w-12 h-12" />
-        </div>
-      </nav>
-      <Outlet />
-    </>
-  );
+  return <Outlet />;
 };
 
-export default AuthLayout;
+export default ProtectRoutes;
