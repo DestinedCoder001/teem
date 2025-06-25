@@ -14,18 +14,17 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import api from "@/lib/axios";
-import type { CustomAxiosError } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Checkbox } from "../ui/checkbox";
+import { useNewPwdDialogStore } from "@/lib/store/dialogStore";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  email: string;
 }
 
-export function NewPasswordDialog({ open, onOpenChange, email }: Props) {
+export function NewPasswordDialog({ open, onOpenChange }: Props) {
   const {
     register,
     handleSubmit,
@@ -33,6 +32,7 @@ export function NewPasswordDialog({ open, onOpenChange, email }: Props) {
   } = useForm<{ password: string; confirmPassword: string }>();
 
   const [showPassword, setShowPassword] = useState(false);
+  const { email } = useNewPwdDialogStore();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: { email: string; newPassword: string }) => {
@@ -45,9 +45,8 @@ export function NewPasswordDialog({ open, onOpenChange, email }: Props) {
       });
       onOpenChange(false);
     },
-    onError(err) {
-      const error = err as CustomAxiosError;
-      toast(error.response?.data?.message || "Password reset failed", {
+    onError() {
+      toast("Password reset failed", {
         position: "top-center",
       });
     },
@@ -84,6 +83,7 @@ export function NewPasswordDialog({ open, onOpenChange, email }: Props) {
               <Label htmlFor="password">New Password</Label>
               <Input
                 id="password"
+                autoComplete="off"
                 type={showPassword ? "text" : "password"}
                 {...register("password", {
                   required: "Password is required",
@@ -103,6 +103,7 @@ export function NewPasswordDialog({ open, onOpenChange, email }: Props) {
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input
                 id="confirmPassword"
+                autoComplete="off"
                 type={showPassword ? "text" : "password"}
                 {...register("confirmPassword", {
                   required: "Confirm your password",

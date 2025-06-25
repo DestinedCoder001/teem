@@ -20,11 +20,14 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import type { CustomAxiosError } from "@/lib/types";
-import { NewPasswordDialog } from "./NewPasswordDialog";
+import {
+  useNewPwdDialogStore,
+  useOtpDialogStore,
+} from "@/lib/store/dialogStore";
+import { useVerifyResetOtp } from "@/lib/hooks/useVerifyResetOtp";
 
 interface OTPDialogProps {
   open: boolean;
-  email: string;
   onOpenChange: (open: boolean) => void;
   action: "signup" | "reset";
 }
@@ -32,55 +35,68 @@ interface OTPDialogProps {
 export default function OTPDialog({
   open,
   onOpenChange,
-  email,
   action,
 }: OTPDialogProps) {
   const [otp, setOtp] = useState("");
-  const [newPasswordDialogOpen, setNewPasswordDialogOpen] = useState(false);
-
   const { mutate, isPending } = useVerifySignupOtp();
+  const { setEmail, setOpen: setNewPwdOpen } = useNewPwdDialogStore();
+  const { mutate: resetMutate, isPending: resetPending } = useVerifyResetOtp();
   const navigate = useNavigate();
+  const { email } = useOtpDialogStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutate(
-      { code: otp, email },
-      {
-        onSuccess: () => {
-          if (action === "signup") {
+    if (action === "signup") {
+      mutate(
+        { code: otp, email },
+        {
+          onSuccess: () => {
             navigate("/");
-          } else {
+          },
+          onError(err) {
+            const error = err as CustomAxiosError;
+            console.log(error);
+            toast(
+              "Counldn't sign up. Try again",
+              {
+                position: "top-center",
+              }
+            );
+          },
+        }
+      );
+    } else if (action === "reset") {
+      resetMutate(
+        { code: otp, email },
+        {
+          onSuccess: (data: { message: string; email: string }) => {
             toast("OTP verification successful", {
               position: "top-center",
             });
+            setEmail(data.email);
             onOpenChange(false);
-            setNewPasswordDialogOpen(true);
-          }
-        },
-        onError(err) {
-          const error = err as CustomAxiosError;
-          console.log(error);
-          toast(
-            error.response?.data?.message || "Counldn't sign up. Try again",
-            {
-              position: "top-center",
-            }
-          );
-        },
-      }
-    );
+            setNewPwdOpen();
+          },
+          onError(err) {
+            const error = err as CustomAxiosError;
+            console.log(error);
+            toast(
+              "Counldn't sign up. Try again",
+              {
+                position: "top-center",
+              }
+            );
+          },
+        }
+      );
+    }
   };
 
   return (
     <>
-      <NewPasswordDialog
-        email={email}
-        open={newPasswordDialogOpen}
-        onOpenChange={setNewPasswordDialogOpen}
-      />
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
         <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
-        <DialogContent className="max-w-md mx-auto w-5/6 md:w-3/6 lg:w-[20rem]">
+        <DialogContent className="max-w-md mx-auto w-5/6 md:w-3/6 lg:w-[20rem]" onInteractOutside={e => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-center">
               Enter OTP
@@ -114,9 +130,13 @@ export default function OTPDialog({
             <Button
               className="w-full rounded-full"
               onClick={handleSubmit}
-              disabled={otp.length !== 6 || isPending}
+              disabled={otp.length !== 6 || (isPending || resetPending)}
             >
-              {isPending ? <LoaderCircle className="animate-spin" /> : "Verify"}
+              {(isPending || resetPending) ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                "Verify"
+              )}
             </Button>
           </form>
         </DialogContent>

@@ -7,16 +7,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import googleIcon from "@/assets/google.png";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import type { CustomAxiosError, SignUpDetails } from "@/lib/types";
+import type { SignUpDetails } from "@/lib/types";
 import { LoaderCircle } from "lucide-react";
 import { useSignUp } from "@/lib/hooks/useSignUp";
 import OTPDialog from "@/components/custom/OtpDialog";
+import { useOtpDialogStore } from "@/lib/store/dialogStore";
+import type { AxiosError } from "axios";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(true);
-  const [otpEmail, setOtpEmail] = useState("");
   const { mutate, isPending } = useSignUp();
+  const { isOpen, setOpen, setEmail: setOtpEmail } = useOtpDialogStore();
 
   const {
     register,
@@ -34,11 +35,19 @@ const SignUp = () => {
     mutate(obj, {
       onSuccess: () => {
         setOtpEmail(email);
-        setDialogOpen(true);
+        setOpen();
       },
-      onError: (err) => {
-        const error = err as CustomAxiosError;
-        toast(error.response?.data?.message || "Counldn't sign up. Try again", {
+      onError: (error) => {
+        const err = error as AxiosError<{ message: string }>;
+        let message = "";
+        if (err.code === "ERR_NETWORK") {
+          message = "Network error";
+        } else if (err.status !== 500) {
+          message = err.response?.data.message as string;
+        } else {
+          message = "Couldn't sign up. Try again";
+        }
+        toast(message, {
           position: "top-center",
         });
       },
@@ -47,14 +56,9 @@ const SignUp = () => {
 
   return (
     <>
-      <OTPDialog
-        action="signup"
-        email={otpEmail}
-        onOpenChange={setDialogOpen}
-        open={dialogOpen}
-      />
+      <OTPDialog action="signup" onOpenChange={setOpen} open={isOpen} />
       <div className="px-4">
-        <div className="h-[calc(100vh-100px)] lg:h-full lg:pb-8">
+        <div className="min-h-[calc(100vh-100px)] flex justify-center items-center sm:pb-4">
           <div className="flex justify-center items-center h-full w-full">
             <div className="w-full md:w-1/2 lg:w-1/3">
               <div className="mb-6">
@@ -153,6 +157,7 @@ const SignUp = () => {
                   </Label>
                   <Input
                     type={showPassword ? "text" : "password"}
+                    autoComplete="off"
                     id="pwd"
                     className={`border ${
                       errors.password ? "border-red-500" : "border-[#bbb]"

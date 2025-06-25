@@ -11,13 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/axios";
-import type { CustomAxiosError } from "@/lib/types";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { LoaderCircle } from "lucide-react";
-import OTPDialog from "./OtpDialog";
-import { useState } from "react";
+import { useOtpDialogStore } from "@/lib/store/dialogStore";
 
 interface Props {
   open: boolean;
@@ -30,27 +28,24 @@ export function RequestResetOtpDialog({ open, onOpenChange }: Props) {
     handleSubmit,
     formState: { errors },
   } = useForm<{ email: string }>();
-  const [otpDialogOpen, setOtpDialogOpen] = useState(false);
-  const [otpEmail, setOtpEmail] = useState("");
+  const { setEmail, setOpen: setOtpOpen } = useOtpDialogStore();
 
   const { isPending, mutate } = useMutation({
     mutationFn: async (payload: { email: string }) => {
       const { data } = await api.post("/auth/forgot-password", payload);
-      setOtpEmail(payload.email);
       return data;
     },
 
     onSuccess: (data: { email: string; message: string }) => {
-      setOtpEmail(data?.email);
+      setEmail(data.email);
       onOpenChange(false);
-      setOtpDialogOpen(true);
-      toast(data?.message || "Code has been sent to your email.", {
+      setOtpOpen();
+      toast("Code has been sent to your email.", {
         position: "top-center",
       });
     },
-    onError(err) {
-      const error = err as CustomAxiosError;
-      toast(error.response?.data?.message || "Couldn't request code.", {
+    onError() {
+      toast("Couldn't request code.", {
         position: "top-center",
       });
     },
@@ -62,12 +57,6 @@ export function RequestResetOtpDialog({ open, onOpenChange }: Props) {
 
   return (
     <>
-      <OTPDialog
-        action="reset"
-        email={otpEmail}
-        open={otpDialogOpen}
-        onOpenChange={setOtpDialogOpen}
-      />
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
         <form onSubmit={handleSubmit(onSubmit)}>

@@ -11,7 +11,6 @@ export const verifyOtp = async (
   type: "reset" | "signup"
 ) => {
   const { email, code } = req.body;
-  const password = req.body?.password;
 
   if (!email || !code) {
     return res.status(400).json({ message: "Email and OTP code are required" });
@@ -38,7 +37,7 @@ export const verifyOtp = async (
 
     let user;
 
-    if (type === "signup" && !password) {
+    if (type === "signup") {
       user = await User.findOneAndUpdate(
         { email },
         { isVerified: true },
@@ -46,17 +45,10 @@ export const verifyOtp = async (
       );
       const accessToken = saveUserAuthDetails(res, user);
       return res.status(200).json({ message: "OTP verified", accessToken });
-    } else if (type === "reset" && password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      user = await User.findOneAndUpdate(
-        {
-          email,
-        },
-        { password: hashedPassword }
-      );
+    } else if (type === "reset") {
       return res
         .status(200)
-        .json({ message: "OTP verified. Log in with your new password." });
+        .json({ message: "OTP verified. Please reset your password", email});
     }
   } catch (error: any) {
     res.status(500).json({
