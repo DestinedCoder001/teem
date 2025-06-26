@@ -12,6 +12,7 @@ import { canRequestOtp, generateOtp } from "../utils/otpHelpers";
 import { Otp } from "../models/otp.model";
 import generatePassword from "password-generator";
 import { verifyGoogleToken } from "../lib/googleAuthHelper";
+import { profile } from "console";
 
 const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
   const result = validationResult(req);
@@ -189,6 +190,7 @@ const handleRefresh = async (req: Request, res: Response) => {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
+          profilePicture: user.profilePicture
         };
         if (err) {
           res.sendStatus(403);

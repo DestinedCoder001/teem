@@ -1,10 +1,15 @@
-import { useUserStore } from "@/lib/store/userStore"
+import { useUserStore } from "@/lib/store/userStore";
 
 const Ws = () => {
-  const user = useUserStore((state) => state.user)
+  const user = useUserStore((state) => state.user);
   return (
-    <div>{user?.firstName} {user?.email} {user?.lastName} {user?.id}</div>
-  )
-}
+    <>
+      <div>
+        {user?.firstName} {user?.email} {user?.lastName} {user?.id}
+      </div>
+      <img src={user?.profilePicture} width={1000} height={1000} />
+    </>
+  );
+};
 
-export default Ws
+export default Ws;
