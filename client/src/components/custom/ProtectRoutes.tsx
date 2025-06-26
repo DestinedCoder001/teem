@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRefresh } from "@/lib/hooks/useRefresh";
-import Loading from "./Loading";
+import type { AxiosError } from "axios";
+import AuthLoading from "./AuthLoading";
+import AuthError from "./AuthError";
 
 const ProtectRoutes = () => {
   const { accessToken, setAccessToken } = useAuthStore();
   const [checked, setChecked] = useState(false);
-  const { data, isPending, isError } = useRefresh();
+  const { data, isPending, isError, error } = useRefresh();
 
   useEffect(() => {
     if (!accessToken && data?.accessToken) {
@@ -21,13 +23,26 @@ const ProtectRoutes = () => {
   }, [accessToken, data?.accessToken, isError, setAccessToken]);
 
   if (!checked || isPending) {
-    return (
-      <Loading />
-    );
+    return <AuthLoading />;
   }
 
-  if (!useAuthStore.getState().accessToken) {
-    return <Navigate to="/login" replace />;
+  const axiosErr = error as AxiosError<{ message?: string }>;
+  const message = axiosErr?.response?.data?.message || "";
+  const isTokenError =
+    axiosErr?.response?.status === 401 &&
+    (message.toLowerCase().includes("expired") ||
+      message.toLowerCase().includes("invalid"));
+
+  if (isError && error) {
+    if (!useAuthStore.getState().accessToken && !isTokenError) {
+      return (
+        <AuthError />
+      );
+    }
+  }
+
+  if (isTokenError) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   return <Outlet />;

@@ -1,18 +1,6 @@
 import wsHolder from "@/assets/ws-holder.png";
-import api from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
 
 function DefaultHome() {
-  const {data} =useQuery({
-    queryKey: ["me"],
-    queryFn: async () => {
-      const res = await api.get("http://localhost:3001/api/users/me");
-      return res.data;
-    },
-    retry: false
-  })
-
-  console.log(data)
 
   return (
     <div className="h-screen">

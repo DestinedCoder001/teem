@@ -35,7 +35,6 @@ api.interceptors.response.use(
         return api(original);
       } catch {
         useAuthStore.getState().setAccessToken(null);
-        window.location.href = "/login";
         return Promise.reject(err);
       }
     }

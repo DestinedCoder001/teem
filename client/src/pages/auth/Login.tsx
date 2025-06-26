@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLogin } from "@/lib/hooks/useLogin";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
@@ -31,6 +31,10 @@ const Login = () => {
     useReqResetDialogStore();
   const { setAccessToken } = useAuthStore();
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = (location.state as { from?: Location })?.from?.pathname || "/";
+
   const {
     register,
     handleSubmit,
@@ -45,6 +49,7 @@ const Login = () => {
       {
         onSuccess: (data: { accessToken: string }) => {
           setAccessToken(data.accessToken);
+          navigate(from, { replace: true });
         },
         onError: (error) => {
           const err = error as AxiosError<{ message: string }>;

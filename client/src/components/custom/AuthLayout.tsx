@@ -1,33 +1,32 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRefresh } from "@/lib/hooks/useRefresh";
 import { useEffect, useState } from "react";
 import logo from "@/assets/teem.png";
-import Loading from "./Loading";
+import AuthLoading from "./AuthLoading";
 
 const AuthLayout = () => {
   const { accessToken, setAccessToken } = useAuthStore();
   const [checked, setChecked] = useState(false);
   const { data, isPending, isError } = useRefresh();
+  const location = useLocation();
+  const from = (location.state as { from?: Location })?.from?.pathname || "/";
 
   useEffect(() => {
     if (!accessToken && data?.accessToken) {
       setAccessToken(data.accessToken);
-      setChecked(true);
-    } else if (accessToken || isError) {
+    }
+  }, [accessToken, data?.accessToken, setAccessToken]);
+
+  useEffect(() => {
+    if (accessToken || isError) {
       setChecked(true);
     }
-  }, [accessToken, data?.accessToken, isError, setAccessToken]);
+  }, [accessToken, isError]);
 
-  if (isPending || !checked) {
-    return (
-      <Loading />
-    );
-  }
+  if (!checked || isPending) return <AuthLoading />;
 
-  if (useAuthStore.getState().accessToken) {
-    return <Navigate to="/" replace />;
-  }
+  if (accessToken) return <Navigate to={from} replace />;
 
   return (
     <>
