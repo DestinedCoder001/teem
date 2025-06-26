@@ -3,7 +3,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useRefresh } from "@/lib/hooks/useRefresh";
 import { useEffect, useState } from "react";
 import logo from "@/assets/teem.png";
-import AuthLoading from "./AuthLoading";
+import AuthLoading from "../AuthLoading";
 
 const AuthLayout = () => {
   const { accessToken, setAccessToken } = useAuthStore();

@@ -6,7 +6,7 @@ export const useRefresh = () => {
     queryKey: ["refresh-token"],
     queryFn: async () => {
       const res = await api.post(
-        "http://localhost:3001/api/auth/refresh-token",
+        "/auth/refresh-token",
         {},
         { withCredentials: true }
       );

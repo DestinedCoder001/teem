@@ -3,8 +3,8 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRefresh } from "@/lib/hooks/useRefresh";
 import type { AxiosError } from "axios";
-import AuthLoading from "./AuthLoading";
-import AuthError from "./AuthError";
+import AuthLoading from "../AuthLoading";
+import AuthError from "../AuthError";
 
 const ProtectRoutes = () => {
   const { accessToken, setAccessToken } = useAuthStore();
@@ -29,15 +29,14 @@ const ProtectRoutes = () => {
   const axiosErr = error as AxiosError<{ message?: string }>;
   const message = axiosErr?.response?.data?.message || "";
   const isTokenError =
-    axiosErr?.response?.status === 401 &&
-    (message.toLowerCase().includes("expired") ||
-      message.toLowerCase().includes("invalid"));
+    (axiosErr?.response?.status === 401 &&
+      (message.toLowerCase().includes("expired") ||
+        message.toLowerCase().includes("invalid"))) ||
+    message.toLowerCase().includes("no user found");
 
   if (isError && error) {
     if (!useAuthStore.getState().accessToken && !isTokenError) {
-      return (
-        <AuthError />
-      );
+      return <AuthError />;
     }
   }
 

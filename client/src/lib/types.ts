@@ -8,4 +8,16 @@ export type SignUpDetails = {
   lastName: string;
 };
 
+export type User = {
+  firstName: string;
+  lastName: string;
+  id: string;
+  email: string;
+};
+
+export type UserState = {
+  user: User | null;
+  setUser: (user: User) => void;
+};
+
 export type CustomAxiosError = AxiosError<{ message: string }>

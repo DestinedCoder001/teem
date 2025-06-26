@@ -14,7 +14,7 @@ const me = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  return res.status(200).json({ message: "Request successful", data: req.user });
+  return res.status(200).json({ message: "Request successful", user: req.user });
 }
 
 const getUser = async (req: Request, res: Response) => {
@@ -33,7 +33,7 @@ const getUser = async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    return res.status(200).json({ message: "Request successful", data: user });
+    return res.status(200).json({ message: "Request successful", user });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }

@@ -41,7 +41,7 @@ export default function OTPDialog({
   const { mutate, isPending } = useVerifySignupOtp();
   const { setEmail, setOpen: setNewPwdOpen } = useNewPwdDialogStore();
   const { mutate: resetMutate, isPending: resetPending } = useVerifyResetOtp();
-  const {setAccessToken} = useAuthStore();
+  const { setAccessToken } = useAuthStore();
   const { email } = useOtpDialogStore();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -51,17 +51,17 @@ export default function OTPDialog({
         { code: otp, email },
         {
           onSuccess: (data: { accessToken: string }) => {
+            toast("Welcome to Teem", {
+              position: "top-center",
+            });
             setAccessToken(data.accessToken);
           },
           onError(err) {
             const error = err as CustomAxiosError;
             console.log(error);
-            toast(
-              "Counldn't sign up. Try again",
-              {
-                position: "top-center",
-              }
-            );
+            toast("Counldn't sign up. Try again", {
+              position: "top-center",
+            });
           },
         }
       );
@@ -80,12 +80,9 @@ export default function OTPDialog({
           onError(err) {
             const error = err as CustomAxiosError;
             console.log(error);
-            toast(
-              "Counldn't sign up. Try again",
-              {
-                position: "top-center",
-              }
-            );
+            toast("Counldn't sign up. Try again", {
+              position: "top-center",
+            });
           },
         }
       );
@@ -96,7 +93,10 @@ export default function OTPDialog({
     <>
       <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
         <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
-        <DialogContent className="max-w-md mx-auto w-5/6 md:w-3/6 lg:w-[20rem]" onInteractOutside={e => e.preventDefault()}>
+        <DialogContent
+          className="max-w-md mx-auto w-5/6 md:w-3/6 lg:w-[20rem]"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-center">
               Enter OTP
@@ -130,9 +130,9 @@ export default function OTPDialog({
             <Button
               className="w-full rounded-full"
               onClick={handleSubmit}
-              disabled={otp.length !== 6 || (isPending || resetPending)}
+              disabled={otp.length !== 6 || isPending || resetPending}
             >
-              {(isPending || resetPending) ? (
+              {isPending || resetPending ? (
                 <LoaderCircle className="animate-spin" />
               ) : (
                 "Verify"
