@@ -1,13 +1,27 @@
 import { OAuth2Client } from "google-auth-library";
+import dotenv from "dotenv"
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+dotenv.config();
 
-const verifyGoogleToken = async (idToken: string) => {
+const clientId = process.env.GOOGLE_CLIENT_ID
+const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+const redirectUri = "http://localhost:5173"
+const client = new OAuth2Client(
+  clientId,
+  clientSecret,
+  redirectUri
+);
+
+const verifyGoogleToken = async (code: string) => {
+  const { tokens } = await client.getToken(code);
+
+  const idToken = tokens.id_token;
   const ticket = await client.verifyIdToken({
-    idToken,
+    idToken: idToken as string,
     audience: process.env.GOOGLE_CLIENT_ID,
   });
-  return ticket.getPayload();
+  const payload = ticket.getPayload();
+  return payload;
 };
 
 export { verifyGoogleToken, client };

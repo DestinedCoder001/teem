@@ -1,7 +1,9 @@
 import { Resend } from "resend";
+import dotenv from "dotenv"
+dotenv.config();
 
-// const resendKey = process.env.RESEND_API_KEY as string;
-const resend = new Resend("re_6H8Wrm4j_4XmxUJij4CUJDdeHSvjib41S");
+const resendKey = process.env.RESEND_API_KEY as string;
+const resend = new Resend(resendKey);
 
 export const sendOtpEmail = async (
   email: string,

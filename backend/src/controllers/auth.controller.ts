@@ -92,11 +92,12 @@ const login = async (req: Request, res: Response) => {
 
 const googleSignup = async (req: Request, res: Response) => {
   try {
-    const { idToken } = req.body;
-    if (!idToken) {
-      return res.status(400).json({ message: "Missing Google token" });
+      const { code } = req.body;
+
+    if (!code) {
+      return res.status(400).json({ message: "Missing Google code" });
     }
-    const payload = await verifyGoogleToken(idToken);
+    const payload = await verifyGoogleToken(code);
 
     if (!payload?.email || !payload.given_name || !payload.family_name) {
       return res.status(400).json({ message: "Invalid Google token" });
@@ -131,8 +132,9 @@ const googleSignup = async (req: Request, res: Response) => {
 
 const googleLogin = async (req: Request, res: Response) => {
   try {
-    const { idToken } = req.body;
-    const payload = await verifyGoogleToken(idToken);
+    const { code } = req.body;
+    
+    const payload = await verifyGoogleToken(code);
 
     if (!payload?.email) {
       return res.status(400).json({ message: "Invalid Google token" });

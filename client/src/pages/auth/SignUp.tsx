@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import googleIcon from "@/assets/google.png";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import type { SignUpDetails } from "@/lib/types";
@@ -13,6 +12,7 @@ import { useSignUp } from "@/lib/hooks/useSignUp";
 import OTPDialog from "@/components/custom/OtpDialog";
 import { useOtpDialogStore } from "@/lib/store/dialogStore";
 import type { AxiosError } from "axios";
+import GoogleSignupButton from "@/components/custom/GoogleSignUpBtn";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -208,14 +208,7 @@ const SignUp = () => {
                   <div className="w-full h-[1px] bg-[#D9D9D9]" />
                 </div>
 
-                <Button
-                  variant="outline"
-                  type="button"
-                  className="text-[#333333] border border-black rounded-full py-5 font-normal text-md"
-                >
-                  <img src={googleIcon} className="w-4 h-4 mr-2" />
-                  Sign up with Google
-                </Button>
+                <GoogleSignupButton />
               </form>
             </div>
           </div>

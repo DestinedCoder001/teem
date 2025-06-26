@@ -9,7 +9,7 @@ router.post("/sign-up", authValidation, (req: Request, res: Response) => {
   signUp(req, res);
 });
 
-router.post("/google-sign-up", (req: Request, res: Response) => {
+router.post("/google-signup", (req: Request, res: Response) => {
   googleSignup(req, res);
 });
 

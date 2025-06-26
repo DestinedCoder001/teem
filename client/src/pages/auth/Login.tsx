@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import googleIcon from "@/assets/google.png";
 import { Link } from "react-router-dom";
 import { useLogin } from "@/lib/hooks/useLogin";
 import { toast } from "sonner";
@@ -20,6 +19,7 @@ import OTPDialog from "@/components/custom/OtpDialog";
 import { RequestResetOtpDialog } from "@/components/custom/RequestResetOtpDialog";
 import type { AxiosError } from "axios";
 import { useAuthStore } from "@/lib/store/authStore";
+import GoogleLoginBtn from "@/components/custom/GoogleLoginBtn";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -191,14 +191,7 @@ const Login = () => {
                   <div className="w-full h-[1px] bg-[#D9D9D9]" />
                 </div>
 
-                <Button
-                  variant="outline"
-                  type="button"
-                  className="text-[#333333] border border-black rounded-full py-5 font-normal text-md"
-                >
-                  <img src={googleIcon} className="w-4 h-4 mr-2" />
-                  Continue with Google
-                </Button>
+                <GoogleLoginBtn />
               </form>
             </div>
           </div>
