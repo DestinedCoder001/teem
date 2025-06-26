@@ -21,9 +21,16 @@ export const UserIconDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="rounded-full w-8 h-8 flex items-center justify-center outline-primary outline-offset-2 outline bg-gray-200 font-bold text-sm text-secondary cursor-pointer">
-          {user?.firstName[0]}
-        </div>
+        {user?.profilePicture && user?.profilePicture !== "" ? (
+          <img
+            src={user?.profilePicture}
+            className="w-8 h-8 rounded-full object-cover outline outline-secondary outline-offset-2 cursor-pointer"
+          />
+        ) : (
+          <div className="rounded-full w-8 h-8 flex items-center justify-center outline-primary outline-offset-2 outline bg-gray-200 font-bold text-sm text-secondary cursor-pointer">
+            {user?.firstName[0]}
+          </div>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent className=" -translate-x-2" align="start">
         <DropdownMenuItem className="cursor-pointer hover:bg-red-200">

@@ -4,7 +4,7 @@ import { sendOtpEmail } from "../utils/sendOtpEmail";
 import { Otp } from "../models/otp.model";
 import { canRequestOtp, generateOtp } from "../utils/otpHelpers";
 
-export const handleSignup = async (email: string, password: string, firstName: string, lastName: string) => {
+export const handleSignup = async (email: string, password: string, firstName: string, lastName: string, profilePicture: string) => {
   const existingUser = await User.findOne({ email });
   if (existingUser && existingUser.isVerified) {
     throw new Error("User already exists.");
@@ -32,7 +32,8 @@ export const handleSignup = async (email: string, password: string, firstName: s
       password: hashedPassword,
       isVerified: false,
       firstName,
-      lastName
+      lastName,
+      profilePicture
     });
   }
 

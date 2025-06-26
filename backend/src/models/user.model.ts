@@ -8,6 +8,7 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
     authProvider: { type: String, default: "local" },
+    profilePicture: { type: String, default: "" },
   },
   {
     timestamps: true

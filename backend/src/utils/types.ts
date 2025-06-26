@@ -9,7 +9,7 @@ declare global {
         email: string;
         firstName: string;
         lastName: string;
-        role: string;
+        profilePicture: string;
       };
     }
   }
@@ -26,7 +26,7 @@ interface JwtPayload {
     email: string;
     firstName: string;
     lastName: string;
-    role: string;
+    profilePicture: string;
   };
 }
 
@@ -35,7 +35,7 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: string;
+  profilePicture: string;
 }
 
 export { SignUpBody, JwtPayload, User };

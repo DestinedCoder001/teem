@@ -26,9 +26,6 @@ const AppLayout = () => {
   return (
     <>
       <nav className="h-[50px] w-full flex px-4 md:px-8 lg:px-16 items-center justify-between sticky top-0 backdrop-blur-[1px]">
-        <div className="absolute top-full left-4 md:left-8 lg:left-16 h-4 w-4 border border-red-500">
-          
-        </div>
         <Link to="/">
           <img src={logo} className="w-10 h-10" />
         </Link>

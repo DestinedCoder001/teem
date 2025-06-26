@@ -13,6 +13,7 @@ import OTPDialog from "@/components/custom/OtpDialog";
 import { useOtpDialogStore } from "@/lib/store/dialogStore";
 import type { AxiosError } from "axios";
 import GoogleSignupButton from "@/components/custom/GoogleSignUpBtn";
+import { generatePicUrl } from "@/lib/generatePicUrl";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +32,8 @@ const SignUp = () => {
     firstName,
     lastName,
   }: SignUpDetails) => {
-    const obj = { email, password, firstName, lastName };
+    const randomPicUrl = generatePicUrl();
+    const obj = { email, password, firstName, lastName, profilePicture: randomPicUrl };
     mutate(obj, {
       onSuccess: () => {
         setOtpEmail(email);

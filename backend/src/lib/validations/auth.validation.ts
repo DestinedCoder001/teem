@@ -35,6 +35,14 @@ const authValidation = checkSchema({
       errorMessage: "Last name is required",
     },
   },
+  profilePicture: {
+    isString: {
+      errorMessage: "Profile picture must be a string",
+    },
+    isURL: {
+      errorMessage: "Profile picture must be a valid URL",
+    }
+  }
 });
 
 const emailValidation = checkSchema({

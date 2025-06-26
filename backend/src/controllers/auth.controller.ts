@@ -22,9 +22,9 @@ const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
   }
   try {
     const data = matchedData(req);
-    const { email, password, firstName, lastName } = data;
+    const { email, password, firstName, lastName, profilePicture } = data;
     await connectDb();
-    await handleSignup(email, password, firstName, lastName);
+    await handleSignup(email, password, firstName, lastName, profilePicture);
     res.status(200).json({
       message: "Verify your account using the OTP sent to your email",
     });
@@ -116,6 +116,7 @@ const googleSignup = async (req: Request, res: Response) => {
       password: generatePassword(8, false),
       isVerified: true,
       authProvider: "google",
+      profilePicture: payload.picture || "",
     });
 
     const accessToken = saveUserAuthDetails(res, newUser);
