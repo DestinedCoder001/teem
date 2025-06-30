@@ -7,7 +7,7 @@ const Ws = () => {
       <div>
         {user?.firstName} {user?.email} {user?.lastName} {user?.id}
       </div>
-      <img src={user?.profilePicture} width={1000} height={1000} />
+      <img src={user?.profilePicture} width={1000} height={1000} className="mt-[500px]" />
     </>
   );
 };

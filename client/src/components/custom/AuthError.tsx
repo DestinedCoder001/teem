@@ -1,13 +1,13 @@
 import { Button } from "../ui/button";
 
-const AuthError = () => {
+const AuthError = ({error}: {error: string}) => {
   return (
     <div className="h-screen flex flex-col items-center justify-center gap-4 text-center">
       <p className="text-lg font-medium ">
-        Something went wrong while restoring your session.
+        {error || "Something went wrong"}
       </p>
       <Button
-        className="border border-[#aaa] px-4 py-2 rounded-lg text-lg text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary"
+        className="border border-[#aaa] px-4 py-2 rounded-lg text-lg theme-text-gradient"
         onClick={() => window.location.reload()}
       >
         Retry

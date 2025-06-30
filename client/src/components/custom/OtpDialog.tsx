@@ -79,8 +79,7 @@ export default function OTPDialog({
           },
           onError(err) {
             const error = err as CustomAxiosError;
-            console.log(error);
-            toast("Counldn't sign up. Try again", {
+            toast(error.response?.data.message || "Counldn't log in. Try again", {
               position: "top-center",
             });
           },

@@ -19,9 +19,6 @@ const GoogleLoginBtn = () => {
           code: response.code,
         });
         setAccessToken(data.data.accessToken);
-        toast.success("Login successful", {
-          position: "top-center",
-        });
       } catch (err) {
         const error = err as AxiosError<{ message?: string }>;
         toast.error(error.response?.data?.message || "Login failed", {
