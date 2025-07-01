@@ -37,7 +37,7 @@ const WsSwitch = () => {
           className="w-full flex justify-between items-center px-4 py-6 text-slate-600 hover:bg-slate-100 rounded-md"
         >
           <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8 rounded-md">
+            <Avatar className="h-8 w-8 rounded-md border border-slate-200">
               <AvatarImage src={currentUser.avatarUrl} alt="@shadcn" />
               <AvatarFallback>{user?.firstName[0]?.toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -52,7 +52,7 @@ const WsSwitch = () => {
       <DropdownMenuContent className="w-56 bg-white text-slate-600 border-slate-200 ml-4 z-[120]">
         <DropdownMenuLabel>
           <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8 rounded-md">
+            <Avatar className="h-8 w-8 rounded-md border border-slate-200">
               <AvatarImage src={currentUser.avatarUrl} alt="@shadcn" />
               <AvatarFallback>{user?.firstName[0]?.toUpperCase()}</AvatarFallback>
             </Avatar>
