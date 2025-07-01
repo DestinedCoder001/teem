@@ -38,7 +38,7 @@ const AppLayout = () => {
   return (
     <>
       <nav className="h-[50px] w-full flex px-4 md:px-8 lg:px-16 items-center justify-between sticky top-0 bg-white z-50 border-b border-slate-300">
-        <PanelLeft onClick={toggleSidebar} className={`text-black/50 lg:hidden ${isOpen && "opacity-0"}`} />
+        <PanelLeft onClick={toggleSidebar} className={`text-black/50 lg:hidden ${isOpen ? "opacity-0 cursor-default": "cursor-pointer"}`} />
         <Link to="/">
           <img src={logo} className="w-10 h-10" />
         </Link>

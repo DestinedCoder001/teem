@@ -33,7 +33,7 @@ export const UserIconDropdown = () => {
           </div>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className=" -translate-x-2" align="start">
+      <DropdownMenuContent className="mr-2 lg:mr-4" align="start">
         <DropdownMenuItem className="cursor-pointer hover:bg-red-200 gap-2">
           <User className="w-4 h-4" />
           Profile

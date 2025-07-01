@@ -20,8 +20,9 @@ function App() {
         <Route element={<ProtectRoutes />}>
           <Route element={<AppLayout />}>
             <Route index element={<New />} />
-            <Route path="w" element={<Ws />} />
-            <Route path="c" element={<Channel />} />
+            <Route path="workspace" element={<Ws />} />
+            <Route path="channels" element={<Channel />} />
+            <Route path="tasks" element={<h1>Hello tasks</h1>} />
           </Route>
         </Route>
       </Routes>
