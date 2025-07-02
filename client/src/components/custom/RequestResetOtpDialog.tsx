@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { LoaderCircle } from "lucide-react";
 import { useOtpDialogStore } from "@/lib/store/dialogStore";
-import type { AxiosError } from "axios";
+import type { CustomAxiosError } from "@/lib/types";
 
 interface Props {
   open: boolean;
@@ -45,7 +45,7 @@ export function RequestResetOtpDialog({ open, onOpenChange }: Props) {
         position: "top-center",
       });
     },
-    onError(err: AxiosError<{ message: string }>) {
+    onError(err: CustomAxiosError) {
       toast(err.response?.data.message || "Couldn't request code.", {
         position: "top-center",
       });

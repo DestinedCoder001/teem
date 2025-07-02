@@ -15,7 +15,7 @@ const MobileSideBar = () => {
       direction="left"
       className="z-50 lg:hidden border-r border-slate-300 px-4"
       enableOverlay={false}
-      style={{ height: "calc(100vh - 50px)", top: "50px", boxShadow: "none" }}
+      style={{ height: "calc(100vh - 50px)", top: "50px", boxShadow: "none", zIndex: 50 }}
     >
       <PanelLeftClose
         onClick={() => setOpen(false)}
@@ -26,6 +26,7 @@ const MobileSideBar = () => {
           {navlinks.map((link, id) => (
             <NavLink
               to={link.link}
+              onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 `group flex items-center gap-x-3 w-full px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 transition-colors ${
                   isActive

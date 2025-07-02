@@ -39,6 +39,22 @@ const createWs = async (req: Request, res: Response) => {
   }
 };
 
+
+const getUserWorkspaces = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    await connectDb();
+    const workspaces = await Workspace.find({ users: req.user.id }).select("name");
+    res.status(200).json({ data: workspaces });
+  } catch (error: any) {
+    console.log("Error in getting user workspaces: ", error);
+    res.status(500).json(error.message);
+  }
+}
+
 const getWsDetails = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
   if (!Types.ObjectId.isValid(workspaceId)) {
@@ -274,4 +290,4 @@ const deleteWs = async (req: Request, res: Response) => {
   }
 };
 
-export { createWs, getWsDetails, sendInvite, removeUser, acceptInvite, deleteWs };
+export { createWs, getWsDetails, getUserWorkspaces, sendInvite, removeUser, acceptInvite, deleteWs };

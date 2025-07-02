@@ -8,10 +8,14 @@ import api from "@/lib/axios";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useUserStore } from "@/lib/store/userStore";
 import { LogOut, Settings, User } from "lucide-react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
+import { useNavigate } from "react-router-dom";
 
 export const UserIconDropdown = () => {
   const { user } = useUserStore((state) => state);
   const { setAccessToken } = useAuthStore((state) => state);
+  const navigate = useNavigate();
   const handleLogout = () => {
     api.get("/auth/logout").then(() => {
       setAccessToken(null);
@@ -22,19 +26,15 @@ export const UserIconDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {user?.profilePicture && user?.profilePicture !== "" ? (
-          <img
-            src={user?.profilePicture}
-            className="w-8 h-8 rounded-full object-cover cursor-pointer hover:opacity-90"
-          />
-        ) : (
-          <div className="rounded-full w-8 h-8 flex items-center justify-center bg-gray-200 font-bold text-sm text-primary cursor-pointer">
-            {user?.firstName[0]}
-          </div>
-        )}
+        <Avatar className="h-8 w-8 rounded-full cursor-pointer border border-slate-200">
+          <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
+          <AvatarFallback className="text-slate-600">
+            {user?.firstName[0].toUpperCase() || ""}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-2 lg:mr-4" align="start">
-        <DropdownMenuItem className="cursor-pointer hover:bg-red-200 gap-2">
+        <DropdownMenuItem className="cursor-pointer hover:bg-red-200 gap-2" onClick={() => navigate("/profile")}>
           <User className="w-4 h-4" />
           Profile
         </DropdownMenuItem>

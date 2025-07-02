@@ -41,17 +41,8 @@ const getUser = async (req: Request, res: Response) => {
 
 const editUserDetails = async (req: Request, res: Response) => {
   const { firstName, lastName } = req.body;
-  const { userId } = req.params;
 
   if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  if (!Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: "Invalid user id." });
-  }
-
-  if (userId !== req.user.id) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
@@ -65,7 +56,7 @@ const editUserDetails = async (req: Request, res: Response) => {
     await connectDb();
 
     const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
+      { _id: req.user.id },
       {
         firstName,
         lastName,

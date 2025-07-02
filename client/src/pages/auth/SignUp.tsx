@@ -6,12 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import type { SignUpDetails } from "@/lib/types";
+import type { CustomAxiosError, SignUpDetails } from "@/lib/types";
 import { LoaderCircle } from "lucide-react";
 import { useSignUp } from "@/lib/hooks/useSignUp";
 import OTPDialog from "@/components/custom/OtpDialog";
 import { useOtpDialogStore } from "@/lib/store/dialogStore";
-import type { AxiosError } from "axios";
 import GoogleSignupButton from "@/components/custom/GoogleSignUpBtn";
 import { generatePicUrl } from "@/lib/generatePicUrl";
 
@@ -40,7 +39,7 @@ const SignUp = () => {
         setOpen();
       },
       onError: (error) => {
-        const err = error as AxiosError<{ message: string }>;
+        const err = error as CustomAxiosError;
         let message = "";
         if (err.code === "ERR_NETWORK") {
           message = "Network error";

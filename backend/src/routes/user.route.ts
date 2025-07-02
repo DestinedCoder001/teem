@@ -15,7 +15,7 @@ router.get("/:userId/tasks", async (req, res) => {
     getUserTasks(req, res);
 });
 
-router.patch("/:userId/edit", async (req, res) => {
+router.patch("/edit", async (req, res) => {
     editUserDetails(req, res);
 });
 

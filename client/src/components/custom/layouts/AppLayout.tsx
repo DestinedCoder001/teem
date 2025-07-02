@@ -9,10 +9,11 @@ import { UserIconDropdown } from "../UserIconDropdown";
 import DesktopSidebar from "@/components/custom/DesktopSidebar";
 import MobileSideBar from "../MobileSidebar";
 import { PanelLeft } from "lucide-react";
-import { useSidebarOpen } from "@/lib/store/uiStore";
+import { useSidebarOpen, useUserWorkspaces } from "@/lib/store/uiStore";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
+  const { setWorkspaces } = useUserWorkspaces((state) => state);
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
 
   const { data, isSuccess } = useQuery({
@@ -22,6 +23,17 @@ const AppLayout = () => {
       return res.data.user as User;
     },
     retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: wsData, isSuccess: getWsSuccess } = useQuery({
+    queryKey: ["get-user-ws"],
+    queryFn: async () => {
+      const res = await api.get("/workspaces");
+      return res.data?.data;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
@@ -30,15 +42,26 @@ const AppLayout = () => {
     }
   }, [data, isSuccess, setUser]);
 
+  useEffect(() => {
+    if (getWsSuccess) {
+      setWorkspaces(wsData);
+    }
+  }, [getWsSuccess, wsData, setWorkspaces]);
+
   const toggleSidebar = () => {
     if (isOpen) return;
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   return (
     <>
       <nav className="h-[50px] w-full flex px-4 md:px-8 lg:px-16 items-center justify-between sticky top-0 bg-white z-50 border-b border-slate-300">
-        <PanelLeft onClick={toggleSidebar} className={`text-black/50 lg:hidden ${isOpen ? "opacity-0 cursor-default": "cursor-pointer"}`} />
+        <PanelLeft
+          onClick={toggleSidebar}
+          className={`text-black/50 lg:hidden ${
+            isOpen ? "opacity-0 cursor-default" : "cursor-pointer"
+          }`}
+        />
         <Link to="/">
           <img src={logo} className="w-10 h-10" />
         </Link>

@@ -8,7 +8,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLogin } from "@/lib/hooks/useLogin";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
-import type { LoginDetails } from "@/lib/types";
+import type { CustomAxiosError, LoginDetails } from "@/lib/types";
 import {
   useNewPwdDialogStore,
   useOtpDialogStore,
@@ -17,7 +17,6 @@ import {
 import { NewPasswordDialog } from "@/components/custom/NewPasswordDialog";
 import OTPDialog from "@/components/custom/OtpDialog";
 import { RequestResetOtpDialog } from "@/components/custom/RequestResetOtpDialog";
-import type { AxiosError } from "axios";
 import { useAuthStore } from "@/lib/store/authStore";
 import GoogleLoginBtn from "@/components/custom/GoogleLoginBtn";
 
@@ -52,7 +51,7 @@ const Login = () => {
           navigate(from, { replace: true });
         },
         onError: (error) => {
-          const err = error as AxiosError<{ message: string }>;
+          const err = error as CustomAxiosError;
           let message = "";
           if (err.code === "ERR_NETWORK") {
             message = "Network error";
