@@ -6,7 +6,6 @@ import Channel from "./pages/main/Channel";
 import AuthLayout from "./components/custom/layouts/AuthLayout";
 import ProtectRoutes from "./components/custom/layouts/ProtectRoutes";
 import AppLayout from "./components/custom/layouts/AppLayout";
-import New from "./pages/main/New";
 import Tasks from "./pages/main/Tasks";
 import DMs from "./pages/main/DMs";
 import UserProfile from "./pages/main/Profile";
@@ -21,8 +20,7 @@ function App() {
         </Route>
         <Route element={<ProtectRoutes />}>
           <Route element={<AppLayout />}>
-            <Route index element={<New />} />
-            <Route path="channels" element={<Channel />} />
+            <Route index element={<Channel />} />
             <Route path="profile" element={<UserProfile />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="dms" element={<DMs />} />

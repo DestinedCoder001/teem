@@ -6,11 +6,12 @@ import { Label } from "@/components/ui/label";
 import { LoaderCircle, Pencil, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useUserStore } from "@/lib/store/userStore";
-import CircleGradientWrapper from "@/components/custom/CircleGradientWrapper";
+import CircleGradientWrapper from "@/components/custom/GradientWrapper";
 import { useMutation } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 import type { CustomAxiosError, User } from "@/lib/types";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 type FormValues = {
   firstName: string;
@@ -87,8 +88,9 @@ const UserProfile = () => {
     <div className="flex flex-col items-center">
       <div className="w-full max-w-md bg-white overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
-          <CircleGradientWrapper className="p-0.5 relative">
+          <CircleGradientWrapper className="p-0.5 relative rounded-full">
             <Avatar className="h-24 w-24">
+              <AvatarImage className="bg-white" src={user?.profilePicture} alt={user?.firstName} />
               <AvatarFallback className="text-slate-600 text-3xl font-bold">
                 {user?.firstName?.[0]?.toUpperCase()}
                 {user?.lastName?.[0]?.toUpperCase()}

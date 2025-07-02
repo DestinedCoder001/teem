@@ -3,7 +3,7 @@ import { ListChecks, Mail, Rss } from "lucide-react"
 const navlinks = [
     {
         label: "Channels",
-        link: "/channels",
+        link: "/",
         icon: <Rss />
     },
     {

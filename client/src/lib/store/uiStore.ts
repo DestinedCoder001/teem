@@ -24,4 +24,24 @@ const useUserWorkspaces = create<{
   setWorkspaces: (workspaces) => set({ workspaces }),
 }));
 
-export { useSidebarOpen, useCreateWsDialogOpen, useUserWorkspaces };
+const currentWs = create<{
+  wsId: string | null;
+  name: string;
+  setWsId: ({ id, name }: { id: string; name: string }) => void;
+  signOut: () => void;
+}>((set) => ({
+  wsId: localStorage.getItem("wsId") || null,
+  name: localStorage.getItem("wsName") || "",
+  setWsId: ({ id, name }) => {
+    localStorage.setItem("wsId", id);
+    localStorage.setItem("wsName", name);
+    set({ wsId: id, name });
+  },
+  signOut: () => {
+    localStorage.removeItem("wsId");
+    localStorage.removeItem("wsName");
+    set({ wsId: null, name: "" });
+  },
+}));
+
+export { useSidebarOpen, useCreateWsDialogOpen, useUserWorkspaces, currentWs };
