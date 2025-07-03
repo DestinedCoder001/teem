@@ -2,13 +2,15 @@ import { Route, Routes } from "react-router-dom";
 import SignUp from "./pages/auth/SignUp";
 import Login from "./pages/auth/Login";
 import { Toaster } from "sonner";
-import Channel from "./pages/main/Channel";
 import AuthLayout from "./components/custom/layouts/AuthLayout";
 import ProtectRoutes from "./components/custom/layouts/ProtectRoutes";
 import AppLayout from "./components/custom/layouts/AppLayout";
 import Tasks from "./pages/main/Tasks";
 import DMs from "./pages/main/DMs";
 import UserProfile from "./pages/main/Profile";
+import DefaultHome from "./pages/main/DefaultHome";
+import ChannelSkeleton from "./components/custom/ChannelSkeleton";
+import Channel from "./pages/main/Channel";
 function App() {
   return (
     <>
@@ -20,8 +22,10 @@ function App() {
         </Route>
         <Route element={<ProtectRoutes />}>
           <Route element={<AppLayout />}>
-            <Route index element={<Channel />} />
+            <Route index element={<DefaultHome />} />
             <Route path="profile" element={<UserProfile />} />
+            <Route path="channels" element={<ChannelSkeleton />} />
+            <Route path="channels/:channelId" element={<Channel />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="dms" element={<DMs />} />
           </Route>

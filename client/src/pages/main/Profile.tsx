@@ -22,7 +22,7 @@ type FormValues = {
 const UserProfile = () => {
   const { user, setUser } = useUserStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
-  const [isOnline] = useState(true);
+  const [isOnline] = useState(false);
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: { firstName: string; lastName: string }) => {
       const { data } = await api.patch("/users/edit", payload);
@@ -88,7 +88,7 @@ const UserProfile = () => {
     <div className="flex flex-col items-center">
       <div className="w-full max-w-md bg-white overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
-          <CircleGradientWrapper className="p-0.5 relative rounded-full">
+          <CircleGradientWrapper className={`p-0.5 relative rounded-full ${!isOnline && "bg-none bg-slate-500"}`}>
             <Avatar className="h-24 w-24">
               <AvatarImage className="bg-white" src={user?.profilePicture} alt={user?.firstName} />
               <AvatarFallback className="text-slate-600 text-3xl font-bold">

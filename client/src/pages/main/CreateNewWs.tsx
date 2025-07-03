@@ -1,5 +1,5 @@
 import CreateWorkspaceDialog from "@/components/custom/CreateWorkspaceDialog";
-const New = () => {
+const CreateNewWs = () => {
   return (
     <div className="h-full flex flex-col justify-center items-center">
       <div className="text-center space-y-3">
@@ -10,4 +10,4 @@ const New = () => {
   );
 };
 
-export default New;
+export default CreateNewWs;

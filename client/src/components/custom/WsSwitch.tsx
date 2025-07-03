@@ -8,7 +8,8 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown, LogOut } from "lucide-react";
-import { currentWs, useUserWorkspaces } from "@/lib/store/uiStore";
+import { currentWs, useUserWorkspaces } from "@/lib/store/userStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const WsSwitch = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -18,8 +19,15 @@ const WsSwitch = () => {
     setWsId,
     signOut,
   } = currentWs((state) => state);
+  const queryClient = useQueryClient();
 
   if (!workspaces.length) return null;
+
+  const handleToggle = (id: string, name: string) => {
+    if (id === wsId) return;
+    setWsId({ id, name });
+    queryClient.invalidateQueries({ queryKey: ["get-ws-details"] });
+  };
 
   return (
     <DropdownMenu>
@@ -49,7 +57,7 @@ const WsSwitch = () => {
         {workspaces?.map((ws) => (
           <DropdownMenuItem
             key={ws._id}
-            onClick={() => setWsId({ id: ws._id, name: ws?.name })}
+            onClick={() => handleToggle(ws._id, ws.name)}
             className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2"
           >
             <Avatar

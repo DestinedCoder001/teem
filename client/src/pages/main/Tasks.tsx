@@ -1,14 +1,12 @@
-import { currentWs, useUserWorkspaces } from "@/lib/store/uiStore";
-import { toast } from "sonner";
-import New from "./New";
+import { currentWs, useUserWorkspaces } from "@/lib/store/userStore";
+import CreateNewWs from "./CreateNewWs";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
   const { wsId } = currentWs((state) => state);
 
   if (!workspaces.length || !wsId) {
-    toast.warning("You're not in a workspace");
-    return <New />;
+    return <CreateNewWs />;
   }
   return <div>Hello Tasks</div>;
 };

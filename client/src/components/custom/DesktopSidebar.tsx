@@ -1,12 +1,14 @@
 import { navlinks } from "@/utils/constants";
 import { NavLink } from "react-router-dom";
 import WsSwitch from "./WsSwitch";
+import ChannelsCollapsible from "./ChannelsCollapsible";
 
 const DesktopSidebar = () => {
   return (
-    <aside className="hidden lg:block w-[220px] min-w-[220px] px-4 pb-4 border-r border-slate-300 bg-slate-50/50">
-      <div className="flex flex-col h-full justify-between w-full">
-        <div className="flex flex-col gap-y-6 mt-24">
+    <aside className="hidden lg:block w-[220px] min-w-[220px] border-r border-slate-300 bg-slate-50/50">
+      <div className="flex flex-col h-full justify-between w-full overflow-y-auto px-4 pb-4 no-scrollbar">
+        <div className="flex flex-col gap-y-6 mt-24 mb-8">
+          <ChannelsCollapsible />
           {navlinks.map((link, id) => (
             <NavLink
               to={link.link}
@@ -24,7 +26,7 @@ const DesktopSidebar = () => {
             </NavLink>
           ))}
         </div>
-        <div className="mb-4">
+        <div className="my-4">
           <WsSwitch />
         </div>
       </div>

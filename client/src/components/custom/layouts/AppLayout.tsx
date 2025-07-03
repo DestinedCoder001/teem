@@ -1,40 +1,26 @@
 import { Link, Outlet } from "react-router-dom";
 import logo from "@/assets/teem.png";
-import api from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
-import type { User } from "@/lib/types";
-import { useUserStore } from "@/lib/store/userStore";
+import { currentWsDetails, useUserStore, useUserWorkspaces } from "@/lib/store/userStore";
 import { useEffect } from "react";
 import { UserIconDropdown } from "../UserIconDropdown";
 import DesktopSidebar from "@/components/custom/DesktopSidebar";
 import MobileSideBar from "../MobileSidebar";
 import { PanelLeft } from "lucide-react";
-import { useSidebarOpen, useUserWorkspaces } from "@/lib/store/uiStore";
+import { useSidebarOpen } from "@/lib/store/uiStore";
+import useGetWs from "@/lib/hooks/useGetWs";
+import useGetMe from "@/lib/hooks/useGetMe";
+import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
+import CreateChannelDialog from "../CreateChannelDialog";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
   const { setWorkspaces } = useUserWorkspaces((state) => state);
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
+  const { wsData, getWsSuccess } = useGetWs();
+  const { setWorkspaceDetails } = currentWsDetails();
+  const { currentWsData, getCurrentWsSuccess } = useGetWsDetails();
+  const { data, isSuccess } = useGetMe();
 
-  const { data, isSuccess } = useQuery({
-    queryKey: ["get-me"],
-    queryFn: async () => {
-      const res = await api.get("/users/me");
-      return res.data.user as User;
-    },
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: wsData, isSuccess: getWsSuccess } = useQuery({
-    queryKey: ["get-user-ws"],
-    queryFn: async () => {
-      const res = await api.get("/workspaces");
-      return res.data?.data;
-    },
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
 
   useEffect(() => {
     if (isSuccess) {
@@ -47,6 +33,12 @@ const AppLayout = () => {
       setWorkspaces(wsData);
     }
   }, [getWsSuccess, wsData, setWorkspaces]);
+
+  useEffect(() => {
+    if (getWsSuccess && getCurrentWsSuccess) {
+      setWorkspaceDetails(currentWsData);
+    }
+  }, [currentWsData, getCurrentWsSuccess, setWorkspaceDetails, getWsSuccess]);
 
   const toggleSidebar = () => {
     if (isOpen) return;
@@ -72,6 +64,7 @@ const AppLayout = () => {
         <MobileSideBar />
 
         <main className="flex-1 overflow-y-auto relative">
+          <CreateChannelDialog />
           <Outlet />
         </main>
       </div>

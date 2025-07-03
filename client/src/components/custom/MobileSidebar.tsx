@@ -5,6 +5,7 @@ import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
 import { NavLink } from "react-router-dom";
 import WsSwitch from "./WsSwitch";
+import ChannelsCollapsible from "./ChannelsCollapsible";
 
 const MobileSideBar = () => {
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
@@ -13,7 +14,7 @@ const MobileSideBar = () => {
       open={isOpen}
       onClose={() => setOpen(false)}
       direction="left"
-      className="z-50 lg:hidden border-r border-slate-300 px-4"
+      className="z-50 lg:hidden border-r border-slate-300"
       enableOverlay={false}
       style={{ height: "calc(100vh - 50px)", top: "50px", boxShadow: "none", zIndex: 50 }}
     >
@@ -21,8 +22,9 @@ const MobileSideBar = () => {
         onClick={() => setOpen(false)}
         className="text-black/50 absolute right-4 top-4 cursor-pointer"
       />
-      <div className="flex flex-col h-full justify-between w-full">
+      <div className="flex flex-col h-full justify-between w-full overflow-y-auto px-4 no-scrollbar">
         <div className="flex flex-col gap-y-4 mt-24">
+          <ChannelsCollapsible />
           {navlinks.map((link, id) => (
             <NavLink
               to={link.link}
@@ -42,7 +44,7 @@ const MobileSideBar = () => {
           ))}
         </div>
 
-        <div className="mb-8">
+        <div className="my-8">
           <WsSwitch />
         </div>
       </div>

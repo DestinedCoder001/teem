@@ -68,9 +68,9 @@ const getWsDetails = async (req: Request, res: Response) => {
   try {
     await connectDb();
     const workspace = await Workspace.findById(workspaceId).populate({
-      path: "users createdBy",
+      path: "users",
       select: "firstName lastName email createdAt",
-    });
+    }).populate("channels");
 
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
