@@ -49,6 +49,7 @@ const currentWsDetails = create<
   channels: [],
   setWorkspaceDetails: (details: WorkspacePayload) => set(details),
 }));
+
 const currentChannelDetails = create<
   ChannelPayload & {
     setChannelDetails: (details: ChannelPayload) => void;

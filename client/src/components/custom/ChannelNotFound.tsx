@@ -1,6 +1,6 @@
 const ChannelNotFound = () => {
   return (
-    <div className="border border-red-500 h-full w-full flex justify-center items-center">
+    <div className="h-full w-full flex justify-center items-center">
       <div className="text-center">
         <h1 className="theme-text-gradient text-5xl font-bold">404</h1>
         <p className="text-slate-600 text-sm font-medium">Channel not found</p>

@@ -8,7 +8,11 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown, LogOut } from "lucide-react";
-import { currentWs, useUserWorkspaces } from "@/lib/store/userStore";
+import {
+  currentWs,
+  currentWsDetails,
+  useUserWorkspaces,
+} from "@/lib/store/userStore";
 import { useQueryClient } from "@tanstack/react-query";
 
 const WsSwitch = () => {
@@ -20,6 +24,7 @@ const WsSwitch = () => {
     signOut,
   } = currentWs((state) => state);
   const queryClient = useQueryClient();
+  const { setWorkspaceDetails } = currentWsDetails((state) => state);
 
   if (!workspaces.length) return null;
 
@@ -27,6 +32,16 @@ const WsSwitch = () => {
     if (id === wsId) return;
     setWsId({ id, name });
     queryClient.invalidateQueries({ queryKey: ["get-ws-details"] });
+  };
+
+  const handleSignOut = () => {
+    signOut();
+    setWorkspaceDetails({
+      name: "",
+      users: [],
+      createdBy: "",
+      channels: [],
+    });
   };
 
   return (
@@ -83,7 +98,7 @@ const WsSwitch = () => {
         <DropdownMenuSeparator className="bg-slate-200 my-2" />
         <DropdownMenuItem
           className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 group"
-          onClick={() => signOut()}
+          onClick={() => handleSignOut()}
         >
           <LogOut className="h-4 w-4 text-red-400 group-hover:translate-x-1 transition-transform duration-200" />
           <span>Sign out of workspace</span>
