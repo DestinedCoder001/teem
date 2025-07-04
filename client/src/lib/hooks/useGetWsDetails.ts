@@ -5,7 +5,7 @@ import { currentWs } from "../store/userStore";
 const useGetWsDetails = () => {
   const { wsId } = currentWs((state) => state);
   const { data: currentWsData, isSuccess: getCurrentWsSuccess, isPending } = useQuery({
-    queryKey: ["get-ws-details"],
+    queryKey: ["get-ws-details", wsId],
     queryFn: async () => {
       const res = await api.get(`/workspaces/${wsId}`);
       return res.data?.data;

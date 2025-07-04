@@ -9,14 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { AxiosError } from "axios";
 import ChannelNotFound from "@/components/custom/ChannelNotFound";
+import AppError from "@/components/custom/AppError";
 
 const Channel = () => {
   const { wsId } = currentWs((state) => state);
   const { getCurrentWsSuccess } = useGetWsDetails();
   const { channelId } = useParams();
-  const { name, description, setChannelDetails } = currentChannelDetails(
-    (state) => state
-  );
+  const { name, setChannelDetails } = currentChannelDetails((state) => state);
 
   const { data, isSuccess, isFetching, error } = useQuery({
     queryKey: ["get-channel-details", channelId],
@@ -45,6 +44,7 @@ const Channel = () => {
     if (err.status === 404) {
       return <ChannelNotFound />;
     }
+    return <AppError />;
   }
 
   return (

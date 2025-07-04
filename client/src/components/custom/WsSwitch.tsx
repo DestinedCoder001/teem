@@ -9,39 +9,56 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown, LogOut } from "lucide-react";
 import {
+  currentChannelDetails,
   currentWs,
   currentWsDetails,
   useUserWorkspaces,
 } from "@/lib/store/userStore";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const WsSwitch = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
   const {
     wsId,
     name: currentWsName,
-    setWsId,
+    setCurrentWs,
     signOut,
   } = currentWs((state) => state);
   const queryClient = useQueryClient();
   const { setWorkspaceDetails } = currentWsDetails((state) => state);
-
+  const { setChannelDetails } = currentChannelDetails((state) => state);
+  const navigate = useNavigate();
   if (!workspaces.length) return null;
 
-  const handleToggle = (id: string, name: string) => {
-    if (id === wsId) return;
-    setWsId({ id, name });
-    queryClient.invalidateQueries({ queryKey: ["get-ws-details"] });
-  };
-
-  const handleSignOut = () => {
-    signOut();
+  const resetAndRedirect = () => {
     setWorkspaceDetails({
       name: "",
       users: [],
       createdBy: "",
       channels: [],
     });
+    setChannelDetails({
+      name: "",
+      description: "",
+    });
+    navigate("/", { replace: true });
+  };
+
+  const handleToggle = (id: string, name: string) => {
+    if (id === wsId) return;
+    setCurrentWs({ id, name });
+    setChannelDetails({
+      name: "",
+      description: "",
+    });
+    navigate("/", { replace: true });
+    queryClient.invalidateQueries({ queryKey: ["get-ws-details", id] });
+  };
+
+  const handleSignOut = () => {
+    signOut();
+    resetAndRedirect();
   };
 
   return (
@@ -53,15 +70,17 @@ const WsSwitch = () => {
           className="w-full flex justify-between items-center px-4 py-6 text-slate-600 hover:bg-slate-100 rounded-md"
         >
           <div className="flex items-center space-x-2">
-            <Avatar className="h-8 w-8 rounded-md border border-primary">
-              <AvatarFallback className="rounded-none">
-                {currentWsName[0]?.toUpperCase() || "W"}
-              </AvatarFallback>
-            </Avatar>
+            {wsId && (
+              <Avatar className="h-8 w-8 rounded-md border border-primary">
+                <AvatarFallback className="rounded-none">
+                  {currentWsName[0]?.toUpperCase() || "W"}
+                </AvatarFallback>
+              </Avatar>
+            )}
             <span className="text-xs font-medium">
               {currentWsName?.length > 10
                 ? currentWsName.slice(0, 10) + "..."
-                : currentWsName}
+                : currentWsName || "Select"}
             </span>
           </div>
           <ChevronsUpDown className="h-4 w-4 text-slate-400" />
@@ -95,14 +114,19 @@ const WsSwitch = () => {
             </span>
           </DropdownMenuItem>
         ))}
-        <DropdownMenuSeparator className="bg-slate-200 my-2" />
-        <DropdownMenuItem
-          className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 group"
-          onClick={() => handleSignOut()}
-        >
-          <LogOut className="h-4 w-4 text-red-400 group-hover:translate-x-1 transition-transform duration-200" />
-          <span>Sign out of workspace</span>
-        </DropdownMenuItem>
+
+        {wsId && (
+          <>
+            <DropdownMenuSeparator className="bg-slate-200 my-2" />
+            <DropdownMenuItem
+              className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 group"
+              onClick={() => handleSignOut()}
+            >
+              <LogOut className="h-4 w-4 text-red-400 group-hover:translate-x-1 transition-transform duration-200" />
+              <span>Sign out of workspace</span>
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

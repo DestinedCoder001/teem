@@ -225,7 +225,7 @@ const removeMembers = async (req: Request, res: Response) => {
 };
 
 const getChannelDetails = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
+  const { channelId, workspaceId } = req.params;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -235,10 +235,15 @@ const getChannelDetails = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid channel id" });
   }
 
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
   try {
     await connectDb();
     const channel = await Channel.findOne({
       _id: channelId,
+      workspace: workspaceId,
     }).populate({
       path: "members",
       select: "firstName lastName",

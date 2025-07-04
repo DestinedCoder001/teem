@@ -21,12 +21,12 @@ const useUserWorkspaces = create<{
 const currentWs = create<{
   wsId: string | null;
   name: string;
-  setWsId: ({ id, name }: { id: string; name: string }) => void;
+  setCurrentWs: ({ id, name }: { id: string; name: string }) => void;
   signOut: () => void;
 }>((set) => ({
   wsId: localStorage.getItem("wsId") || null,
   name: localStorage.getItem("wsName") || "",
-  setWsId: ({ id, name }) => {
+  setCurrentWs: ({ id, name }) => {
     localStorage.setItem("wsId", id);
     localStorage.setItem("wsName", name);
     set({ wsId: id, name });
