@@ -106,7 +106,7 @@ const WsSwitch = () => {
             <span
               className={`text-sm ${
                 ws._id === wsId
-                  ? "font-bold theme-text-gradient"
+                  ? "font-bold text-slate-600"
                   : "font-normal"
               }`}
             >
