@@ -28,7 +28,7 @@ export const saveUserAuthDetails = (res: Response, user: User) => {
   );
   res.cookie("tjwt", refreshToken, {
     httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
   });
   return accessToken;
 };

@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 const TaskCard = () => {
-  const [projectProgress] = useState(32);
 
   const handleMarkComplete = () => {
     console.log("Task marked complete");
@@ -30,7 +29,7 @@ const TaskCard = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg border border-slate-300 px-6 py-4 max-w-md mx-auto cursor-pointer">
+    <div className="bg-white rounded-lg shadow-lg border border-slate-300 px-6 py-4 max-w-md mx-auto cursor-pointer space-y-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-gray-700">
           Konsep design homepage
@@ -67,24 +66,15 @@ const TaskCard = () => {
         <span>Due Nov 24</span>
       </div>
 
-      <p className="text-gray-700 text-xs mb-6 font-[500] tracking-wide">
+      <p className="text-gray-700 text-xs font-[500] tracking-wide">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam
+        tempor incididunt ut labore et dolore magna aliqua.
       </p>
 
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-2 text-sm">
-          <span className="text-gray-800 font-medium">Project Progress</span>
-          <span className="text-gray-800 font-medium">{projectProgress}%</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2.5">
-          <div
-            className="bg-gradient-to-r from-primary/60 to-secondary/60 h-2.5 rounded-full"
-            style={{ width: `${projectProgress}%` }}
-          ></div>
-        </div>
+      <div className="w-max text-xs bg-orange-100 rounded-full px-4 py-1 text-orange-600 font-[500]">
+        In progress
       </div>
+
 
       <div className="flex items-center gap-x-4">
         <div className="flex -space-x-2 overflow-hidden">

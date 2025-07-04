@@ -11,6 +11,7 @@ import UserProfile from "./pages/main/Profile";
 import DefaultHome from "./pages/main/DefaultHome";
 import ChannelSkeleton from "./components/custom/ChannelSkeleton";
 import Channel from "./pages/main/Channel";
+import NotFound from "./components/custom/NotFound";
 function App() {
   return (
     <>
@@ -30,6 +31,7 @@ function App() {
             <Route path="dms" element={<DMs />} />
           </Route>
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
