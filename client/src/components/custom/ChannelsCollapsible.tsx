@@ -6,7 +6,11 @@ import {
 } from "@/components/ui/collapsible";
 import { useEffect, useState } from "react";
 import { ChevronDown, Rss } from "lucide-react";
-import { currentWs, currentWsDetails } from "@/lib/store/userStore";
+import {
+  currentWs,
+  currentWsDetails,
+  useUserWorkspaces,
+} from "@/lib/store/userStore";
 import CreateChannelBtn from "./CreateChannelBtn";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import { Skeleton } from "../ui/skeleton";
@@ -18,13 +22,18 @@ const ChannelsCollapsible = () => {
   const { channels } = currentWsDetails((state) => state);
   const { isPending } = useGetWsDetails();
   const { wsId } = currentWs((state) => state);
+  const { workspaces } = useUserWorkspaces((state) => state);
 
   useEffect(() => {
     setOpen(false);
   }, [wsId]);
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} disabled={!wsId}>
+    <Collapsible
+      open={open}
+      onOpenChange={setOpen}
+      disabled={!wsId || !workspaces.length}
+    >
       <CollapsibleTrigger className="w-full rounded-md">
         <div
           className={`group flex items-center justify-between w-full px-3 py-2 lg:p-2 cursor-pointer rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 transition-colors ${

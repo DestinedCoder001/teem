@@ -2,7 +2,7 @@ import { Schema, model, models } from "mongoose";
 
 const tasksSchema = new Schema({
   title: { type: String, required: true },
-  summary: { type: String, required: true },
+  guidelines: { type: String, required: true },
   assignedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true },
   workspace: { type: Schema.Types.ObjectId, ref: "Workspace", required: true },

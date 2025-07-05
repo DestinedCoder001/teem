@@ -3,10 +3,15 @@ import {
   createTask,
   deleteTask,
   editTask,
+  getTasks,
   updateTaskStatus,
 } from "../controllers/task.controller";
 import { createTaskValidation } from "../lib/validations/task.validation";
 const router = Router({ mergeParams: true });
+
+router.get("/", (req, res) => {
+  getTasks(req, res);
+});
 
 router.post("/create", createTaskValidation, (req: Request, res: Response) => {
   createTask(req, res);

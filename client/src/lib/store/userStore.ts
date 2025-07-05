@@ -2,7 +2,7 @@ import { create } from "zustand";
 import {
   type WorkspacePayload,
   type UserState,
-  type ChannelPayload,
+  type ChannelPayload, type TaskPayload
 } from "../types";
 
 const useUserStore = create<UserState>((set) => ({
@@ -60,10 +60,19 @@ const currentChannelDetails = create<
   setChannelDetails: (details: ChannelPayload) => set(details),
 }));
 
+const useUserTasks = create<{
+  tasks: TaskPayload[] | [];
+  setTasks: (tasks: TaskPayload[] | []) => void;
+}>((set) => ({
+  tasks: [],
+  setTasks: (tasks) => set({ tasks }),
+}));
+
 export {
   useUserWorkspaces,
   currentWs,
   useUserStore,
   currentWsDetails,
   currentChannelDetails,
+  useUserTasks,
 };

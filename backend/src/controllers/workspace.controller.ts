@@ -69,7 +69,7 @@ const getWsDetails = async (req: Request, res: Response) => {
     await connectDb();
     const workspace = await Workspace.findById(workspaceId).populate({
       path: "users",
-      select: "firstName lastName email createdAt",
+      select: "firstName lastName email createdAt profilePicture",
     }).populate("channels");
 
     if (!workspace) {

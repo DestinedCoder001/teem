@@ -33,9 +33,9 @@ const UserProfile = () => {
       toast("Profile updated successfully", {
         position: "top-center",
       });
-      
+
       const updatedUser: User = {
-        id: data?.id,
+        _id: data?._id,
         email: data?.email,
         firstName: data?.firstName,
         lastName: data?.lastName,
@@ -88,19 +88,29 @@ const UserProfile = () => {
     <div className="flex flex-col items-center">
       <div className="w-full max-w-md bg-white overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
-          <CircleGradientWrapper className={`p-0.5 relative rounded-full ${!isOnline && "bg-none bg-slate-500"}`}>
+          <CircleGradientWrapper
+            className={`p-0.5 relative rounded-full ${
+              !isOnline && "bg-none bg-slate-500"
+            }`}
+          >
             <Avatar className="h-24 w-24">
-              <AvatarImage className="bg-white" src={user?.profilePicture} alt={user?.firstName} />
+              <AvatarImage
+                className="bg-white"
+                src={user?.profilePicture}
+                alt={user?.firstName}
+              />
               <AvatarFallback className="text-slate-600 text-3xl font-bold">
                 {user?.firstName?.[0]?.toUpperCase()}
                 {user?.lastName?.[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span
-              className={`absolute bottom-2 right-1/15 w-4 h-4 border-2 border-white rounded-full ${
-                isOnline ? "bg-secondary" : "bg-slate-500"
-              }`}
-            />
+            {isOnline ? (
+              <span
+                className="absolute bottom-2 right-1/15 w-4 h-4 border-2 border-white rounded-full
+                  bg-secondary
+                "
+              />
+            ) : null}
           </CircleGradientWrapper>
 
           <div

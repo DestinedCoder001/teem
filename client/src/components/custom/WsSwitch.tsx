@@ -12,6 +12,7 @@ import {
   currentChannelDetails,
   currentWs,
   currentWsDetails,
+  useUserTasks,
   useUserWorkspaces,
 } from "@/lib/store/userStore";
 import { useQueryClient } from "@tanstack/react-query";
@@ -28,6 +29,7 @@ const WsSwitch = () => {
   const queryClient = useQueryClient();
   const { setWorkspaceDetails } = currentWsDetails((state) => state);
   const { setChannelDetails } = currentChannelDetails((state) => state);
+  const { setTasks } = useUserTasks((state) => state);
   const navigate = useNavigate();
   if (!workspaces.length) return null;
 
@@ -42,6 +44,7 @@ const WsSwitch = () => {
       name: "",
       description: "",
     });
+    setTasks([]);
     navigate("/", { replace: true });
   };
 
@@ -52,6 +55,7 @@ const WsSwitch = () => {
       name: "",
       description: "",
     });
+    setTasks([]);
     navigate("/", { replace: true });
     queryClient.invalidateQueries({ queryKey: ["get-ws-details", id] });
   };
@@ -105,9 +109,7 @@ const WsSwitch = () => {
             </Avatar>
             <span
               className={`text-sm ${
-                ws._id === wsId
-                  ? "font-bold text-slate-600"
-                  : "font-normal"
+                ws._id === wsId ? "font-bold text-slate-600" : "font-normal"
               }`}
             >
               {ws.name}

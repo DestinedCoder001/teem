@@ -6,7 +6,6 @@ import { Types } from "mongoose";
 import { matchedData, validationResult } from "express-validator";
 
 const createTask = async (req: Request, res: Response) => {
-
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -21,8 +20,7 @@ const createTask = async (req: Request, res: Response) => {
 
   const { workspaceId } = req.params;
   const { assignedTo } = req.body;
-  const { title, summary, dueDate } = matchedData(req);
-
+  const { title, guidelines, dueDate } = matchedData(req);
 
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
@@ -31,12 +29,14 @@ const createTask = async (req: Request, res: Response) => {
   if (!assignedTo) {
     return res.status(400).json({ message: "Assignee is required" });
   }
-  
+
   if (!Types.ObjectId.isValid(assignedTo)) {
     return res.status(400).json({ message: "Invalid user id (body)" });
   }
 
-
+  if (dueDate instanceof Date && dueDate < new Date()) {
+    return res.status(400).json({ message: "Date must be in the future" });
+  }
 
   try {
     await connectDb();
@@ -54,7 +54,7 @@ const createTask = async (req: Request, res: Response) => {
 
     const newTask = await Task.create({
       title,
-      summary,
+      guidelines,
       assignedBy: req.user.id,
       assignedTo,
       workspace: workspace._id,
@@ -71,13 +71,40 @@ const createTask = async (req: Request, res: Response) => {
   }
 };
 
-const editTask = async (req: Request, res: Response) => {
-  const { taskId, title, summary } = req.body;
+const getTasks = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (!title || !summary || !taskId) {
+  const { workspaceId } = req.params;
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  try {
+    await connectDb();
+    const tasks = await Task.find({
+      $or: [{ assignedBy: req.user.id }, { assignedTo: req.user.id }],
+      workspace: workspaceId,
+    }).populate({
+      path: "assignedTo assignedBy",
+      select: "firstName lastName email profilePicture",
+    });
+    res.status(200).json({ data: tasks });
+  } catch (error: any) {
+    console.log("Error in getting tasks: ", error);
+    res.status(500).json(error.message);
+  }
+};
+
+const editTask = async (req: Request, res: Response) => {
+  const { taskId, title, guidelines } = req.body;
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!title || !guidelines || !taskId) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -90,7 +117,7 @@ const editTask = async (req: Request, res: Response) => {
 
     const task = await Task.findOneAndUpdate(
       { _id: taskId, assignedBy: req.user.id },
-      { title, summary }
+      { title, guidelines }
     );
 
     if (!task) {
@@ -112,6 +139,10 @@ const updateTaskStatus = async (req: Request, res: Response) => {
 
   if (!status || !taskId) {
     return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (status !== "pending" && status !== "completed") {
+    return res.status(400).json({ message: "Invalid status" });
   }
 
   if (!Types.ObjectId.isValid(taskId)) {
@@ -167,7 +198,7 @@ const deleteTask = async (req: Request, res: Response) => {
     });
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: "Unable to delete task" });
     }
 
     res.status(200).json({ message: "Task deleted successfully" });
@@ -177,4 +208,4 @@ const deleteTask = async (req: Request, res: Response) => {
   }
 };
 
-export { createTask, editTask, updateTaskStatus, deleteTask };
+export { createTask, getTasks, editTask, updateTaskStatus, deleteTask };
