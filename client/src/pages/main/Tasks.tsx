@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import useGetTasks from "@/lib/hooks/useGetTasks";
 import TasksLoading from "@/components/custom/TasksLoading";
+import EditTaskDialog from "@/components/custom/EditTaskDialog";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -77,6 +78,7 @@ const Tasks = () => {
       </div>
 
       <CreateTaskDialog />
+      <EditTaskDialog />
     </>
   );
 };

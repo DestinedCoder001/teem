@@ -7,12 +7,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import type { CustomAxiosError, SignUpDetails } from "@/lib/types";
-import { LoaderCircle } from "lucide-react";
 import { useSignUp } from "@/lib/hooks/useSignUp";
 import OTPDialog from "@/components/custom/OtpDialog";
 import { useOtpDialogStore } from "@/lib/store/dialogStore";
 import GoogleSignupButton from "@/components/custom/GoogleSignUpBtn";
 import { generatePicUrl } from "@/lib/generatePicUrl";
+import { Loader } from "lucide-react";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -197,7 +197,7 @@ const SignUp = () => {
                   className="rounded-full py-6 font-normal text-md"
                 >
                   {isPending ? (
-                    <LoaderCircle className="animate-spin" />
+                    <Loader className="animate-spin" />
                   ) : (
                     "Create account"
                   )}

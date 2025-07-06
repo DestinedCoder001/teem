@@ -99,17 +99,30 @@ const getTasks = async (req: Request, res: Response) => {
 };
 
 const editTask = async (req: Request, res: Response) => {
-  const { taskId, title, guidelines } = req.body;
+  const { taskId, title, guidelines, dueDate, assignedTo } = req.body;
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (!title || !guidelines || !taskId) {
+  if (!title || !guidelines || !taskId || !dueDate) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   if (!Types.ObjectId.isValid(taskId)) {
     return res.status(400).json({ message: "Invalid task id" });
+  }
+  if (!Types.ObjectId.isValid(assignedTo)) {
+    return res.status(400).json({ message: "Invalid user id" });
+  }
+
+  if (typeof dueDate !== "string" || isNaN(Date.parse(dueDate))) {
+    return res.status(400).json({ message: "Invalid due date" });
+  }
+
+  const dueDateObj = new Date(dueDate);
+
+  if (dueDateObj < new Date()) {
+    return res.status(400).json({ message: "Date must be in the future" });
   }
 
   try {
@@ -117,11 +130,11 @@ const editTask = async (req: Request, res: Response) => {
 
     const task = await Task.findOneAndUpdate(
       { _id: taskId, assignedBy: req.user.id },
-      { title, guidelines }
+      { title, guidelines, dueDate, assignedTo }
     );
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({ message: "Could not edit task" });
     }
 
     res.status(200).json({ message: "Task updated successfully" });

@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useLogin } from "@/lib/hooks/useLogin";
 import { toast } from "sonner";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import type { CustomAxiosError, LoginDetails } from "@/lib/types";
 import {
   useNewPwdDialogStore,
@@ -183,7 +183,7 @@ const Login = () => {
                   className="rounded-full py-6 font-normal text-md"
                 >
                   {isPending ? (
-                    <LoaderCircle className="animate-spin" />
+                    <Loader className="animate-spin" />
                   ) : (
                     "Log in"
                   )}

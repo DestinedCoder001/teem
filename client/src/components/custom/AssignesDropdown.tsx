@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { currentWsDetails } from "@/lib/store/userStore";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   user: string;
@@ -17,13 +17,22 @@ interface Props {
 }
 const AssignesDropdown = ({ user, setUser }: Props) => {
   const { users } = currentWsDetails((state) => state);
-  const [name, setName] = useState("Select");
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    const name = users.find((item) => user === item._id);
+    if (name) {
+      setName(name?.firstName + " " + name?.lastName);
+    } else {
+      setName("Select");
+    }
+  }, [user, users]);
 
   return (
     <DropdownMenu>
       <DropdownMenuLabel className="-mb-3">Assign to</DropdownMenuLabel>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">{name || "Select"}</Button>
+        <Button variant="outline">{name}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[18rem]  md:w-[23rem]">
         <DropdownMenuRadioGroup value={user || ""} onValueChange={setUser}>
@@ -32,7 +41,7 @@ const AssignesDropdown = ({ user, setUser }: Props) => {
               value={user?._id}
               key={user?._id}
               className="font-medium text-slate-600"
-              onClick={() => setName(user?.firstName + " " + user?.lastName)}
+              // onClick={() => setName(user?.firstName + " " + user?.lastName)}
             >
               <Avatar className="h-6 w-6 rounded-full cursor-pointer border border-slate-200">
                 <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
