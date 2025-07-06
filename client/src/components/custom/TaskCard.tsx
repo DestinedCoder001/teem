@@ -11,9 +11,11 @@ import {
   Trash2,
   MoveRight,
   ClipboardCheck,
-  CircleCheck, PenLine,
-  Loader, TimerOff,
-  CirclePlay
+  CircleCheck,
+  PenLine,
+  Loader,
+  TimerOff,
+  CirclePlay,
 } from "lucide-react";
 import type { TaskPayload, User } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -47,12 +49,16 @@ const TaskCard = ({
   const { setTask } = currentEditingTask((state) => state);
 
   const handleTaskUpdate = (taskStatus: "pending" | "completed") => {
-    if (status === taskStatus) return;
-    mutate({ taskId: id, status: taskStatus });
+    setTimeout(() => {
+      if (status === taskStatus) return;
+      mutate({ taskId: id, status: taskStatus });
+    }, 100); // wrapped in timeout to allow dropdown menu unmount completely before triggering these functions to prevent a weird flickering issue.
   };
 
   const handleDelete = () => {
-    deleteTask({ taskId: id });
+    setTimeout(() => {
+      deleteTask({ taskId: id });
+    }, 100); // wrapped in timeout to allow dropdown menu unmount completely before triggering these functions to prevent a weird flickering issue.
   };
 
   const formatDateTime = (isoString: string): string => {
@@ -86,7 +92,10 @@ const TaskCard = ({
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer space-y-4" title={title}>
+      <div
+        className="flex flex-col justify-between bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer"
+        title={title}
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold theme-text-gradient">
             {title?.length > 20 ? title.slice(0, 20) + "..." : title}
@@ -104,9 +113,9 @@ const TaskCard = ({
                 </DropdownMenuTrigger>
               </>
             )}
-            <DropdownMenuContent align="end" className="text-slate-600">
+            <DropdownMenuContent className="text-slate-600">
               <DropdownMenuItem
-                onClick={() => {
+                onSelect={() => {
                   setOpen(true);
                   setTask(taskDetails);
                 }}
@@ -116,21 +125,21 @@ const TaskCard = ({
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleTaskUpdate("completed")}
+                onSelect={() => handleTaskUpdate("completed")}
                 className="cursor-pointer group"
               >
                 <CircleCheck className="mr-2 h-4 w-4 group-hover:text-green-500" />
                 Mark Complete
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => handleTaskUpdate("pending")}
+                onSelect={() => handleTaskUpdate("pending")}
                 className="cursor-pointer group"
               >
                 <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500" />
                 Mark In Progress
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={handleDelete}
+                onSelect={handleDelete}
                 className="cursor-pointer group"
               >
                 <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500" />
@@ -140,59 +149,61 @@ const TaskCard = ({
           </DropdownMenu>
         </div>
 
-        <div className="flex items-center text-sm text-slate-500 mb-2 font-[500]">
-          <ClipboardCheck className="h-4 w-4 mr-1" />
-          <span>Due {formatDateTime(dueDate.toString())}</span>
+        <div className="mb-2 space-y-2">
+          <div className="flex items-center text-sm text-slate-500 font-[500]">
+            <ClipboardCheck className="h-4 w-4 mr-1" />
+            <span>Due {formatDateTime(dueDate.toString())}</span>
+          </div>
+
+          <p className="text-gray-700 text-xs font-[500] tracking-wide break-all">
+            {guidelines?.length > 100
+              ? guidelines.slice(0, 100) + "..."
+              : guidelines}
+          </p>
         </div>
-
-        <p className="text-gray-700 text-xs font-[500] tracking-wide break-all">
-          {guidelines?.length > 100
-            ? guidelines.slice(0, 100) + "..."
-            : guidelines}
-        </p>
-
-        <div className="flex items-center gap-x-3">
-          <Avatar>
-            <AvatarImage
-              className="h-8 w-8 rounded-full border border-slate-200"
-              src={assignedBy?.profilePicture}
-              alt={assignedBy?.firstName}
-            />
-            <AvatarFallback className="text-slate-600 font-medium text-sm">
-              {assignedBy?.firstName[0]?.toUpperCase()}
-              {assignedBy?.lastName[0]?.toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <MoveRight className="text-slate-500" />
-          <Avatar>
-            <AvatarImage
-              className="h-8 w-8 rounded-full border border-slate-200"
-              src={assignedTo?.profilePicture}
-              alt={assignedTo?.firstName}
-            />
-            <AvatarFallback className="text-slate-600 font-medium text-sm">
-              {assignedTo?.firstName[0]?.toUpperCase()}
-              {assignedTo?.lastName[0]?.toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+        <div className="space-y-2 mt-4">
+          <div className="flex items-center gap-x-3">
+            <Avatar>
+              <AvatarImage
+                className="h-8 w-8 rounded-full border border-slate-200"
+                src={assignedBy?.profilePicture}
+                alt={assignedBy?.firstName}
+              />
+              <AvatarFallback className="text-slate-600 font-medium text-sm">
+                {assignedBy?.firstName[0]?.toUpperCase()}
+                {assignedBy?.lastName[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <MoveRight className="text-slate-500" />
+            <Avatar>
+              <AvatarImage
+                className="h-8 w-8 rounded-full border border-slate-200"
+                src={assignedTo?.profilePicture}
+                alt={assignedTo?.firstName}
+              />
+              <AvatarFallback className="text-slate-600 font-medium text-sm">
+                {assignedTo?.firstName[0]?.toUpperCase()}
+                {assignedTo?.lastName[0]?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          {status === "completed" ? (
+            <div className="flex gap-x-1 items-center w-max text-xs bg-green-100 rounded-full px-4 py-1 text-green-600 font-[500]">
+              <CircleCheck className="w-4 h-4 shrink-0" fill="#7bf1a8" />
+              Completed
+            </div>
+          ) : new Date(dueDate).getTime() < Date.now() ? (
+            <div className="flex gap-x-1 items-center w-max text-xs bg-red-100 rounded-full px-4 py-1 text-red-600 font-[500]">
+              <TimerOff className="w-4 h-4 shrink-0" fill="#fca5a5" />
+              Due
+            </div>
+          ) : status === "pending" ? (
+            <div className="flex gap-x-1 items-center w-max text-xs bg-orange-100 rounded-full px-4 py-1 text-orange-600 font-[500]">
+              <CirclePlay className="w-4 h-4 shrink-0" fill="#fdba74" />
+              In progress
+            </div>
+          ) : null}
         </div>
-
-        {status === "completed" ? (
-          <div className="flex gap-x-1 items-center w-max text-xs bg-green-100 rounded-full px-4 py-1 text-green-600 font-[500]">
-            <CircleCheck className="w-4 h-4 shrink-0" fill="#7bf1a8" />
-            Completed
-          </div>
-        ) : new Date(dueDate).getTime() < Date.now() ? (
-          <div className="flex gap-x-1 items-center w-max text-xs bg-red-100 rounded-full px-4 py-1 text-red-600 font-[500]">
-            <TimerOff className="w-4 h-4 shrink-0" fill="#fca5a5" />
-            Due
-          </div>
-        ) : status === "pending" ? (
-          <div className="flex gap-x-1 items-center w-max text-xs bg-orange-100 rounded-full px-4 py-1 text-orange-600 font-[500]">
-            <CirclePlay className="w-4 h-4 shrink-0" fill="#fdba74" />
-            In progress
-          </div>
-        ) : null}
       </div>
     </>
   );
