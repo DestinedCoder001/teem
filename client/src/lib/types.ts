@@ -41,6 +41,7 @@ export type TaskPayload = {
   dueDate: Date;
   assignedTo: User;
   assignedBy: User;
+  createdAt: Date;
 };
 
 export type CustomAxiosError = AxiosError<{ message: string }>;

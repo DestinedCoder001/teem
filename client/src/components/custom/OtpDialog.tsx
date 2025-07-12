@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/input-otp";
 import { useVerifySignupOtp } from "@/lib/hooks/useVerifySignupOtp";
 import { toast } from "sonner";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import type { CustomAxiosError } from "@/lib/types";
 import {
   useNewPwdDialogStore,
@@ -132,7 +132,7 @@ export default function OTPDialog({
               disabled={otp.length !== 6 || isPending || resetPending}
             >
               {isPending || resetPending ? (
-                <LoaderCircle className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : (
                 "Verify"
               )}

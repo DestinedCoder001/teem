@@ -12,6 +12,7 @@ import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import useGetTasks from "@/lib/hooks/useGetTasks";
 import TasksLoading from "@/components/custom/TasksLoading";
 import EditTaskDialog from "@/components/custom/EditTaskDialog";
+import TaskSheet from "@/components/custom/TaskSheet";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -56,6 +57,7 @@ const Tasks = () => {
                 assignedTo,
                 status,
                 dueDate,
+                createdAt
               }) => (
                 <TaskCard
                   key={_id}
@@ -66,6 +68,7 @@ const Tasks = () => {
                   dueDate={dueDate}
                   assignedTo={assignedTo}
                   assignedBy={assignedBy}
+                  createdAt={createdAt}
                 />
               )
             )}
@@ -79,6 +82,7 @@ const Tasks = () => {
 
       <CreateTaskDialog />
       <EditTaskDialog />
+      <TaskSheet />
     </>
   );
 };

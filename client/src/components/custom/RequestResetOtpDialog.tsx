@@ -14,7 +14,7 @@ import api from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useOtpDialogStore } from "@/lib/store/dialogStore";
 import type { CustomAxiosError } from "@/lib/types";
 
@@ -99,7 +99,7 @@ export function RequestResetOtpDialog({ open, onOpenChange }: Props) {
                 className="min-w-[8rem]"
               >
                 {isPending ? (
-                  <LoaderCircle className="animate-spin" />
+                  <Loader className="animate-spin" />
                 ) : (
                   "Send request"
                 )}

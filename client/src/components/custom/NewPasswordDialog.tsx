@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import api from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
@@ -141,7 +141,7 @@ export function NewPasswordDialog({ open, onOpenChange }: Props) {
               onClick={handleSubmit(onSubmit)}
             >
               {isPending ? (
-                <LoaderCircle className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : (
                 "Reset Password"
               )}

@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import type { CustomAxiosError } from "@/lib/types";
 import { useCreateTaskDialogOpen } from "@/lib/store/uiStore";
 import { useForm } from "react-hook-form";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useCreateTask } from "@/lib/hooks/useCreateTask";
 import DateTimePicker from "./DateTimePicker";
 import { useEffect, useState } from "react";
@@ -147,8 +147,8 @@ const CreateTaskDialog = () => {
                     message: "Guidelines must be at least 10 characters",
                   },
                   maxLength: {
-                    value: 200,
-                    message: "Guidelines must be less than 200 characters",
+                    value: 1000,
+                    message: "Guidelines must be less than 1000 characters",
                   },
                 })}
               />
@@ -167,7 +167,7 @@ const CreateTaskDialog = () => {
               className="min-w-[10rem]"
             >
               {isPending ? (
-                <LoaderCircle className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : (
                 "Create Task"
               )}

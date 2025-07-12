@@ -14,7 +14,7 @@ import { useCreateWsDialogOpen } from "@/lib/store/uiStore";
 import { useForm } from "react-hook-form";
 import { useCreateWorkspace } from "@/lib/hooks/useCreateWorkspace";
 import { toast } from "sonner";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { CustomAxiosError } from "@/lib/types";
 
@@ -108,7 +108,7 @@ const CreateWorkspaceDialog = () => {
                 className="min-w-[10rem]"
               >
                 {isPending ? (
-                  <LoaderCircle className="animate-spin" />
+                  <Loader className="animate-spin" />
                 ) : (
                   "Create Workspace"
                 )}

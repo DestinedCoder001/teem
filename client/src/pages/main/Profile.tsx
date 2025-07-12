@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LoaderCircle, Pencil, X } from "lucide-react";
+import { Loader, Pencil, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useUserStore } from "@/lib/store/userStore";
 import CircleGradientWrapper from "@/components/custom/GradientWrapper";
@@ -187,7 +187,7 @@ const UserProfile = () => {
                   }`}
                 >
                   {isPending ? (
-                    <LoaderCircle className="animate-spin" />
+                    <Loader className="animate-spin" />
                   ) : (
                     "Save"
                   )}

@@ -1,0 +1,96 @@
+import {
+  Sheet, SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle
+} from "@/components/ui/sheet";
+import { useTaskSheetOpen } from "@/lib/store/uiStore";
+import { Button } from "../ui/button";
+import { currentEditingTask } from "@/lib/store/userStore";
+import {
+  CircleCheck,
+  CirclePlay,
+  ClipboardCheckIcon,
+  TimerOff,
+} from "lucide-react";
+import { formatTaskDueDate } from "@/utils/formatDueDate";
+
+const TaskSheet = () => {
+  const { isOpen, setOpen } = useTaskSheetOpen((state) => state);
+  const { task } = currentEditingTask((state) => state);
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setOpen}>
+      <SheetContent className="py-6 overflow-auto no-scrollbar w-full">
+        <SheetHeader className="text-center">
+          <SheetTitle className="theme-text-gradient text-2xl w-max mx-auto">
+            {task?.title}
+          </SheetTitle>
+          <SheetDescription className="hidden">
+            Task description
+          </SheetDescription>
+
+          {task?.status === "completed" ? (
+            <div className="flex gap-x-1 items-center mx-auto mt-2 w-max bg-green-100 rounded-full px-4 py-1 text-green-600 font-[500]">
+              <CircleCheck className="w-5 h-5 shrink-0" fill="#7bf1a8" />
+              Completed
+            </div>
+          ) : new Date(task?.dueDate as Date).getTime() < Date.now() ? (
+            <div className="flex gap-x-1 items-center mx-auto mt-2 w-max bg-red-100 rounded-full px-4 py-1 text-red-600 font-[500]">
+              <TimerOff className="w-5 h-5 shrink-0" fill="#fca5a5" />
+              Due
+            </div>
+          ) : task?.status === "pending" ? (
+            <div className="flex gap-x-1 items-center mx-auto mt-2 w-max bg-orange-100 rounded-full px-4 py-1 text-orange-600 font-[500] animate-pulse">
+              <CirclePlay className="w-5 h-5 shrink-0" fill="#fdba74" />
+              In progress
+            </div>
+          ) : null}
+
+          {task?.dueDate && (
+            <div className="flex items-center justify-center text-slate-700 w-full">
+              <ClipboardCheckIcon className="h-4 w-4 mr-1" />
+              <p>Due {formatTaskDueDate(task.dueDate.toString() as string)}</p>
+            </div>
+          )}
+        </SheetHeader>
+
+        {task?.createdAt && (
+          <div className="my-4 text-slate-600 font-medium break-words text-left p-4 text-sm">
+            <p className="bg-slate-100 rounded-md text-center py-2">
+              Assigned by{" "}
+              <span className="font-semibold text-slate-700">
+                {task?.assignedBy.firstName} {task?.assignedBy.lastName}
+              </span>{" "}
+              to{" "}
+              <span className="font-semibold text-slate-700">
+                {" "}
+                {task?.assignedTo.firstName} {task?.assignedTo.lastName}
+              </span>{" "}
+              {formatTaskDueDate(task?.createdAt?.toString() as string)}
+            </p>
+          </div>
+        )}
+
+        <div className="text-slate-600 font-medium break-words text-left p-4">
+          <h2 className="text-slate-700 font-semibold mb-2 text-center">
+            Guidelines:
+          </h2>
+          {task?.guidelines}
+        </div>
+        <SheetFooter>
+          <Button
+            onClick={() => setOpen(false)}
+            variant="ghost"
+            className="border border-slate-300"
+          >
+            <span className="theme-text-gradient">Close</span>
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+export default TaskSheet;

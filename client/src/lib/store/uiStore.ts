@@ -23,6 +23,7 @@ const useCreateChannelDialogOpen = create<{
   isOpen: false,
   setOpen: (open) => set({ isOpen: open }),
 }));
+
 const useCreateTaskDialogOpen = create<{
   isOpen: boolean;
   setOpen: (open: boolean) => void;
@@ -30,6 +31,7 @@ const useCreateTaskDialogOpen = create<{
   isOpen: false,
   setOpen: (open) => set({ isOpen: open }),
 }));
+
 const useEditTaskDialogOpen = create<{
   isOpen: boolean;
   setOpen: (open: boolean) => void;
@@ -38,4 +40,19 @@ const useEditTaskDialogOpen = create<{
   setOpen: (open) => set({ isOpen: open }),
 }));
 
-export { useSidebarOpen, useCreateWsDialogOpen, useCreateChannelDialogOpen, useCreateTaskDialogOpen, useEditTaskDialogOpen };
+const useTaskSheetOpen = create<{
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+}>((set) => ({
+  isOpen: false,
+  setOpen: (open) => set({ isOpen: open }),
+}));
+
+export {
+  useSidebarOpen,
+  useCreateWsDialogOpen,
+  useCreateChannelDialogOpen,
+  useCreateTaskDialogOpen,
+  useEditTaskDialogOpen,
+  useTaskSheetOpen,
+};

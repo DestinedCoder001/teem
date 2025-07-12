@@ -15,8 +15,8 @@ export const createTaskValidation = checkSchema({
       errorMessage: "Summary must be a string",
     },
     isLength: {
-      options: { min: 10, max: 200 },
-      errorMessage: "Summary must be between 10 and 200 characters",
+      options: { min: 10, max: 1000 },
+      errorMessage: "Summary must be between 10 and 1000 characters",
     },
     trim: true,
   },

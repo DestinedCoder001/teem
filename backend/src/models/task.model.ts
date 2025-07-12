@@ -8,6 +8,6 @@ const tasksSchema = new Schema({
   workspace: { type: Schema.Types.ObjectId, ref: "Workspace", required: true },
   status: { type: String, default: "pending", enum: ["pending", "completed"] },
   dueDate: { type: Date, required: true },
-});
+}, { timestamps: true });
 
 export const Task = models.Task || model("Task", tasksSchema);

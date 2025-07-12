@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useCreateChannelDialogOpen } from "@/lib/store/uiStore";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { CustomAxiosError } from "@/lib/types";
 import { useCreateChannel } from "@/lib/hooks/useCreateChannel";
@@ -112,7 +112,7 @@ const CreateChannelDialog = () => {
               className="min-w-[10rem]"
             >
               {isPending ? (
-                <LoaderCircle className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : (
                 "Create channel"
               )}

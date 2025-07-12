@@ -19,11 +19,11 @@ import {
 } from "lucide-react";
 import type { TaskPayload, User } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { format, isToday, isTomorrow, isYesterday, parseISO } from "date-fns";
 import { useUpdateTaskStatus } from "@/lib/hooks/useUpdateTaskStatus";
 import { useDeleteTask } from "@/lib/hooks/useDeleteTask";
-import { useEditTaskDialogOpen } from "@/lib/store/uiStore";
+import { useEditTaskDialogOpen, useTaskSheetOpen } from "@/lib/store/uiStore";
 import { currentEditingTask } from "@/lib/store/userStore";
+import { formatTaskDueDate } from "@/utils/formatDueDate";
 
 interface TaskCardProps {
   id: string;
@@ -33,6 +33,7 @@ interface TaskCardProps {
   dueDate: Date;
   assignedTo: User;
   assignedBy: User;
+  createdAt: Date;
 }
 const TaskCard = ({
   id,
@@ -42,11 +43,13 @@ const TaskCard = ({
   dueDate,
   assignedTo,
   assignedBy,
+  createdAt
 }: TaskCardProps) => {
   const { mutate, isPending } = useUpdateTaskStatus();
   const { mutate: deleteTask, isPending: deletePending } = useDeleteTask();
   const { setOpen } = useEditTaskDialogOpen((state) => state);
   const { setTask } = currentEditingTask((state) => state);
+  const { setOpen: setTaskDrawerOpen } = useTaskSheetOpen((state) => state);
 
   const handleTaskUpdate = (taskStatus: "pending" | "completed") => {
     setTimeout(() => {
@@ -61,25 +64,6 @@ const TaskCard = ({
     }, 100); // wrapped in timeout to allow dropdown menu unmount completely before triggering these functions to prevent a weird flickering issue.
   };
 
-  const formatDateTime = (isoString: string): string => {
-    const date = parseISO(isoString);
-    const time = format(date, "h:mm a");
-
-    if (isToday(date)) {
-      return `today at ${time}`;
-    }
-
-    if (isTomorrow(date)) {
-      return `tomorrow at ${time}`;
-    }
-
-    if (isYesterday(date)) {
-      return `yesterday at ${time}`;
-    }
-
-    return `${format(date, "MMM d")} at ${time}`;
-  };
-
   const taskDetails: TaskPayload = {
     _id: id,
     title,
@@ -88,6 +72,7 @@ const TaskCard = ({
     dueDate,
     assignedTo,
     assignedBy,
+    createdAt
   };
 
   return (
@@ -95,6 +80,10 @@ const TaskCard = ({
       <div
         className="flex flex-col justify-between bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer"
         title={title}
+        onClick={() => {
+          setTask(taskDetails);
+          setTaskDrawerOpen(true);
+        }}
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold theme-text-gradient">
@@ -113,7 +102,10 @@ const TaskCard = ({
                 </DropdownMenuTrigger>
               </>
             )}
-            <DropdownMenuContent className="text-slate-600">
+            <DropdownMenuContent
+              className="text-slate-600"
+              onClick={(e) => e.stopPropagation()}
+            >
               <DropdownMenuItem
                 onSelect={() => {
                   setOpen(true);
@@ -152,7 +144,7 @@ const TaskCard = ({
         <div className="mb-2 space-y-2">
           <div className="flex items-center text-sm text-slate-500 font-[500]">
             <ClipboardCheck className="h-4 w-4 mr-1" />
-            <span>Due {formatDateTime(dueDate.toString())}</span>
+            <span>Due {formatTaskDueDate(dueDate.toString())}</span>
           </div>
 
           <p className="text-gray-700 text-xs font-[500] tracking-wide break-all">

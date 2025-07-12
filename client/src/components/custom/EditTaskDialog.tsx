@@ -12,7 +12,7 @@ import { Button } from "../ui/button";
 import { toast } from "sonner";
 import type { CustomAxiosError } from "@/lib/types";
 import { useForm } from "react-hook-form";
-import { LoaderCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import DateTimePicker from "./DateTimePicker";
 import AssignesDropdown from "./AssignesDropdown";
@@ -193,7 +193,7 @@ const EditTaskDialog = () => {
               className="min-w-[10rem]"
             >
               {isPending ? (
-                <LoaderCircle className="animate-spin" />
+                <Loader className="animate-spin" />
               ) : (
                 "Edit Task"
               )}
