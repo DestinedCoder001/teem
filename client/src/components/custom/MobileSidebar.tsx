@@ -6,9 +6,13 @@ import "react-modern-drawer/dist/index.css";
 import { NavLink } from "react-router-dom";
 import WsSwitch from "./WsSwitch";
 import ChannelsCollapsible from "./ChannelsCollapsible";
+import useGetMe from "@/lib/hooks/useGetMe";
+import { Skeleton } from "../ui/skeleton";
 
 const MobileSideBar = () => {
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
+    const { isFetching } = useGetMe();
+
   return (
     <Drawer
       open={isOpen}
@@ -45,7 +49,7 @@ const MobileSideBar = () => {
         </div>
 
         <div className="my-8">
-          <WsSwitch />
+          {isFetching ? <Skeleton className="h-12 w-full" /> : <WsSwitch />}
         </div>
       </div>
     </Drawer>

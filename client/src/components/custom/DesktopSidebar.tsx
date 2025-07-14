@@ -2,8 +2,12 @@ import { navlinks } from "@/utils/constants";
 import { NavLink } from "react-router-dom";
 import WsSwitch from "./WsSwitch";
 import ChannelsCollapsible from "./ChannelsCollapsible";
+import useGetMe from "@/lib/hooks/useGetMe";
+import { Skeleton } from "../ui/skeleton";
 
 const DesktopSidebar = () => {
+  const { isFetching } = useGetMe();
+
   return (
     <aside className="hidden lg:block w-[220px] min-w-[220px] border-r border-slate-300 bg-slate-50/50">
       <div className="flex flex-col h-full justify-between w-full overflow-y-auto px-4 pb-4 no-scrollbar">
@@ -27,7 +31,7 @@ const DesktopSidebar = () => {
           ))}
         </div>
         <div className="my-4">
-          <WsSwitch />
+          {isFetching ? <Skeleton className="h-12 w-full" /> : <WsSwitch />}
         </div>
       </div>
     </aside>

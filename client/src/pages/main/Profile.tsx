@@ -12,6 +12,8 @@ import api from "@/lib/axios";
 import { toast } from "sonner";
 import type { CustomAxiosError, User } from "@/lib/types";
 import { AvatarImage } from "@radix-ui/react-avatar";
+import useGetMe from "@/lib/hooks/useGetMe";
+import ProfileSkeleton from "@/components/custom/ProfileSkeleton";
 
 type FormValues = {
   firstName: string;
@@ -21,6 +23,7 @@ type FormValues = {
 
 const UserProfile = () => {
   const { user, setUser } = useUserStore((state) => state);
+  const { isFetching } = useGetMe();
   const [isEditing, setIsEditing] = useState(false);
   const [isOnline] = useState(false);
   const { mutate, isPending } = useMutation({
@@ -83,6 +86,10 @@ const UserProfile = () => {
     }
     setIsEditing(false);
   };
+
+  if(isFetching) {
+    return <ProfileSkeleton />
+  }
 
   return (
     <div className="flex flex-col items-center">
@@ -186,11 +193,7 @@ const UserProfile = () => {
                     isPending ? "text-secondary/80" : "theme-text-gradient"
                   }`}
                 >
-                  {isPending ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "Save"
-                  )}
+                  {isPending ? <Loader className="animate-spin" /> : "Save"}
                 </Button>
               </>
             ) : (
