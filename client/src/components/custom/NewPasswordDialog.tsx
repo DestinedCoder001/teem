@@ -40,13 +40,13 @@ export function NewPasswordDialog({ open, onOpenChange }: Props) {
       return data;
     },
     onSuccess() {
-      toast("Password reset successfully. Log in with your new password", {
+      toast.success("Password reset successfully. Log in with your new password", {
         position: "top-center",
       });
       onOpenChange(false);
     },
     onError() {
-      toast("Password reset failed", {
+      toast.error("Password reset failed", {
         position: "top-center",
       });
     },
@@ -54,14 +54,14 @@ export function NewPasswordDialog({ open, onOpenChange }: Props) {
 
   const onSubmit = (data: { password: string; confirmPassword: string }) => {
     if (data.password !== data.confirmPassword) {
-      toast("Passwords do not match", { position: "top-center" });
+      toast.warning("Passwords do not match", { position: "top-center" });
       return;
     }
 
     if (email) {
       mutate({ email, newPassword: data.confirmPassword });
     } else {
-      toast("Email not provided", { position: "top-center" });
+      toast.warning("Email not provided", { position: "top-center" });
     }
   };
 

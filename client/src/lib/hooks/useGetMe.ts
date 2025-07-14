@@ -7,13 +7,13 @@ const useGetMe = () => {
     queryKey: ["get-me"],
     queryFn: async () => {
       const res = await api.get("/users/me");
-      return res.data.user as User;
+      return res.data;
     },
     retry: false,
     refetchOnWindowFocus: false,
   });
 
-  return { data: data as User, isSuccess };
+  return { user: data?.user as User, workspaces: data?.workspaces, isSuccess };
 };
 
 export default useGetMe;

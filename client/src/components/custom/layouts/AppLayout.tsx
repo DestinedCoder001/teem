@@ -1,13 +1,16 @@
 import { Link, Outlet } from "react-router-dom";
 import logo from "@/assets/teem.png";
-import { currentWsDetails, useUserStore, useUserWorkspaces } from "@/lib/store/userStore";
+import {
+  currentWsDetails,
+  useUserStore,
+  useUserWorkspaces,
+} from "@/lib/store/userStore";
 import { useEffect } from "react";
 import { UserIconDropdown } from "../UserIconDropdown";
 import DesktopSidebar from "@/components/custom/DesktopSidebar";
 import MobileSideBar from "../MobileSidebar";
 import { PanelLeft } from "lucide-react";
 import { useSidebarOpen } from "@/lib/store/uiStore";
-import useGetWs from "@/lib/hooks/useGetWs";
 import useGetMe from "@/lib/hooks/useGetMe";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import CreateChannelDialog from "../CreateChannelDialog";
@@ -16,29 +19,22 @@ const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
   const { setWorkspaces } = useUserWorkspaces((state) => state);
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
-  const { wsData, getWsSuccess } = useGetWs();
   const { setWorkspaceDetails } = currentWsDetails();
   const { currentWsData, getCurrentWsSuccess } = useGetWsDetails();
-  const { data, isSuccess } = useGetMe();
-
+  const { user, workspaces, isSuccess } = useGetMe();
 
   useEffect(() => {
     if (isSuccess) {
-      setUser(data);
+      setUser(user);
+      setWorkspaces(workspaces);
     }
-  }, [data, isSuccess, setUser]);
+  }, [user, isSuccess, setUser, workspaces, setWorkspaces]);
 
   useEffect(() => {
-    if (getWsSuccess) {
-      setWorkspaces(wsData);
-    }
-  }, [getWsSuccess, wsData, setWorkspaces]);
-
-  useEffect(() => {
-    if (getWsSuccess && getCurrentWsSuccess) {
+    if (isSuccess && getCurrentWsSuccess) {
       setWorkspaceDetails(currentWsData);
     }
-  }, [currentWsData, getCurrentWsSuccess, setWorkspaceDetails, getWsSuccess]);
+  }, [currentWsData, getCurrentWsSuccess, setWorkspaceDetails, isSuccess]);
 
   const toggleSidebar = () => {
     if (isOpen) return;

@@ -95,13 +95,13 @@ const EditTaskDialog = () => {
       },
       {
         onSuccess: () => {
-          toast("Task updated successfully", { position: "top-center" });
+          toast.success("Task updated successfully", { position: "top-center" });
           reset();
           setOpen(false);
         },
         onError: (err) => {
           const error = err as CustomAxiosError;
-          toast(error.response?.data.message || "Couldn't edit task", {
+          toast.error(error.response?.data.message || "Couldn't edit task", {
             position: "top-center",
           });
         },

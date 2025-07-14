@@ -30,7 +30,7 @@ const UserProfile = () => {
     },
     onSuccess: ({ data }: { data: User }) => {
       setIsEditing(false);
-      toast("Profile updated successfully", {
+      toast.error("Profile updated successfully", {
         position: "top-center",
       });
 
@@ -46,7 +46,7 @@ const UserProfile = () => {
     },
     onError: (err) => {
       const error = err as CustomAxiosError;
-      toast(error.response?.data.message || "Couldn't edit profile", {
+      toast.error(error.response?.data.message || "Couldn't edit profile", {
         position: "top-center",
       });
     },

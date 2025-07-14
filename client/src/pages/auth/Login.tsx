@@ -60,7 +60,7 @@ const Login = () => {
           } else {
             message = "Couldn't log in. Try again";
           }
-          toast(message, {
+          toast.error(message, {
             position: "top-center",
           });
         },

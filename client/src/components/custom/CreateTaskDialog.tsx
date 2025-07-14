@@ -73,13 +73,13 @@ const CreateTaskDialog = () => {
       },
       {
         onSuccess: () => {
-          toast("Task created successfully", { position: "top-center" });
+          toast.success("Task created successfully", { position: "top-center" });
           reset();
           setOpen(false);
         },
         onError: (err) => {
           const error = err as CustomAxiosError;
-          toast(error.response?.data.message || "Couldn't create task", {
+          toast.error(error.response?.data.message || "Couldn't create task", {
             position: "top-center",
           });
         },

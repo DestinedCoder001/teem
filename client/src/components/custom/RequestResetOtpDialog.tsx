@@ -41,12 +41,12 @@ export function RequestResetOtpDialog({ open, onOpenChange }: Props) {
       setEmail(data.email);
       onOpenChange(false);
       setOtpOpen();
-      toast("Code has been sent to your email.", {
+      toast.success("Code has been sent to your email.", {
         position: "top-center",
       });
     },
     onError(err: CustomAxiosError) {
-      toast(err.response?.data.message || "Couldn't request code.", {
+      toast.error(err.response?.data.message || "Couldn't request code.", {
         position: "top-center",
       });
     },

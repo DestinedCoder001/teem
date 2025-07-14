@@ -42,7 +42,7 @@ const CreateChannelDialog = () => {
       },
       {
         onSuccess: () => {
-          toast("Channel created successfully", {
+          toast.success("Channel created successfully", {
             position: "top-center",
           });
           setOpen(false);
@@ -50,7 +50,7 @@ const CreateChannelDialog = () => {
         },
         onError: (err) => {
           const error = err as CustomAxiosError;
-          toast(error.response?.data.message || "Couldn't create channel", {
+          toast.error(error.response?.data.message || "Couldn't create channel", {
             position: "top-center",
           });
         },

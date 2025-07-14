@@ -48,7 +48,7 @@ const SignUp = () => {
         } else {
           message = "Couldn't sign up. Try again";
         }
-        toast(message, {
+        toast.error(message, {
           position: "top-center",
         });
       },

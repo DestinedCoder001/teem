@@ -59,7 +59,7 @@ export default function OTPDialog({
           onError(err) {
             const error = err as CustomAxiosError;
             console.log(error);
-            toast("Counldn't sign up. Try again", {
+            toast.error("Counldn't sign up. Try again", {
               position: "top-center",
             });
           },
@@ -70,7 +70,7 @@ export default function OTPDialog({
         { code: otp, email },
         {
           onSuccess: (data: { message: string; email: string }) => {
-            toast("OTP verification successful", {
+            toast.success("OTP verification successful", {
               position: "top-center",
             });
             setEmail(data.email);
@@ -79,7 +79,7 @@ export default function OTPDialog({
           },
           onError(err) {
             const error = err as CustomAxiosError;
-            toast(error.response?.data.message || "Counldn't log in. Try again", {
+            toast.error(error.response?.data.message || "Counldn't log in. Try again", {
               position: "top-center",
             });
           },

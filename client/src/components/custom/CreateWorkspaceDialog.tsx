@@ -46,7 +46,7 @@ const CreateWorkspaceDialog = () => {
       {
         onSuccess: () => {
           console.log(wsData)
-          toast("Workspace created successfully", {
+          toast.success("Workspace created successfully", {
             position: "top-center",
           });
           setOpen(false);
@@ -54,7 +54,7 @@ const CreateWorkspaceDialog = () => {
         },
         onError: (err) => {
           const error = err as CustomAxiosError;
-          toast(error.response?.data.message || "Couldn't create workspace", {
+          toast.error(error.response?.data.message || "Couldn't create workspace", {
             position: "top-center",
           });
         },

@@ -9,13 +9,15 @@ import Channel from "../models/channel.model";
 import { Task } from "../models/task.model";
 import bcrypt from "bcrypt";
 
-
 const me = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  return res.status(200).json({ message: "Request successful", user: req.user });
-}
+  const workspaces = await Workspace.find({ users: req.user._id }).select(
+    "name"
+  );
+  return res.status(200).json({ user: req.user, workspaces });
+};
 
 const getUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -81,25 +83,23 @@ const deleteAccount = async (req: Request, res: Response) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  
   const userId = req.user._id;
-  
+
   if (!Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user id." });
   }
-  
+
   try {
     await connectDb();
     const user = await User.findOne({ _id: userId });
-    
+
     console.log(user._id.toString(), userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
-    
-    if (user.authProvider === "local") {   
+
+    if (user.authProvider === "local") {
       if (!password) {
         return res.status(400).json({ message: "Password is required" });
       }

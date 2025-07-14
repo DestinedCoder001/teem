@@ -31,7 +31,7 @@ const WsSwitch = () => {
   const { setChannelDetails } = currentChannelDetails((state) => state);
   const { setTasks } = useUserTasks((state) => state);
   const navigate = useNavigate();
-  if (!workspaces.length) return null;
+  if (!workspaces?.length) return null;
 
   const resetAndRedirect = () => {
     setWorkspaceDetails({

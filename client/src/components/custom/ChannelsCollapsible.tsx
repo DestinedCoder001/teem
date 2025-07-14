@@ -32,7 +32,7 @@ const ChannelsCollapsible = () => {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      disabled={!wsId || !workspaces.length}
+      disabled={!wsId || !workspaces?.length}
     >
       <CollapsibleTrigger className="w-full rounded-md">
         <div
