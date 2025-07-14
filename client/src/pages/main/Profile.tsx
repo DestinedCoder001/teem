@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader, Pencil, X } from "lucide-react";
+import { CameraIcon, Loader, Pencil, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useUserStore } from "@/lib/store/userStore";
 import CircleGradientWrapper from "@/components/custom/GradientWrapper";
@@ -14,6 +14,7 @@ import type { CustomAxiosError, User } from "@/lib/types";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import useGetMe from "@/lib/hooks/useGetMe";
 import ProfileSkeleton from "@/components/custom/ProfileSkeleton";
+import { useUpdateDp } from "@/lib/hooks/useUpdateDp";
 
 type FormValues = {
   firstName: string;
@@ -25,7 +26,11 @@ const UserProfile = () => {
   const { user, setUser } = useUserStore((state) => state);
   const { isFetching } = useGetMe();
   const [isEditing, setIsEditing] = useState(false);
-  const [isOnline] = useState(false);
+  const [isOnline] = useState(true);
+  const [img, setImg] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const { mutate: updateImg, isPending: imgUpdatePending } = useUpdateDp();
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: { firstName: string; lastName: string }) => {
       const { data } = await api.patch("/users/edit", payload);
@@ -33,7 +38,7 @@ const UserProfile = () => {
     },
     onSuccess: ({ data }: { data: User }) => {
       setIsEditing(false);
-      toast.error("Profile updated successfully", {
+      toast.success("Profile updated successfully", {
         position: "top-center",
       });
 
@@ -72,6 +77,33 @@ const UserProfile = () => {
     }
   }, [user, reset]);
 
+  const handleCamClick = () => {
+    if (imgUpdatePending) {
+      return;
+    }
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target?.files?.[0];
+    if (!file) return;
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImg(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  useEffect(() => {
+    if (img) {
+      updateImg({ file: img });
+    }
+  }, [img]);
+
   const onSubmit = (data: FormValues) => {
     mutate(data);
   };
@@ -87,38 +119,60 @@ const UserProfile = () => {
     setIsEditing(false);
   };
 
-  if(isFetching) {
-    return <ProfileSkeleton />
+  if (isFetching) {
+    return <ProfileSkeleton />;
   }
 
   return (
     <div className="flex flex-col items-center">
       <div className="w-full max-w-md bg-white overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
-          <CircleGradientWrapper
-            className={`p-0.5 relative rounded-full ${
-              !isOnline && "bg-none bg-slate-500"
-            }`}
-          >
-            <Avatar className="h-24 w-24">
-              <AvatarImage
-                className="bg-white"
-                src={user?.profilePicture}
-                alt={user?.firstName}
-              />
-              <AvatarFallback className="text-slate-600 text-3xl font-bold">
-                {user?.firstName?.[0]?.toUpperCase()}
-                {user?.lastName?.[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            {isOnline ? (
-              <span
-                className="absolute bottom-2 right-1/15 w-4 h-4 border-2 border-white rounded-full
+          <div className={`${isEditing && "relative"}`}>
+            <CircleGradientWrapper
+              className={`p-0.5 relative rounded-full ${
+                !isOnline && "bg-none bg-slate-500"
+              }`}
+            >
+              <Avatar
+                className={`h-24 w-24 ${imgUpdatePending && "animate-pulse"}`}
+              >
+                <AvatarImage
+                  className="bg-white object-cover object-center w-full"
+                  src={img || user?.profilePicture}
+                  alt={user?.firstName}
+                />
+                <AvatarFallback className="text-slate-600 text-3xl font-bold">
+                  {user?.firstName?.[0]?.toUpperCase()}
+                  {user?.lastName?.[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {isOnline ? (
+                <span
+                  className="absolute bottom-2 right-1/15 w-4 h-4 border-2 border-white rounded-full
                   bg-secondary
                 "
-              />
+                />
+              ) : null}
+            </CircleGradientWrapper>
+
+            {isEditing ? (
+              <>
+                <div
+                  className="p-2 absolute -right-10 bottom-1 bg-primary rounded-full cursor-pointer hover:scale-[105%] transition-all"
+                  onClick={handleCamClick}
+                >
+                  <CameraIcon className="text-white size-4" />
+                </div>
+                <input
+                  className="hidden"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  ref={inputRef}
+                />
+              </>
             ) : null}
-          </CircleGradientWrapper>
+          </div>
 
           <div
             className={`text-xs font-semibold px-3 py-1 rounded-full mb-4 mt-2 ${

@@ -27,14 +27,21 @@ export const UserIconDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="h-8 w-8 rounded-full cursor-pointer border border-slate-200">
-          <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
+          <AvatarImage
+            src={user?.profilePicture}
+            alt={user?.firstName}
+            className="object-cover object-center w-full"
+          />
           <AvatarFallback className="text-slate-600">
             {user?.firstName[0].toUpperCase() || ""}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-2 lg:mr-4" align="start">
-        <DropdownMenuItem className="cursor-pointer hover:bg-red-200 gap-2" onClick={() => navigate("/profile")}>
+        <DropdownMenuItem
+          className="cursor-pointer hover:bg-red-200 gap-2"
+          onClick={() => navigate("/profile")}
+        >
           <User className="w-4 h-4" />
           Profile
         </DropdownMenuItem>
