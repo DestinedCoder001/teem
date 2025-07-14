@@ -34,6 +34,7 @@ interface TaskCardProps {
   assignedTo: User;
   assignedBy: User;
   createdAt: Date;
+  isDue: boolean;
 }
 const TaskCard = ({
   id,
@@ -43,7 +44,8 @@ const TaskCard = ({
   dueDate,
   assignedTo,
   assignedBy,
-  createdAt
+  createdAt,
+  isDue,
 }: TaskCardProps) => {
   const { mutate, isPending } = useUpdateTaskStatus();
   const { mutate: deleteTask, isPending: deletePending } = useDeleteTask();
@@ -72,88 +74,94 @@ const TaskCard = ({
     dueDate,
     assignedTo,
     assignedBy,
-    createdAt
+    createdAt,
+    isDue,
   };
 
   return (
     <>
       <div
-        className="flex flex-col justify-between bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer"
+        className="flex flex-col justify-between bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer h-[16rem] lg:h-[17rem]"
         title={title}
         onClick={() => {
           setTask(taskDetails);
           setTaskDrawerOpen(true);
         }}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold theme-text-gradient">
-            {title?.length > 20 ? title.slice(0, 20) + "..." : title}
-          </h2>
-          <DropdownMenu>
-            {isPending || deletePending ? (
-              <Loader className="h-5 w-5 mr-2 mb-1 text-slate-500 animate-spin" />
-            ) : (
-              <>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal className="h-4 w-4 text-slate-500" />
-                  </Button>
-                </DropdownMenuTrigger>
-              </>
-            )}
-            <DropdownMenuContent
-              className="text-slate-600"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <DropdownMenuItem
-                onSelect={() => {
-                  setOpen(true);
-                  setTask(taskDetails);
-                }}
-                className="cursor-pointer group"
+        <div className="flex flex-col gap-y-2">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold theme-text-gradient">
+              {title?.length > 15 ? title.slice(0, 15) + "..." : title}
+            </h2>
+            <DropdownMenu>
+              {isPending || deletePending ? (
+                <Loader className="h-5 w-5 mr-2 mb-1 text-slate-500 animate-spin" />
+              ) : (
+                <>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                      <span className="sr-only">Open menu</span>
+                      <MoreHorizontal className="h-4 w-4 text-slate-500" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </>
+              )}
+              <DropdownMenuContent
+                className="text-slate-600"
+                onClick={(e) => e.stopPropagation()}
               >
-                <PenLine className="mr-2 h-4 w-4 group-hover:text-primary" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => handleTaskUpdate("completed")}
-                className="cursor-pointer group"
-              >
-                <CircleCheck className="mr-2 h-4 w-4 group-hover:text-green-500" />
-                Mark Complete
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => handleTaskUpdate("pending")}
-                className="cursor-pointer group"
-              >
-                <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500" />
-                Mark In Progress
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={handleDelete}
-                className="cursor-pointer group"
-              >
-                <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500" />
-                Delete Task
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <div className="mb-2 space-y-2">
-          <div className="flex items-center text-sm text-slate-500 font-[500]">
-            <ClipboardCheck className="h-4 w-4 mr-1" />
-            <span>Due {formatTaskDueDate(dueDate.toString())}</span>
+                <DropdownMenuItem
+                  onSelect={() => {
+                    setOpen(true);
+                    setTask(taskDetails);
+                  }}
+                  className="cursor-pointer group"
+                >
+                  <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => handleTaskUpdate("completed")}
+                  className="cursor-pointer group"
+                >
+                  <CircleCheck className="mr-2 h-4 w-4 group-hover:text-green-500 group-focus:text-green-500" />
+                  Mark Complete
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={() => handleTaskUpdate("pending")}
+                  className="cursor-pointer group"
+                >
+                  <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500 group-focus:text-orange-500" />
+                  Mark In Progress
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onSelect={handleDelete}
+                  className="cursor-pointer group"
+                >
+                  <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
+                  Delete Task
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
-          <p className="text-gray-700 text-xs font-[500] tracking-wide break-all">
-            {guidelines?.length > 100
-              ? guidelines.slice(0, 100) + "..."
-              : guidelines}
-          </p>
+          <div className="mb-2 space-y-2">
+            {dueDate && (
+              <div className="flex items-center text-sm text-slate-500 font-[500]">
+                <ClipboardCheck className="h-4 w-4 mr-1" />
+                <span>Due {formatTaskDueDate(dueDate.toString())}</span>
+              </div>
+            )}
+
+            <p className="text-gray-700 text-xs font-[500] tracking-wide break-all">
+              {guidelines?.length > 100
+                ? guidelines.slice(0, 100) + "..."
+                : guidelines}
+            </p>
+          </div>
         </div>
-        <div className="space-y-2 mt-4">
+
+        <div className="space-y-2 lg:space-y-4 mt-4">
           <div className="flex items-center gap-x-3">
             <Avatar>
               <AvatarImage
@@ -184,7 +192,7 @@ const TaskCard = ({
               <CircleCheck className="w-4 h-4 shrink-0" fill="#7bf1a8" />
               Completed
             </div>
-          ) : new Date(dueDate).getTime() < Date.now() ? (
+          ) : isDue ? (
             <div className="flex gap-x-1 items-center w-max text-xs bg-red-100 rounded-full px-4 py-1 text-red-600 font-[500]">
               <TimerOff className="w-4 h-4 shrink-0" fill="#fca5a5" />
               Due

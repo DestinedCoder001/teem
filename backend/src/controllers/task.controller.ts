@@ -41,7 +41,7 @@ const createTask = async (req: Request, res: Response) => {
   try {
     await connectDb();
     const workspace = await Workspace.findOne({ _id: workspaceId });
-    const isUserInWorkspace = workspace.users.includes(req.user.id);
+    const isUserInWorkspace = workspace.users.includes(req.user._id);
     const isAssigneeInWorkspace = workspace.users.includes(assignedTo);
 
     if (!isUserInWorkspace) {
@@ -55,7 +55,7 @@ const createTask = async (req: Request, res: Response) => {
     const newTask = await Task.create({
       title,
       guidelines,
-      assignedBy: req.user.id,
+      assignedBy: req.user._id,
       assignedTo,
       workspace: workspace._id,
       dueDate,
@@ -85,13 +85,20 @@ const getTasks = async (req: Request, res: Response) => {
   try {
     await connectDb();
     const tasks = await Task.find({
-      $or: [{ assignedBy: req.user.id }, { assignedTo: req.user.id }],
+      $or: [{ assignedBy: req.user._id }, { assignedTo: req.user._id }],
       workspace: workspaceId,
     }).populate({
       path: "assignedTo assignedBy",
       select: "firstName lastName email profilePicture",
     });
-    res.status(200).json({ data: tasks });
+    const modTasks = tasks.map((task) => {
+      const taskObj = task.toObject();
+      taskObj.isDue =
+        task.status === "pending" && new Date(task.dueDate) < new Date();
+      return taskObj;
+    });
+
+    res.status(200).json({ data: modTasks });
   } catch (error: any) {
     console.log("Error in getting tasks: ", error);
     res.status(500).json(error.message);
@@ -129,7 +136,7 @@ const editTask = async (req: Request, res: Response) => {
     await connectDb();
 
     const task = await Task.findOneAndUpdate(
-      { _id: taskId, assignedBy: req.user.id },
+      { _id: taskId, assignedBy: req.user._id },
       { title, guidelines, dueDate, assignedTo }
     );
 
@@ -172,8 +179,8 @@ const updateTaskStatus = async (req: Request, res: Response) => {
     }
 
     if (
-      task.assignedTo.toString() !== req.user.id &&
-      task.assignedBy.toString() !== req.user.id
+      task.assignedTo.toString() !== req.user._id &&
+      task.assignedBy.toString() !== req.user._id
     ) {
       return res.status(403).json({ message: "Action not permitted." });
     }
@@ -207,7 +214,7 @@ const deleteTask = async (req: Request, res: Response) => {
 
     const task = await Task.findOneAndDelete({
       _id: taskId,
-      assignedBy: req.user.id,
+      assignedBy: req.user._id,
     });
 
     if (!task) {

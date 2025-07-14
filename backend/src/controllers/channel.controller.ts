@@ -32,7 +32,7 @@ const createChannel = async (req: Request, res: Response) => {
     }
 
     const isUserInWorkspace = workspace.users.find((user: User) => {
-      return user._id.toString() === req.user?.id;
+      return user._id.toString() === req.user?._id;
     });
 
     if (!isUserInWorkspace) {
@@ -43,8 +43,8 @@ const createChannel = async (req: Request, res: Response) => {
       name,
       description,
       workspace: workspaceId,
-      createdBy: req.user.id,
-      members: [req.user.id],
+      createdBy: req.user._id,
+      members: [req.user._id],
     });
     await workspace.channels.push(newChannel._id);
     await workspace.save();
@@ -86,7 +86,7 @@ const editChannelDetails = async (req: Request, res: Response) => {
       {
         _id: channelId,
         workspace: workspaceId,
-        members: { $in: [req.user.id] },
+        members: { $in: [req.user._id] },
       },
       {
         name,
@@ -200,7 +200,7 @@ const removeMembers = async (req: Request, res: Response) => {
       _id: channelId,
       workspace: workspaceId,
     });
-    if (channel.createdBy.toString() !== req.user.id) {
+    if (channel.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted" });
     }
 
@@ -300,7 +300,7 @@ const joinChannel = async (req: Request, res: Response) => {
 
     const isUserInWorkspace = await Workspace.findOne({
       _id: workspaceId,
-      users: req.user.id,
+      users: req.user._id,
     });
 
     if (!isUserInWorkspace) {
@@ -316,7 +316,7 @@ const joinChannel = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Channel not found" });
     }
 
-    if (channel.members.includes(req.user.id)) {
+    if (channel.members.includes(req.user._id)) {
       return res.status(400).json({ message: "User already in channel" });
     }
 
@@ -325,7 +325,7 @@ const joinChannel = async (req: Request, res: Response) => {
         _id: channelId,
         workspace: workspaceId,
       },
-      { $addToSet: { members: req.user.id } },
+      { $addToSet: { members: req.user._id } },
       { new: true }
     );
 
@@ -364,9 +364,9 @@ const leaveChannel = async (req: Request, res: Response) => {
       {
         _id: channelId,
         workspace: workspaceId,
-        members: { $in: [req.user.id] },
+        members: { $in: [req.user._id] },
       },
-      { $pull: { members: req.user.id } },
+      { $pull: { members: req.user._id } },
       { new: true }
     );
 
@@ -408,7 +408,7 @@ const deleteChannel = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Channel not found" });
     }
 
-    if (channel.createdBy.toString() !== req.user.id) {
+    if (channel.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 

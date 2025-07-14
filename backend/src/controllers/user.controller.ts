@@ -56,7 +56,7 @@ const editUserDetails = async (req: Request, res: Response) => {
     await connectDb();
 
     const updatedUser = await User.findOneAndUpdate(
-      { _id: req.user.id },
+      { _id: req.user._id },
       {
         firstName,
         lastName,
@@ -82,7 +82,7 @@ const deleteAccount = async (req: Request, res: Response) => {
   }
 
   
-  const userId = req.user.id;
+  const userId = req.user._id;
   
   if (!Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user id." });

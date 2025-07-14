@@ -5,7 +5,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: {
-        id: string;
+        _id: string;
         email: string;
         firstName: string;
         lastName: string;
@@ -22,7 +22,7 @@ interface SignUpBody {
 
 interface JwtPayload {
   UserInfo: {
-    id: string;
+    _id: string;
     email: string;
     firstName: string;
     lastName: string;

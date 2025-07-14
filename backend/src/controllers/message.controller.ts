@@ -31,12 +31,12 @@ const sendMessage = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Channel not found" });
     }
 
-    if (!channel.members.includes(req.user.id)) {
+    if (!channel.members.includes(req.user._id)) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
     const newMessage = await Message.create({
-      sender: req.user.id,
+      sender: req.user._id,
       channel: channelId,
       content: message,
       workspace: workspaceId,
@@ -71,7 +71,7 @@ const editMessage = async (req: Request, res: Response) => {
   try {
     await connectDb();
     const updatedMessage = await Message.findOneAndUpdate(
-      { _id: messageId, sender: req.user.id },
+      { _id: messageId, sender: req.user._id },
       { content: message, edited: true }
     );
     if (!updatedMessage) {
@@ -103,7 +103,7 @@ const deleteMessage = async (req: Request, res: Response) => {
     const deletedMessage = await Message.replaceOne(
       {
         _id: messageId,
-        sender: req.user.id,
+        sender: req.user._id,
       },
       { deleted: true }
     );

@@ -36,7 +36,7 @@ const TaskSheet = () => {
               <CircleCheck className="w-5 h-5 shrink-0" fill="#7bf1a8" />
               Completed
             </div>
-          ) : new Date(task?.dueDate as Date).getTime() < Date.now() ? (
+          ) : task?.isDue ? (
             <div className="flex gap-x-1 items-center mx-auto mt-2 w-max bg-red-100 rounded-full px-4 py-1 text-red-600 font-[500]">
               <TimerOff className="w-5 h-5 shrink-0" fill="#fca5a5" />
               Due

@@ -26,8 +26,8 @@ const createWs = async (req: Request, res: Response) => {
     await connectDb();
     const newWorkSpace = await Workspace.create({
       name,
-      createdBy: req.user.id,
-      users: [req.user.id],
+      createdBy: req.user._id,
+      users: [req.user._id],
     });
     res.status(201).json({
       message: "Workspace created successfully",
@@ -47,7 +47,7 @@ const getUserWorkspaces = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspaces = await Workspace.find({ users: req.user.id }).select("name");
+    const workspaces = await Workspace.find({ users: req.user._id }).select("name");
     res.status(200).json({ data: workspaces });
   } catch (error: any) {
     console.log("Error in getting user workspaces: ", error);
@@ -119,7 +119,7 @@ const sendInvite = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invite already sent" });
     }
 
-    if (receiver._id.toString() === req.user.id) {
+    if (receiver._id.toString() === req.user._id) {
       return res.status(400).json({ message: "You cannot invite yourself" });
     }
 
@@ -129,7 +129,7 @@ const sendInvite = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Workspace not found" });
     }
 
-    if (workspace.createdBy.toString() !== req.user.id) {
+    if (workspace.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
@@ -142,7 +142,7 @@ const sendInvite = async (req: Request, res: Response) => {
     }
 
     await WorkspaceInvite.create({
-      sender: req.user.id,
+      sender: req.user._id,
       receiver: receiver._id,
       workspace: workspace._id,
     });
@@ -170,7 +170,7 @@ const acceptInvite = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Invite not found" });
     }
 
-    if (invite.receiver.toString() === req.user.id) {
+    if (invite.receiver.toString() === req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
@@ -179,7 +179,7 @@ const acceptInvite = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Workspace not found" });
     }
 
-    if (workspace.createdBy.toString() === req.user.id) {
+    if (workspace.createdBy.toString() === req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
@@ -230,7 +230,7 @@ const removeUser = async (req: Request, res: Response) => {
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
     }
-    if (workspace.createdBy.toString() !== req.user.id) {
+    if (workspace.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
     if (email === req.user.email) {
@@ -275,7 +275,7 @@ const deleteWs = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Workspace not found" });
     }
 
-    if (workspace.createdBy.toString() !== req.user.id) {
+    if (workspace.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 

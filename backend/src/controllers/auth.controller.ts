@@ -186,7 +186,7 @@ const handleRefresh = async (req: Request, res: Response) => {
         const user = await User.findById(payload.id);
         if (!user) return res.status(403).json({ message: "No user found" });
         const userDetails = {
-          id: user._id.toString(),
+          _id: user._id.toString(),
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,

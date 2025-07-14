@@ -173,8 +173,8 @@ const EditTaskDialog = () => {
                     message: "Guidelines must be at least 10 characters",
                   },
                   maxLength: {
-                    value: 200,
-                    message: "Guidelines must be less than 200 characters",
+                    value: 1000,
+                    message: "Guidelines must be less than 1000 characters",
                   },
                 })}
               />

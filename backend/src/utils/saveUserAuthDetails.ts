@@ -4,7 +4,7 @@ import { User } from "./types";
 
 export const saveUserAuthDetails = (res: Response, user: User) => {
   const userDetails = {
-    id: user._id.toString(),
+    _id: user._id.toString(),
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,

@@ -1,5 +1,6 @@
 import {
   currentWs,
+  useUserStore,
   useUserTasks,
   useUserWorkspaces,
 } from "@/lib/store/userStore";
@@ -7,12 +8,21 @@ import TaskCard from "@/components/custom/TaskCard";
 import { Button } from "@/components/ui/button";
 import { useCreateTaskDialogOpen } from "@/lib/store/uiStore";
 import CreateTaskDialog from "@/components/custom/CreateTaskDialog";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import useGetTasks from "@/lib/hooks/useGetTasks";
 import TasksLoading from "@/components/custom/TasksLoading";
 import EditTaskDialog from "@/components/custom/EditTaskDialog";
 import TaskSheet from "@/components/custom/TaskSheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { TaskPayload } from "@/lib/types";
+import TaskStatusFilter from "@/components/custom/TaskStatusFilter";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -21,12 +31,44 @@ const Tasks = () => {
   const { getCurrentWsSuccess } = useGetWsDetails();
   const { tasksData, getTasksSuccess, isPending } = useGetTasks();
   const { tasks, setTasks } = useUserTasks((state) => state);
+  const { user } = useUserStore((state) => state);
+
+  const [filter, setFilter] = useState("all");
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [filteredTasks, setFilteredTasks] = useState<TaskPayload[]>([]);
 
   useEffect(() => {
     if (getCurrentWsSuccess && getTasksSuccess) {
       setTasks(tasksData);
     }
   }, [getCurrentWsSuccess, getTasksSuccess, setTasks, tasksData]);
+
+  const filterTasks = () => {
+    let res = tasks;
+
+    if (filter === "to_me") {
+      res = res.filter((task) => task?.assignedTo?._id === user?._id);
+    } else if (filter === "by_me") {
+      res = res.filter((task) => task?.assignedBy?._id === user?._id);
+    }
+
+    if (statusFilters.length > 0) {
+      res = res.filter((task) => {
+        if (task.status === "pending" && task.isDue) {
+          return statusFilters.includes("due");
+        }
+        return statusFilters.includes(task.status);
+      });
+    }
+
+    setFilteredTasks(res);
+  };
+
+  console.log(statusFilters);
+
+  useEffect(() => {
+    filterTasks();
+  }, [filter, statusFilters, tasks]);
 
   if (wsId && isPending) {
     return <TasksLoading />;
@@ -35,7 +77,7 @@ const Tasks = () => {
   return (
     <>
       <div className="p-4 h-auto">
-        <div className="flex justify-end mb-4">
+        <div className="flex gap-x-4 justify-end">
           <Button
             variant="ghost"
             disabled={!wsId || !workspaces.length}
@@ -46,9 +88,29 @@ const Tasks = () => {
           </Button>
         </div>
 
-        {tasks.length > 0 ? (
+        <div className="flex justify-between md:justify-end md:gap-x-4 my-4">
+          <TaskStatusFilter
+            filters={statusFilters}
+            setFilters={setStatusFilters}
+          />
+          <Select
+            onValueChange={(value) => setFilter(value)}
+            defaultValue="all"
+          >
+            <SelectTrigger className="w-[180px] text-slate-700">
+              <SelectValue placeholder="Assigned by" />
+            </SelectTrigger>
+            <SelectContent className="text-slate-700">
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="to_me">Assigned to me</SelectItem>
+              <SelectItem value="by_me">Assigned by me</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {filteredTasks?.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tasks.map(
+            {filteredTasks?.map(
               ({
                 title,
                 _id,
@@ -57,9 +119,11 @@ const Tasks = () => {
                 assignedTo,
                 status,
                 dueDate,
-                createdAt
+                createdAt,
+                isDue,
               }) => (
                 <TaskCard
+                  isDue={isDue}
                   key={_id}
                   id={_id}
                   title={title}
