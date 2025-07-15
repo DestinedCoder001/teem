@@ -133,14 +133,17 @@ const UserProfile = () => {
                 !isOnline && "bg-none bg-slate-500"
               }`}
             >
-              <Avatar
-                className={`h-24 w-24 ${imgUpdatePending && "animate-pulse"}`}
-              >
+              <Avatar className="h-24 w-24">
                 <AvatarImage
-                  className="bg-white object-cover object-center w-full"
+                  className={`bg-white object-cover object-center w-full ${
+                    imgUpdatePending && "grayscale-75 relative"
+                  }`}
                   src={img || user?.profilePicture}
                   alt={user?.firstName}
                 />
+                {imgUpdatePending && (
+                  <Loader className="animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white" />
+                )}
                 <AvatarFallback className="text-slate-600 text-3xl font-bold">
                   {user?.firstName?.[0]?.toUpperCase()}
                   {user?.lastName?.[0]?.toUpperCase()}
@@ -246,6 +249,7 @@ const UserProfile = () => {
                   className={`min-w-[5rem] ${
                     isPending ? "text-secondary/80" : "theme-text-gradient"
                   }`}
+                  disabled={isPending || imgUpdatePending}
                 >
                   {isPending ? <Loader className="animate-spin" /> : "Save"}
                 </Button>
