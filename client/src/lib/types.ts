@@ -26,6 +26,7 @@ export type WorkspacePayload = {
   users: User[];
   createdBy: string;
   channels: { name: string; description: string; _id: string }[];
+  profilePicture: string;
 };
 
 export type ChannelPayload = {

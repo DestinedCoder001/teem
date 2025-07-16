@@ -136,7 +136,7 @@ const UserProfile = () => {
               <Avatar className="h-24 w-24">
                 <AvatarImage
                   className={`bg-white object-cover object-center w-full ${
-                    imgUpdatePending && "grayscale-75 relative"
+                    imgUpdatePending && "grayscale-75"
                   }`}
                   src={img || user?.profilePicture}
                   alt={user?.firstName}

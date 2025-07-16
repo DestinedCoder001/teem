@@ -14,7 +14,7 @@ const me = async (req: Request, res: Response) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
   const workspaces = await Workspace.find({ users: req.user._id }).select(
-    "name"
+    "name profilePicture"
   );
   return res.status(200).json({ user: req.user, workspaces });
 };

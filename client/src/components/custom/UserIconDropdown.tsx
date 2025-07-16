@@ -39,18 +39,21 @@ export const UserIconDropdown = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mr-2 lg:mr-4" align="start">
         <DropdownMenuItem
-          className="cursor-pointer hover:bg-red-200 gap-2"
+          className="cursor-pointer text-slate-600 font-medium gap-2"
           onClick={() => navigate("/profile")}
         >
           <User className="w-4 h-4" />
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer hover:bg-red-200 gap-2">
+        <DropdownMenuItem
+          className="cursor-pointer text-slate-600 font-medium gap-2"
+          onClick={() => navigate("/settings")}
+        >
           <Settings className="w-4 h-4" />
           Settings
         </DropdownMenuItem>
         <DropdownMenuItem
-          className="cursor-pointer hover:bg-red-200 gap-2"
+          className="cursor-pointer text-slate-600 font-medium gap-2"
           onClick={handleLogout}
         >
           <LogOut className="w-4 h-4" />

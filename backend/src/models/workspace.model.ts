@@ -5,10 +5,11 @@ const workspaceSchema = new Schema(
     name: { type: String, required: true },
     users: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
-    channels: {type: [Schema.Types.ObjectId], ref: "Channel", default: []},
+    channels: { type: [Schema.Types.ObjectId], ref: "Channel", default: [] },
+    profilePicture: { type: String, default: "" },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

@@ -12,8 +12,10 @@ const useUserStore = create<UserState>((set) => ({
 }));
 
 const useUserWorkspaces = create<{
-  workspaces: { _id: string; name: string }[];
-  setWorkspaces: (workspaces: { _id: string; name: string }[]) => void;
+  workspaces: { _id: string; name: string; profilePicture: string }[];
+  setWorkspaces: (
+    workspaces: { _id: string; name: string; profilePicture: string }[]
+  ) => void;
 }>((set) => ({
   workspaces: [],
   setWorkspaces: (workspaces) => set({ workspaces }),
@@ -48,6 +50,7 @@ const currentWsDetails = create<
   users: [],
   createdBy: "",
   channels: [],
+  profilePicture: "",
   setWorkspaceDetails: (details: WorkspacePayload) => set(details),
 }));
 

@@ -5,7 +5,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDown, LogOut } from "lucide-react";
 import {
@@ -27,7 +27,9 @@ const WsSwitch = () => {
     signOut,
   } = currentWs((state) => state);
   const queryClient = useQueryClient();
-  const { setWorkspaceDetails } = currentWsDetails((state) => state);
+  const { setWorkspaceDetails, profilePicture } = currentWsDetails(
+    (state) => state
+  );
   const { setChannelDetails } = currentChannelDetails((state) => state);
   const { setTasks } = useUserTasks((state) => state);
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ const WsSwitch = () => {
       users: [],
       createdBy: "",
       channels: [],
+      profilePicture: "",
     });
     setChannelDetails({
       name: "",
@@ -65,7 +68,6 @@ const WsSwitch = () => {
     resetAndRedirect();
   };
 
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -77,6 +79,11 @@ const WsSwitch = () => {
           <div className="flex items-center space-x-2">
             {wsId && (
               <Avatar className="h-8 w-8 rounded-md border border-primary">
+                <AvatarImage
+                  src={profilePicture}
+                  alt={currentWsName}
+                  className="object-cover object-center w-full"
+                />
                 <AvatarFallback className="rounded-none">
                   {currentWsName[0]?.toUpperCase() || "W"}
                 </AvatarFallback>
@@ -104,6 +111,11 @@ const WsSwitch = () => {
                 ws._id === wsId ? "border-primary" : "border-slate-200"
               }`}
             >
+              <AvatarImage
+                src={ws.profilePicture}
+                alt={ws.name}
+                className="object-cover object-center w-full"
+              />
               <AvatarFallback className="rounded-none">
                 {ws.name[0]?.toUpperCase()}
               </AvatarFallback>
