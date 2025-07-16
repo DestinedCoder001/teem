@@ -4,6 +4,7 @@ import {
   type UserState,
   type ChannelPayload,
   type TaskPayload,
+  type User,
 } from "../types";
 
 const useUserStore = create<UserState>((set) => ({
@@ -47,6 +48,7 @@ const currentWsDetails = create<
   }
 >((set) => ({
   name: "",
+  _id: "",
   users: [],
   createdBy: "",
   channels: [],
@@ -80,6 +82,14 @@ const currentEditingTask = create<{
   setTask: (task) => set({ task }),
 }));
 
+const userToBeRemoved = create<{
+  user: User | null;
+  setUser: (user: User | null) => void;
+}>((set) => ({
+  user: null,
+  setUser: (user) => set({ user }),
+}));
+
 export {
   useUserWorkspaces,
   currentWs,
@@ -88,4 +98,5 @@ export {
   currentChannelDetails,
   useUserTasks,
   currentEditingTask,
+  userToBeRemoved,
 };

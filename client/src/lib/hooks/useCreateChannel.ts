@@ -7,7 +7,7 @@ export const useCreateChannel = () => {
 
   return useMutation({
     mutationFn: async (payload: { name: string, description: string }) => {
-      const { data } = await api.post(`/${wsId}/channels/create`, payload);
+      const { data } = await api.post(`/workspaces/${wsId}/create`, payload);
       return data;
     },
   });

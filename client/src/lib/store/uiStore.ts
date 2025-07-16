@@ -40,6 +40,13 @@ const useEditTaskDialogOpen = create<{
   setOpen: (open) => set({ isOpen: open }),
 }));
 
+const useRemoveAlertOpen = create<{
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+}>((set) => ({
+  isOpen: false,
+  setOpen: (open) => set({ isOpen: open }),
+}));
 const useTaskSheetOpen = create<{
   isOpen: boolean;
   setOpen: (open: boolean) => void;
@@ -55,4 +62,5 @@ export {
   useCreateTaskDialogOpen,
   useEditTaskDialogOpen,
   useTaskSheetOpen,
+  useRemoveAlertOpen,
 };

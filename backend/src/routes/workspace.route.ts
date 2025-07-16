@@ -28,7 +28,7 @@ router.post("/:workspaceId/accept-invite", (req: Request, res: Response) => {
     acceptInvite(req, res);
 });
 
-router.post("/:workspaceId/remove-user", emailValidation, (req: Request, res: Response) => {
+router.post("/:workspaceId/remove-user", (req: Request, res: Response) => {
     removeUser(req, res);
 });
 

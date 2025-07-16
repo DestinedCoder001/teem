@@ -22,6 +22,7 @@ export type UserState = {
 };
 
 export type WorkspacePayload = {
+  _id: string;
   name: string;
   users: User[];
   createdBy: string;

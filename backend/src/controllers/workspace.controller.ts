@@ -222,26 +222,28 @@ const acceptInvite = async (req: Request, res: Response) => {
 };
 
 const removeUser = async (req: Request, res: Response) => {
-  const validationResults = validationResult(req);
-
-  const { workspaceId } = req.params;
-  if (!Types.ObjectId.isValid(workspaceId)) {
-    return res.status(400).json({ message: "Invalid workspace id" });
-  }
-
-  if (!validationResults.isEmpty()) {
-    return res.status(400).json({
-      results: validationResults.array(),
-    });
-  }
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+  const { workspaceId } = req.params;
+  const { userId } = req.body;
+
+  if (!workspaceId || !userId) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  if (!Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user id" });
+  }
+
 
   try {
     await connectDb();
-    const { email } = matchedData(req);
 
     const workspace = await Workspace.findOne({ _id: workspaceId }).populate(
       "users"
@@ -252,13 +254,14 @@ const removeUser = async (req: Request, res: Response) => {
     if (workspace.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
-    if (email === req.user.email) {
+    if (userId === req.user._id) {
       return res.status(400).json({ message: "You cannot remove yourself" });
     }
 
     const userToBeRemoved = workspace.users.find(
-      (user: UserType) => user.email === email
+      (user: UserType) => user._id.toString() === userId
     );
+
     if (!userToBeRemoved) {
       return res.status(400).json({ message: "User not in workspace" });
     }
