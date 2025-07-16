@@ -61,8 +61,8 @@ const WorkspaceSettings = () => {
       <p className="text-slate-600 my-1 text-sm">
         Manage your workspace settings and members.
       </p>
-      <div className="grid grid-cols-8 gap-x-4 my-4 h-[18rem]">
-        <div className="space-y-10 col-span-5 border border-slate-300 p-4 rounded-lg">
+      <div className="flex flex-col gap-y-4 md:grid md:grid-cols-2 xl:grid-cols-8 md:gap-x-4 my-4 lg:h-[18rem]">
+        <div className="space-y-10 md:col-span-1 xl:col-span-5 border border-slate-300 p-4 rounded-lg">
           <div className="flex flex-col items-center gap-4">
             <Avatar className="size-18 rounded-md border font-bold text-lg">
               <AvatarImage
@@ -112,7 +112,7 @@ const WorkspaceSettings = () => {
           </div>
         </div>
 
-        <div className="col-span-3 border border-slate-300 rounded-lg overflow-hidden">
+        <div className="md:col-span-1 xl:col-span-3 border border-slate-300 rounded-lg overflow-hidden h-[20rem] lg:h-auto">
           <div className="border-b border-slate-300 p-4 flex justify-between items-center">
             <h2 className="font-medium text-gray-700">Members</h2>
             {!isManagingUsers && (
