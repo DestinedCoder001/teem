@@ -58,7 +58,7 @@ const TaskSheet = () => {
 
         {task?.createdAt && (
           <div className="my-4 text-slate-600 font-medium break-words text-left p-4 text-sm">
-            <p className="bg-slate-100 rounded-md text-center py-2">
+            <p className="bg-slate-100 rounded-md text-center p-2">
               Assigned by{" "}
               <span className="font-semibold text-slate-700">
                 {task?.assignedBy.firstName} {task?.assignedBy.lastName}

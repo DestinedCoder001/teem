@@ -85,7 +85,7 @@ const getWsDetails = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspace = await Workspace.findById(workspaceId)
+    const workspace = await Workspace.findOne({_id: workspaceId, users: [req.user._id]})
       .populate({
         path: "users",
         select: "firstName lastName email createdAt profilePicture",
@@ -143,7 +143,7 @@ const sendInvite = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "You cannot invite yourself" });
     }
 
-    const workspace = await Workspace.findOne({ _id: workspaceId });
+    const workspace = await Workspace.findOne({ _id: workspaceId, users: [req.user._id] });
 
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
@@ -245,7 +245,7 @@ const removeUser = async (req: Request, res: Response) => {
   try {
     await connectDb();
 
-    const workspace = await Workspace.findOne({ _id: workspaceId }).populate(
+    const workspace = await Workspace.findOne({ _id: workspaceId, users: [req.user._id] }).populate(
       "users"
     );
     if (!workspace) {

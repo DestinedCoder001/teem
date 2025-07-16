@@ -8,6 +8,7 @@ const useGetTasks = () => {
     data: tasksData,
     isSuccess: getTasksSuccess,
     isPending,
+    error
   } = useQuery({
     queryKey: ["get-user-tasks", wsId],
     queryFn: async () => {
@@ -17,7 +18,7 @@ const useGetTasks = () => {
     retry: false,
     refetchOnWindowFocus: false,
   });
-  return { tasksData, getTasksSuccess, isPending };
+  return { tasksData, getTasksSuccess, isPending, error };
 };
 
 export default useGetTasks;

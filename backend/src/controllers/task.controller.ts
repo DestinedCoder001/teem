@@ -40,7 +40,7 @@ const createTask = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspace = await Workspace.findOne({ _id: workspaceId });
+    const workspace = await Workspace.findOne({ _id: workspaceId, users: [req.user._id] });
     const isUserInWorkspace = workspace.users.includes(req.user._id);
     const isAssigneeInWorkspace = workspace.users.includes(assignedTo);
 
@@ -84,6 +84,10 @@ const getTasks = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
+    const workspace = await Workspace.findOne({ _id: workspaceId, users: [req.user._id] });
+    if (!workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
     const tasks = await Task.find({
       $or: [{ assignedBy: req.user._id }, { assignedTo: req.user._id }],
       workspace: workspaceId,

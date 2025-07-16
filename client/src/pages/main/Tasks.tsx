@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { useCreateTaskDialogOpen } from "@/lib/store/uiStore";
 import CreateTaskDialog from "@/components/custom/CreateTaskDialog";
 import { useEffect, useState } from "react";
-import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import useGetTasks from "@/lib/hooks/useGetTasks";
 import TasksLoading from "@/components/custom/TasksLoading";
 import EditTaskDialog from "@/components/custom/EditTaskDialog";
@@ -23,13 +22,14 @@ import {
 } from "@/components/ui/select";
 import type { TaskPayload } from "@/lib/types";
 import TaskStatusFilter from "@/components/custom/TaskStatusFilter";
+import AppError from "@/components/custom/AppError";
+import type { AxiosError } from "axios";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
   const { wsId } = currentWs((state) => state);
   const { setOpen } = useCreateTaskDialogOpen((state) => state);
-  const { getCurrentWsSuccess } = useGetWsDetails();
-  const { tasksData, getTasksSuccess, isPending } = useGetTasks();
+  const { tasksData, getTasksSuccess, isPending, error } = useGetTasks();
   const { tasks, setTasks } = useUserTasks((state) => state);
   const { user } = useUserStore((state) => state);
 
@@ -38,10 +38,10 @@ const Tasks = () => {
   const [filteredTasks, setFilteredTasks] = useState<TaskPayload[]>([]);
 
   useEffect(() => {
-    if (getCurrentWsSuccess && getTasksSuccess) {
+    if (getTasksSuccess) {
       setTasks(tasksData);
     }
-  }, [getCurrentWsSuccess, getTasksSuccess, setTasks, tasksData]);
+  }, [getTasksSuccess, setTasks, tasksData]);
 
   const filterTasks = () => {
     let res = tasks;
@@ -64,14 +64,19 @@ const Tasks = () => {
     setFilteredTasks(res);
   };
 
-  console.log(statusFilters);
-
   useEffect(() => {
     filterTasks();
   }, [filter, statusFilters, tasks]);
 
   if (wsId && isPending) {
     return <TasksLoading />;
+  }
+
+    if (error) {
+    const err = error as AxiosError;
+    if (err.status === 404) {
+      return <AppError />;
+    }
   }
 
   return (
@@ -137,7 +142,7 @@ const Tasks = () => {
               )
             )}
           </div>
-        ) : getCurrentWsSuccess && getTasksSuccess ? (
+        ) : getTasksSuccess ? (
           <div className="text-center text-slate-600 h-full w-full flex justify-center items-center">
             No tasks found
           </div>
