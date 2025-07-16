@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { acceptInvite, createWs, deleteWs, getWsDetails, removeUser, sendInvite } from "../controllers/workspace.controller";
+import { acceptInvite, createWs, deleteWs, editWsName, getWsDetails, removeUser, sendInvite } from "../controllers/workspace.controller";
 import { workspaceCreateValidation } from "../lib/validations/worskspace.validation";
 import { emailValidation } from "../lib/validations/auth.validation";
 
@@ -7,6 +7,10 @@ const router = Router();
 
 router.post("/create", workspaceCreateValidation, (req: Request, res: Response) => {
     createWs(req, res);
+});
+
+router.patch("/edit-name", (req: Request, res: Response) => {
+    editWsName(req, res);
 });
 
 router.get("/:workspaceId", (req: Request, res: Response) => {

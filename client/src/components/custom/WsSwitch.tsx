@@ -22,12 +22,11 @@ const WsSwitch = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
   const {
     wsId,
-    name: currentWsName,
     setCurrentWs,
     signOut,
   } = currentWs((state) => state);
   const queryClient = useQueryClient();
-  const { setWorkspaceDetails, profilePicture } = currentWsDetails(
+  const { setWorkspaceDetails, profilePicture, name: currentWsName } = currentWsDetails(
     (state) => state
   );
   const { setChannelDetails } = currentChannelDetails((state) => state);

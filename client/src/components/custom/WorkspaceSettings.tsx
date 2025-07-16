@@ -7,6 +7,7 @@ import { currentWs, currentWsDetails } from "@/lib/store/userStore";
 import { Checkbox } from "../ui/checkbox";
 import { Loader, Trash, XIcon } from "lucide-react";
 import { useUpdateWsDp } from "@/lib/hooks/useUpdateWsDp";
+import { useUpdateWsName } from "@/lib/hooks/useUpdateWsName";
 
 const WorkspaceSettings = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,6 +21,9 @@ const WorkspaceSettings = () => {
   const [usersToRemove, setUsersToRemove] = useState<string[]>([]);
   const [isManagingUsers, setIsManagingUsers] = useState(false);
   const { mutate, isPending } = useUpdateWsDp();
+  const { mutate: updateWsName, isPending: nameUpdatePending } =
+    useUpdateWsName();
+  const [newWsName, setNewWsName] = useState("");
 
   const handleRemoveUser = (userId: string) => {
     if (usersToRemove.includes(userId)) {
@@ -50,10 +54,20 @@ const WorkspaceSettings = () => {
   };
 
   useEffect(() => {
+    setNewWsName(currentWsName);
+  }, [currentWsName]);
+
+  useEffect(() => {
     if (workspaceImage) {
       mutate({ file: workspaceImage, workspaceId: wsId as string });
     }
   }, [workspaceImage]);
+
+  const handleNameChange = () => {
+    if (newWsName && newWsName.trim().length > 0) {
+      updateWsName({ name: newWsName, workspaceId: wsId as string });
+    }
+  };
 
   return (
     <>
@@ -87,6 +101,7 @@ const WorkspaceSettings = () => {
                 variant="outline"
                 className="theme-text-gradient"
                 onClick={triggerFileInput}
+                disabled={isPending || nameUpdatePending}
               >
                 Upload New Image
               </Button>
@@ -103,12 +118,26 @@ const WorkspaceSettings = () => {
 
           <div className="space-y-2">
             <Label htmlFor="workspaceName">Workspace Name</Label>
-            <Input
-              id="workspaceName"
-              value={currentWsName}
-              // onChange={(e) => setWorkspaceName(e.target.value)}
-              placeholder="Enter workspace name"
-            />
+            <div className="flex items-center gap-x-4">
+              <Input
+                id="workspaceName"
+                value={newWsName}
+                onChange={(e) => setNewWsName(e.target.value)}
+                placeholder="Enter workspace name"
+              />
+              <Button
+                variant="default"
+                onClick={handleNameChange}
+                className="min-w-[5rem]"
+                disabled={nameUpdatePending}
+              >
+                {nameUpdatePending ? (
+                  <Loader className="animate-spin" />
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -121,6 +150,7 @@ const WorkspaceSettings = () => {
                 size="sm"
                 className={!isManagingUsers ? "theme-text-gradient" : ""}
                 onClick={() => setIsManagingUsers(!isManagingUsers)}
+                disabled={isPending || nameUpdatePending}
               >
                 {isManagingUsers ? <Trash /> : "Manage"}
               </Button>

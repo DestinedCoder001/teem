@@ -39,6 +39,40 @@ const createWs = async (req: Request, res: Response) => {
   }
 };
 
+const editWsName = async (req: Request, res: Response) => {
+  const { name, workspaceId } = req.body;
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!name || !workspaceId) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  try {
+    await connectDb();
+    const workspace = await Workspace.findById(workspaceId);
+    if (!workspace) {
+      return res.status(404).json({ message: "Workspace not found" });
+    }
+
+    if (workspace.createdBy.toString() !== req.user._id) {
+      return res.status(403).json({ message: "Action not permitted." });
+    }
+    const newWs = await Workspace.findOneAndUpdate({ _id: workspaceId }, { name }, {new: true});
+    return res
+      .status(200)
+      .json({ workspace: newWs });
+  } catch {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const getWsDetails = async (req: Request, res: Response) => {
   const { workspaceId } = req.params;
   if (!Types.ObjectId.isValid(workspaceId)) {
@@ -51,10 +85,12 @@ const getWsDetails = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspace = await Workspace.findById(workspaceId).populate({
-      path: "users",
-      select: "firstName lastName email createdAt profilePicture",
-    }).populate("channels");
+    const workspace = await Workspace.findById(workspaceId)
+      .populate({
+        path: "users",
+        select: "firstName lastName email createdAt profilePicture",
+      })
+      .populate("channels");
 
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
@@ -137,7 +173,6 @@ const sendInvite = async (req: Request, res: Response) => {
 };
 
 const acceptInvite = async (req: Request, res: Response) => {
-
   const { workspaceId } = req.params;
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
@@ -230,7 +265,7 @@ const removeUser = async (req: Request, res: Response) => {
 
     await Workspace.findOneAndUpdate(
       { _id: workspaceId },
-      { $pull: { users: userToBeRemoved._id } },
+      { $pull: { users: userToBeRemoved._id } }
     );
     res.status(200).json({ message: "User removed successfully" });
   } catch (error: any) {
@@ -240,7 +275,6 @@ const removeUser = async (req: Request, res: Response) => {
 };
 
 const deleteWs = async (req: Request, res: Response) => {
-
   const { workspaceId } = req.params;
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
@@ -264,14 +298,25 @@ const deleteWs = async (req: Request, res: Response) => {
     }
 
     await WorkspaceInvite.deleteMany({ workspace: workspaceId });
-    const deletedWorkspace = await Workspace.findOneAndDelete(
-      { _id: workspaceId },
-    );
-    res.status(200).json({ message: "Workspace deleted successfully", data: deletedWorkspace });
+    const deletedWorkspace = await Workspace.findOneAndDelete({
+      _id: workspaceId,
+    });
+    res.status(200).json({
+      message: "Workspace deleted successfully",
+      data: deletedWorkspace,
+    });
   } catch (error: any) {
     console.log(error);
     res.status(500).json("Error in deleting from workspace: " + error);
   }
 };
 
-export { createWs, getWsDetails, sendInvite, removeUser, acceptInvite, deleteWs };
+export {
+  createWs,
+  editWsName,
+  getWsDetails,
+  sendInvite,
+  removeUser,
+  acceptInvite,
+  deleteWs,
+};
