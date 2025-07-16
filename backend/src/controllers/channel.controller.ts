@@ -26,7 +26,10 @@ const createChannel = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspace = await Workspace.findOne({ _id: workspaceId });
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: { $in: [req.user._id] },
+    });
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
     }
@@ -241,6 +244,13 @@ const getChannelDetails = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: { $in: [req.user._id] },
+    });
+    if (!workspace) {
+      return res.status(403).json({ message: "Channel not available" });
+    }
     const channel = await Channel.findOne({
       _id: channelId,
       workspace: workspaceId,

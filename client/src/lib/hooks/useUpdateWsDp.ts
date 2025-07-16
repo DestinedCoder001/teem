@@ -13,6 +13,7 @@ export const useUpdateWsDp = () => {
     onSuccess: () => {
       toast.success("Workspace profile picture updated successfully", { position: "top-center" });
       queryClient.invalidateQueries({ queryKey: ["get-ws-details"] });
+      queryClient.invalidateQueries({ queryKey: ["get-me"] });
     },
     onError: (err) => {
       const error = err as CustomAxiosError;

@@ -41,7 +41,6 @@ const AssignesDropdown = ({ user, setUser }: Props) => {
               value={user?._id}
               key={user?._id}
               className="font-medium text-slate-600"
-              // onClick={() => setName(user?.firstName + " " + user?.lastName)}
             >
               <Avatar className="h-6 w-6 rounded-full cursor-pointer border border-slate-200">
                 <AvatarImage src={user?.profilePicture} alt={user?.firstName} />

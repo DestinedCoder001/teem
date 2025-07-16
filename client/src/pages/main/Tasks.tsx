@@ -23,7 +23,6 @@ import {
 import type { TaskPayload } from "@/lib/types";
 import TaskStatusFilter from "@/components/custom/TaskStatusFilter";
 import AppError from "@/components/custom/AppError";
-import type { AxiosError } from "axios";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -73,10 +72,7 @@ const Tasks = () => {
   }
 
     if (error) {
-    const err = error as AxiosError;
-    if (err.status === 404) {
       return <AppError />;
-    }
   }
 
   return (

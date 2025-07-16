@@ -35,12 +35,13 @@ const UserRemoveAlert = () => {
             <TriangleAlert />
             Caution!
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-800">
+          <AlertDialogDescription className="text-slate-800 text-left">
             <span className="font-semibold text-black">
               {user?.firstName} {user?.lastName}
             </span>{" "}
             will be removed from this workspace and will no longer be able to
-            access channels, tasks and messages.
+            access channels, tasks and messages.<br /><br />
+            All tasks related to this user will also be deleted.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

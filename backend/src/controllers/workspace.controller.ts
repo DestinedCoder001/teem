@@ -7,6 +7,7 @@ import { User as UserType } from "../utils/types";
 import { Types } from "mongoose";
 import WorkspaceInvite from "../models/workspaceInvite.model";
 import Channel from "../models/channel.model";
+import { Task } from "../models/task.model";
 
 const createWs = async (req: Request, res: Response) => {
   const validationResults = validationResult(req);
@@ -64,10 +65,12 @@ const editWsName = async (req: Request, res: Response) => {
     if (workspace.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
-    const newWs = await Workspace.findOneAndUpdate({ _id: workspaceId }, { name }, {new: true});
-    return res
-      .status(200)
-      .json({ workspace: newWs });
+    const newWs = await Workspace.findOneAndUpdate(
+      { _id: workspaceId },
+      { name },
+      { new: true }
+    );
+    return res.status(200).json({ workspace: newWs });
   } catch {
     return res.status(500).json({ message: "Something went wrong" });
   }
@@ -85,7 +88,10 @@ const getWsDetails = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspace = await Workspace.findOne({_id: workspaceId, users: [req.user._id]})
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: { $in: [req.user._id] },
+    })
       .populate({
         path: "users",
         select: "firstName lastName email createdAt profilePicture",
@@ -143,7 +149,10 @@ const sendInvite = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "You cannot invite yourself" });
     }
 
-    const workspace = await Workspace.findOne({ _id: workspaceId, users: [req.user._id] });
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: { $in: [req.user._id] },
+    });
 
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
@@ -222,7 +231,6 @@ const acceptInvite = async (req: Request, res: Response) => {
 };
 
 const removeUser = async (req: Request, res: Response) => {
-
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -241,13 +249,13 @@ const removeUser = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid user id" });
   }
 
-
   try {
     await connectDb();
 
-    const workspace = await Workspace.findOne({ _id: workspaceId, users: [req.user._id] }).populate(
-      "users"
-    );
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: { $in: [req.user._id] },
+    }).populate("users");
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
     }
@@ -265,6 +273,13 @@ const removeUser = async (req: Request, res: Response) => {
     if (!userToBeRemoved) {
       return res.status(400).json({ message: "User not in workspace" });
     }
+
+    await Task.deleteMany({
+      $or: [
+        { assignedTo: userToBeRemoved._id },
+        { assignedBy: userToBeRemoved._id },
+      ],
+    });
 
     await Workspace.findOneAndUpdate(
       { _id: workspaceId },

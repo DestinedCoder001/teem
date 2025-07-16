@@ -26,7 +26,7 @@ const WsSwitch = () => {
     signOut,
   } = currentWs((state) => state);
   const queryClient = useQueryClient();
-  const { setWorkspaceDetails, profilePicture, name: currentWsName } = currentWsDetails(
+  const { setWorkspaceDetails, profilePicture, name: currentWsName, _id } = currentWsDetails(
     (state) => state
   );
   const { setChannelDetails } = currentChannelDetails((state) => state);
@@ -36,6 +36,7 @@ const WsSwitch = () => {
 
   const resetAndRedirect = () => {
     setWorkspaceDetails({
+      _id: "",
       name: "",
       users: [],
       createdBy: "",
@@ -107,7 +108,7 @@ const WsSwitch = () => {
           >
             <Avatar
               className={`h-8 w-8 rounded-md border ${
-                ws._id === wsId ? "border-primary" : "border-slate-200"
+                ws._id === _id ? "border-primary" : "border-slate-200"
               }`}
             >
               <AvatarImage

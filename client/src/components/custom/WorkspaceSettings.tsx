@@ -3,10 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  currentWsDetails,
-  userToBeRemoved
-} from "@/lib/store/userStore";
+import { currentWsDetails, userToBeRemoved } from "@/lib/store/userStore";
 import { Loader, MoreHorizontal } from "lucide-react";
 import { useUpdateWsDp } from "@/lib/hooks/useUpdateWsDp";
 import { useUpdateWsName } from "@/lib/hooks/useUpdateWsName";
@@ -24,7 +21,7 @@ const WorkspaceSettings = () => {
     users,
     name: currentWsName,
     profilePicture,
-    _id
+    _id,
   } = currentWsDetails((state) => state);
   const [workspaceImage, setWorkspaceImage] = useState("");
   const { mutate, isPending } = useUpdateWsDp();
@@ -130,7 +127,7 @@ const WorkspaceSettings = () => {
                 variant="default"
                 onClick={handleNameChange}
                 className="min-w-[5rem]"
-                disabled={nameUpdatePending}
+                disabled={nameUpdatePending || isPending}
               >
                 {nameUpdatePending ? (
                   <Loader className="animate-spin" />
@@ -174,20 +171,18 @@ const WorkspaceSettings = () => {
                     </div>
 
                     <DropdownMenu>
-                      {isPending ? (
-                        <Loader className="h-5 w-5 mr-2 mb-1 text-slate-500 animate-spin" />
-                      ) : (
-                        <>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4 text-slate-700" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                        </>
-                      )}
-                      <DropdownMenuContent className="-translate-x-8
-                      ">
+                      <>
+                        <DropdownMenuTrigger asChild disabled={isPending || nameUpdatePending}>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4 text-slate-700" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                      </>
+                      <DropdownMenuContent
+                        className="-translate-x-8
+                      "
+                      >
                         <DropdownMenuItem
                           onClick={() => {
                             setUser(user);
