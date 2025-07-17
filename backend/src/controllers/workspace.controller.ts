@@ -315,6 +315,8 @@ const deleteWs = async (req: Request, res: Response) => {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
+    await Task.deleteMany({ workspace: workspaceId });
+    await Channel.deleteMany({ workspace: workspaceId });
     await WorkspaceInvite.deleteMany({ workspace: workspaceId });
     const deletedWorkspace = await Workspace.findOneAndDelete({
       _id: workspaceId,
