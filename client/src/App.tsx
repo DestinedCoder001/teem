@@ -6,7 +6,6 @@ import AuthLayout from "./components/custom/layouts/AuthLayout";
 import ProtectRoutes from "./components/custom/layouts/ProtectRoutes";
 import AppLayout from "./components/custom/layouts/AppLayout";
 import Tasks from "./pages/main/Tasks";
-import DMs from "./pages/main/DMs";
 import UserProfile from "./pages/main/Profile";
 import DefaultHome from "./pages/main/DefaultHome";
 import ChannelSkeleton from "./components/custom/ChannelSkeleton";
@@ -29,7 +28,7 @@ function App() {
             <Route path="channels" element={<ChannelSkeleton />} />
             <Route path="channels/:channelId" element={<Channel />} />
             <Route path="tasks" element={<Tasks />} />
-            <Route path="dms" element={<DMs />} />
+            {/* <Route path="dms" element={<DMs />} /> */}
             <Route path="settings" element={<Settings />} />
           </Route>
         </Route>

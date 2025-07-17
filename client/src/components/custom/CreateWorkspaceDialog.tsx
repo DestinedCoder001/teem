@@ -3,13 +3,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogOverlay,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import CreateWsBtn from "./CreateWsBtn";
 import { useCreateWsDialogOpen } from "@/lib/store/uiStore";
 import { useForm } from "react-hook-form";
 import { useCreateWorkspace } from "@/lib/hooks/useCreateWorkspace";
@@ -50,7 +48,7 @@ const CreateWorkspaceDialog = () => {
             position: "top-center",
           });
           setOpen(false);
-          queryClient.invalidateQueries({ queryKey: ["get-user-ws"] });
+          queryClient.invalidateQueries({ queryKey: ["get-me"] });
         },
         onError: (err) => {
           const error = err as CustomAxiosError;
@@ -66,9 +64,6 @@ const CreateWorkspaceDialog = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
-      <DialogTrigger asChild>
-        <CreateWsBtn />
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-white text-gray-900">
         <DialogHeader>
           <DialogTitle className="text-xl theme-text-gradient w-max text-ellipsis">

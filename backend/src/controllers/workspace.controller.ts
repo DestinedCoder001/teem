@@ -25,6 +25,10 @@ const createWs = async (req: Request, res: Response) => {
   try {
     const { name } = matchedData(req);
     await connectDb();
+    const workspaces = await Workspace.find({createdBy: req.user._id})
+    if (workspaces.length >= 3 ) {
+      return res.status(403).json({message: "Workspaces limit reached."})
+    }
     const newWorkSpace = await Workspace.create({
       name,
       createdBy: req.user._id,

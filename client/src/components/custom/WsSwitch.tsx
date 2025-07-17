@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut, Plus } from "lucide-react";
 import {
   currentChannelDetails,
   currentWs,
@@ -17,22 +17,24 @@ import {
 } from "@/lib/store/userStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useCreateWsDialogOpen } from "@/lib/store/uiStore";
 
 const WsSwitch = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
-  const {
-    wsId,
-    setCurrentWs,
-    signOut,
-  } = currentWs((state) => state);
+  const { wsId, setCurrentWs, signOut } = currentWs((state) => state);
   const queryClient = useQueryClient();
-  const { setWorkspaceDetails, profilePicture, name: currentWsName, _id } = currentWsDetails(
-    (state) => state
-  );
+  const {
+    setWorkspaceDetails,
+    profilePicture,
+    name: currentWsName,
+    _id,
+  } = currentWsDetails((state) => state);
   const { setChannelDetails } = currentChannelDetails((state) => state);
   const { setTasks } = useUserTasks((state) => state);
   const navigate = useNavigate();
-  if (!workspaces?.length) return null;
+  const { setOpen } = useCreateWsDialogOpen((state) => state);
+
+  // if (!workspaces?.length) return null;
 
   const resetAndRedirect = () => {
     setWorkspaceDetails({
@@ -99,40 +101,50 @@ const WsSwitch = () => {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-56 bg-white text-slate-600 border-slate-200 ml-4 z-[120]">
-        {workspaces?.map((ws) => (
-          <DropdownMenuItem
-            key={ws._id}
-            onClick={() => handleToggle(ws._id, ws.name)}
-            className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2"
-          >
-            <Avatar
-              className={`h-8 w-8 rounded-md border ${
-                ws._id === _id ? "border-primary" : "border-slate-200"
-              }`}
+      <DropdownMenuContent className="w-56 bg-white text-slate-600 ml-4 z-[120]">
+        {workspaces.length &&
+          workspaces?.map((ws) => (
+            <DropdownMenuItem
+              key={ws._id}
+              onClick={() => handleToggle(ws._id, ws.name)}
+              className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2"
             >
-              <AvatarImage
-                src={ws.profilePicture}
-                alt={ws.name}
-                className="object-cover object-center w-full"
-              />
-              <AvatarFallback className="rounded-none">
-                {ws.name[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <span
-              className={`text-sm ${
-                ws._id === wsId ? "font-bold text-slate-600" : "font-normal"
-              }`}
-            >
-              {ws.name}
-            </span>
-          </DropdownMenuItem>
-        ))}
+              <Avatar
+                className={`h-8 w-8 rounded-md border ${
+                  ws._id === _id ? "border-primary" : "border-slate-200"
+                }`}
+              >
+                <AvatarImage
+                  src={ws.profilePicture}
+                  alt={ws.name}
+                  className="object-cover object-center w-full"
+                />
+                <AvatarFallback className="rounded-none">
+                  {ws.name[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span
+                className={`text-sm ${
+                  ws._id === wsId ? "font-bold text-slate-600" : "font-normal"
+                }`}
+              >
+                {ws.name.length > 20 ? ws.name.slice(0, 20) + "..." : ws.name}
+              </span>
+            </DropdownMenuItem>
+          ))}
 
-        {wsId && (
+        <DropdownMenuSeparator className="bg-slate-200" />
+        <DropdownMenuItem
+          onClick={() => setOpen(true)}
+          className="focus:bg-slate-100 cursor-pointer flex items-center justify-center space-x-2"
+        >
+          <Plus strokeWidth={3} />
+          <span>New workspace</span>
+        </DropdownMenuItem>
+
+        {_id && (
           <>
-            <DropdownMenuSeparator className="bg-slate-200 my-2" />
+            <DropdownMenuSeparator className="bg-slate-200" />
             <DropdownMenuItem
               className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 group"
               onClick={() => handleSignOut()}

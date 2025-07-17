@@ -14,6 +14,7 @@ import { useSidebarOpen } from "@/lib/store/uiStore";
 import useGetMe from "@/lib/hooks/useGetMe";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import CreateChannelDialog from "../CreateChannelDialog";
+import CreateWorkspaceDialog from "../CreateWorkspaceDialog";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
@@ -60,6 +61,7 @@ const AppLayout = () => {
         <MobileSideBar />
 
         <main className="flex-1 overflow-y-auto relative">
+          <CreateWorkspaceDialog />
           <CreateChannelDialog />
           <Outlet />
         </main>
