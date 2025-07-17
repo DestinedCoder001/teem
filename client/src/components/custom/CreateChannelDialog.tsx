@@ -46,6 +46,7 @@ const CreateChannelDialog = () => {
             position: "top-center",
           });
           setOpen(false);
+          reset();
           queryClient.invalidateQueries({ queryKey: ["get-ws-details"] });
         },
         onError: (err) => {
@@ -56,7 +57,6 @@ const CreateChannelDialog = () => {
         },
       }
     );
-    reset();
   };
 
   return (

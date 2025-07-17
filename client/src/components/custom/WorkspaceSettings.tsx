@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { currentWsDetails, userToBeRemoved } from "@/lib/store/userStore";
-import { Loader, MoreHorizontal } from "lucide-react";
+import { Loader, MoreHorizontal, Trash } from "lucide-react";
 import { useUpdateWsDp } from "@/lib/hooks/useUpdateWsDp";
 import { useUpdateWsName } from "@/lib/hooks/useUpdateWsName";
 import {
@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRemoveAlertOpen } from "@/lib/store/uiStore";
+import { useRemoveAlertOpen, useWsDeleteAlertOpen } from "@/lib/store/uiStore";
 
 const WorkspaceSettings = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -29,6 +29,9 @@ const WorkspaceSettings = () => {
     useUpdateWsName();
   const [newWsName, setNewWsName] = useState("");
   const { setOpen } = useRemoveAlertOpen((state) => state);
+  const { setOpen: setWsDeleteAlertOpen } = useWsDeleteAlertOpen(
+    (state) => state
+  );
   const { setUser } = userToBeRemoved((state) => state);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +77,14 @@ const WorkspaceSettings = () => {
         Manage your workspace settings and members.
       </p>
       <div className="flex flex-col gap-y-4 md:grid md:grid-cols-2 xl:grid-cols-8 md:gap-x-4 my-4 lg:h-[18rem]">
-        <div className="space-y-10 md:col-span-1 xl:col-span-5 border border-slate-300 p-4 rounded-lg">
+        <div className="space-y-10 md:col-span-1 xl:col-span-5 border border-slate-300 p-4 rounded-lg relative">
+          <Button
+            onClick={() => setWsDeleteAlertOpen(true)}
+            variant="outline"
+            className="absolute top-4 right-4"
+          >
+            <Trash className="text-red-500" />
+          </Button>
           <div className="flex flex-col items-center gap-4">
             <Avatar className="size-18 rounded-md border font-bold text-lg">
               <AvatarImage
@@ -172,7 +182,10 @@ const WorkspaceSettings = () => {
 
                     <DropdownMenu>
                       <>
-                        <DropdownMenuTrigger asChild disabled={isPending || nameUpdatePending}>
+                        <DropdownMenuTrigger
+                          asChild
+                          disabled={isPending || nameUpdatePending}
+                        >
                           <Button variant="ghost" className="h-8 w-8 p-0">
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4 text-slate-700" />

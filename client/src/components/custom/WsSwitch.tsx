@@ -102,45 +102,48 @@ const WsSwitch = () => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56 bg-white text-slate-600 ml-4 z-[120]">
-        {workspaces.length &&
+        {workspaces.length > 0 &&
           workspaces?.map((ws) => (
-            <DropdownMenuItem
-              key={ws._id}
-              onClick={() => handleToggle(ws._id, ws.name)}
-              className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2"
-            >
-              <Avatar
-                className={`h-8 w-8 rounded-md border ${
-                  ws._id === _id ? "border-primary" : "border-slate-200"
-                }`}
+            <>
+              <DropdownMenuItem
+                key={ws._id}
+                onClick={() => handleToggle(ws._id, ws.name)}
+                className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2"
               >
-                <AvatarImage
-                  src={ws.profilePicture}
-                  alt={ws.name}
-                  className="object-cover object-center w-full"
-                />
-                <AvatarFallback className="rounded-none">
-                  {ws.name[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <span
-                className={`text-sm ${
-                  ws._id === wsId ? "font-bold text-slate-600" : "font-normal"
-                }`}
-              >
-                {ws.name.length > 20 ? ws.name.slice(0, 20) + "..." : ws.name}
-              </span>
-            </DropdownMenuItem>
+                <Avatar
+                  className={`h-8 w-8 rounded-md border ${
+                    ws._id === _id ? "border-primary" : "border-slate-200"
+                  }`}
+                >
+                  <AvatarImage
+                    src={ws.profilePicture}
+                    alt={ws.name}
+                    className="object-cover object-center w-full"
+                  />
+                  <AvatarFallback className="rounded-none">
+                    {ws.name[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span
+                  className={`text-sm ${
+                    ws._id === wsId ? "font-bold text-slate-600" : "font-normal"
+                  }`}
+                >
+                  {ws.name.length > 20 ? ws.name.slice(0, 20) + "..." : ws.name}
+                </span>
+              </DropdownMenuItem>
+            </>
           ))}
 
-        <DropdownMenuSeparator className="bg-slate-200" />
-        <DropdownMenuItem
+        {workspaces.length < 3 && (
+          <DropdownMenuItem
           onClick={() => setOpen(true)}
           className="focus:bg-slate-100 cursor-pointer flex items-center justify-center space-x-2"
-        >
-          <Plus strokeWidth={3} />
-          <span>New workspace</span>
-        </DropdownMenuItem>
+          >
+            <Plus strokeWidth={3} />
+            <span>New workspace</span>
+          </DropdownMenuItem>
+        )}
 
         {_id && (
           <>

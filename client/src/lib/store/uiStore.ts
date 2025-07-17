@@ -47,6 +47,14 @@ const useRemoveAlertOpen = create<{
   isOpen: false,
   setOpen: (open) => set({ isOpen: open }),
 }));
+const useWsDeleteAlertOpen = create<{
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+}>((set) => ({
+  isOpen: false,
+  setOpen: (open) => set({ isOpen: open }),
+}));
+
 const useTaskSheetOpen = create<{
   isOpen: boolean;
   setOpen: (open: boolean) => void;
@@ -63,4 +71,5 @@ export {
   useEditTaskDialogOpen,
   useTaskSheetOpen,
   useRemoveAlertOpen,
+  useWsDeleteAlertOpen
 };
