@@ -31,7 +31,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/users", usersRoute);
-
 app.use("/api/workspaces", workspacesRoute);
 app.use("/api/:workspaceId/channels", channelsRoute);
 app.use("/api/:workspaceId/:channelId", messagesRoute);

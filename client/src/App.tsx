@@ -12,6 +12,7 @@ import ChannelSkeleton from "./components/custom/ChannelSkeleton";
 import Channel from "./pages/main/Channel";
 import NotFound from "./components/custom/NotFound";
 import Settings from "./pages/main/Settings";
+import User from "./pages/main/User";
 function App() {
   return (
     <>
@@ -28,11 +29,11 @@ function App() {
             <Route path="channels" element={<ChannelSkeleton />} />
             <Route path="channels/:channelId" element={<Channel />} />
             <Route path="tasks" element={<Tasks />} />
-            {/* <Route path="dms" element={<DMs />} /> */}
+            <Route path="users/:userId" element={<User />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFound text="Page not found" />} />
       </Routes>
     </>
   );

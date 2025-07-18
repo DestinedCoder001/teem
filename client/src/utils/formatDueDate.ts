@@ -17,5 +17,5 @@ export const formatTaskDueDate = (isoString: string): string => {
     return `yesterday at ${time}`;
   }
 
-  return `${format(date, "MMM d")} at ${time}`;
+  return `${format(date, "MMM d yyyy")} at ${time}`;
 };

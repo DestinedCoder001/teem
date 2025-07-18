@@ -14,9 +14,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRemoveAlertOpen, useWsDeleteAlertOpen } from "@/lib/store/uiStore";
+import { useNavigate } from "react-router-dom";
 
 const WorkspaceSettings = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   const {
     users,
     name: currentWsName,
@@ -161,8 +163,9 @@ const WorkspaceSettings = () => {
               }
               return (
                 <div
+                onClick={()=> navigate(`/users/${user._id}`)}
                   key={user._id}
-                  className="bg-white p-4 rounded-md border border-slate-300"
+                  className="bg-white p-4 rounded-md border border-slate-300 cursor-pointer"
                   title={user.firstName + " " + user.lastName}
                 >
                   <div className="flex justify-between items-center">
