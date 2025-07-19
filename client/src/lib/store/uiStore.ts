@@ -62,6 +62,13 @@ const useTaskSheetOpen = create<{
   isOpen: false,
   setOpen: (open) => set({ isOpen: open }),
 }));
+const useSendInviteOpen = create<{
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+}>((set) => ({
+  isOpen: false,
+  setOpen: (open) => set({ isOpen: open }),
+}));
 
 export {
   useSidebarOpen,
@@ -71,5 +78,6 @@ export {
   useEditTaskDialogOpen,
   useTaskSheetOpen,
   useRemoveAlertOpen,
-  useWsDeleteAlertOpen
+  useWsDeleteAlertOpen,
+  useSendInviteOpen,
 };

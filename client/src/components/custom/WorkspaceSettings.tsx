@@ -13,7 +13,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRemoveAlertOpen, useWsDeleteAlertOpen } from "@/lib/store/uiStore";
+import {
+  useRemoveAlertOpen,
+  useSendInviteOpen,
+  useWsDeleteAlertOpen,
+} from "@/lib/store/uiStore";
 import { useNavigate } from "react-router-dom";
 
 const WorkspaceSettings = () => {
@@ -35,6 +39,7 @@ const WorkspaceSettings = () => {
     (state) => state
   );
   const { setUser } = userToBeRemoved((state) => state);
+  const setInviteOpen = useSendInviteOpen((state) => state.setOpen);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -154,6 +159,14 @@ const WorkspaceSettings = () => {
         <div className="md:col-span-1 xl:col-span-3 border border-slate-300 rounded-lg overflow-hidden h-[20rem] lg:h-auto">
           <div className="border-b border-slate-300 p-4 flex justify-between items-center">
             <h2 className="font-medium text-gray-700">Members</h2>
+            <Button
+              variant="outline"
+              className="theme-text-gradient"
+              size="sm"
+              onClick={() => setInviteOpen(true)}
+            >
+              Send an invite
+            </Button>
           </div>
           <div className="overflow-auto no-scrollbar px-4 pt-4 pb-20 bg-gray-50/50 flex flex-col gap-y-2 h-full">
             {users?.map((user) => {
@@ -163,7 +176,7 @@ const WorkspaceSettings = () => {
               }
               return (
                 <div
-                onClick={()=> navigate(`/users/${user._id}`)}
+                  onClick={() => navigate(`/users/${user._id}`)}
                   key={user._id}
                   className="bg-white p-4 rounded-md border border-slate-300 cursor-pointer"
                   title={user.firstName + " " + user.lastName}

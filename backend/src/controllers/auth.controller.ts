@@ -51,7 +51,7 @@ const login = async (req: Request, res: Response) => {
 
   if (!result.isEmpty()) {
     return res.status(400).send({
-      results: result.array(),
+      message: result.array()[0].msg
     });
   }
 

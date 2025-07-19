@@ -114,6 +114,11 @@ const getWsDetails = async (req: Request, res: Response) => {
 };
 
 const sendInvite = async (req: Request, res: Response) => {
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
   const { workspaceId } = req.params;
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
@@ -122,12 +127,8 @@ const sendInvite = async (req: Request, res: Response) => {
 
   if (!validationResults.isEmpty()) {
     return res.status(400).json({
-      results: validationResults.array(),
+      message: validationResults.array()[0].msg,
     });
-  }
-
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
   }
 
   try {

@@ -8,6 +8,7 @@ import Workspace from "../models/workspace.model";
 import Channel from "../models/channel.model";
 import { Task } from "../models/task.model";
 import bcrypt from "bcrypt";
+import { matchedData, validationResult } from "express-validator";
 
 const me = async (req: Request, res: Response) => {
   if (!req.user) {
@@ -40,6 +41,32 @@ const getUser = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+const findByEmail = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" }); 
+  }
+  const results = validationResult(req);
+
+  if (!results.isEmpty()) {
+    return res.status(400).send({
+      results: results.array()[0].msg,
+    });
+  }
+
+  
+  try {
+    const { email } = matchedData(req);
+    await connectDb();
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({ user });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+}
 
 const editUserDetails = async (req: Request, res: Response) => {
   const { firstName, lastName } = req.body;
@@ -152,4 +179,4 @@ const getUserTasks = async (req: Request, res: Response) => {
   }
 };
 
-export { me, getUser, editUserDetails, deleteAccount, getUserTasks };
+export { me, getUser, editUserDetails, deleteAccount, getUserTasks, findByEmail };
