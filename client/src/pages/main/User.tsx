@@ -77,7 +77,11 @@ const User = () => {
           </h1>
           <p className="text-sm text-gray-500">{user?.email}</p>
         </div>
-        <p className="text-center font-bold text-slate-700">Account created {formatDates(user?.createdAt)}</p>
+        {user.createdAt && (
+          <p className="text-center font-bold text-slate-700">
+            Account created {formatDates(user?.createdAt)}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { acceptInvite, createWs, deleteWs, editWsName, getWsDetails, removeUser, sendInvite } from "../controllers/workspace.controller";
+import { acceptInvite, createWs, declineInvite, deleteWs, editWsName, getWsDetails, removeUser, sendInvite } from "../controllers/workspace.controller";
 import { workspaceCreateValidation } from "../lib/validations/worskspace.validation";
 import { emailValidation } from "../lib/validations/auth.validation";
 
@@ -20,12 +20,17 @@ router.get("/:workspaceId", (req: Request, res: Response) => {
 router.delete("/:workspaceId/delete", (req: Request, res: Response) => {
     deleteWs(req, res);
 });
+
 router.post("/:workspaceId/send-invite", emailValidation, (req: Request, res: Response) => {
     sendInvite(req, res);
 });
 
-router.post("/:workspaceId/accept-invite", (req: Request, res: Response) => {
+router.post("/accept-invite", (req: Request, res: Response) => {
     acceptInvite(req, res);
+});
+
+router.post("/decline-invite", (req: Request, res: Response) => {
+    declineInvite(req, res);
 });
 
 router.post("/:workspaceId/remove-user", (req: Request, res: Response) => {

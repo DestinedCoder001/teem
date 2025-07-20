@@ -1,5 +1,5 @@
 import { navlinks } from "@/utils/constants";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import WsSwitch from "./WsSwitch";
 import ChannelsCollapsible from "./ChannelsCollapsible";
 import useGetMe from "@/lib/hooks/useGetMe";
@@ -7,6 +7,7 @@ import { Skeleton } from "../ui/skeleton";
 
 const DesktopSidebar = () => {
   const { isFetching } = useGetMe();
+  const { pathname } = useLocation();
 
   return (
     <aside className="hidden lg:block w-[220px] min-w-[220px] border-r border-slate-300 bg-slate-50/50">
@@ -25,7 +26,13 @@ const DesktopSidebar = () => {
               }
               key={id}
             >
-              <span className="group-hover:text-secondary">{link.icon}</span>
+              <span
+                className={`group-hover:text-secondary ${
+                  pathname === link.link && "text-secondary"
+                }`}
+              >
+                {link.icon}
+              </span>
               <span>{link.label}</span>
             </NavLink>
           ))}

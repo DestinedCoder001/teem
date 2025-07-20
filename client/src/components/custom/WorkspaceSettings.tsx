@@ -213,7 +213,8 @@ const WorkspaceSettings = () => {
                       "
                       >
                         <DropdownMenuItem
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setUser(user);
                             setOpen(true);
                           }}

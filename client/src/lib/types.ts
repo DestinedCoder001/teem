@@ -47,4 +47,17 @@ export type TaskPayload = {
   isDue: boolean;
 };
 
+export type Invite = {
+  _id: string;
+  workspace: {
+    _id: string;
+    name: string;
+  };
+  sender: {
+    firstName: string;
+    lastName: string;
+  };
+  createdAt: string;
+};
+
 export type CustomAxiosError = AxiosError<{ message: string }>;

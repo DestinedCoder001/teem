@@ -25,9 +25,9 @@ const createWs = async (req: Request, res: Response) => {
   try {
     const { name } = matchedData(req);
     await connectDb();
-    const workspaces = await Workspace.find({createdBy: req.user._id})
-    if (workspaces.length >= 3 ) {
-      return res.status(403).json({message: "Workspaces limit reached."})
+    const workspaces = await Workspace.find({ createdBy: req.user._id });
+    if (workspaces.length >= 3) {
+      return res.status(403).json({ message: "Workspaces limit reached." });
     }
     const newWorkSpace = await Workspace.create({
       name,
@@ -114,11 +114,10 @@ const getWsDetails = async (req: Request, res: Response) => {
 };
 
 const sendInvite = async (req: Request, res: Response) => {
-
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  
+
   const { workspaceId } = req.params;
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
@@ -187,7 +186,7 @@ const sendInvite = async (req: Request, res: Response) => {
 };
 
 const acceptInvite = async (req: Request, res: Response) => {
-  const { workspaceId } = req.params;
+  const { workspaceId } = req.body;
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
   }
@@ -203,7 +202,7 @@ const acceptInvite = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Invite not found" });
     }
 
-    if (invite.receiver.toString() === req.user._id) {
+    if (invite.receiver.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted." });
     }
 
@@ -231,6 +230,43 @@ const acceptInvite = async (req: Request, res: Response) => {
     console.log(error);
     res.status(500).json({
       message: "Error in accepting workspace invite: " + error.message,
+    });
+  }
+};
+
+const declineInvite = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const { inviteId } = req.body;
+  if (!Types.ObjectId.isValid(inviteId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  try {
+    await connectDb();
+    const invite = await WorkspaceInvite.findById(inviteId);
+    if (!invite) {
+      return res.status(404).json({ message: "Invite not found" });
+    }
+    if (
+      invite.receiver.toString() !== req.user._id &&
+      invite.sender.toString() !== req.user._id
+    ) {
+      return res.status(403).json({ message: "Action not permitted." });
+    }
+
+    await WorkspaceInvite.deleteOne({ _id: invite._id });
+    let msg = "";
+    if (invite.sender.toString() === req.user._id) {
+      msg = "You declined the invite";
+    } else {
+      msg = "Invite declined successfully";
+    }
+    res.status(200).json({ message: msg });
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Error in declining workspace invite: " + error.message,
     });
   }
 };
@@ -343,5 +379,6 @@ export {
   sendInvite,
   removeUser,
   acceptInvite,
+  declineInvite,
   deleteWs,
 };

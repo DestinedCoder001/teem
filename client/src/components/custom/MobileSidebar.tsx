@@ -3,7 +3,7 @@ import { navlinks } from "@/utils/constants";
 import { PanelLeftClose } from "lucide-react";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import WsSwitch from "./WsSwitch";
 import ChannelsCollapsible from "./ChannelsCollapsible";
 import useGetMe from "@/lib/hooks/useGetMe";
@@ -11,7 +11,8 @@ import { Skeleton } from "../ui/skeleton";
 
 const MobileSideBar = () => {
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
-    const { isFetching } = useGetMe();
+  const { isFetching } = useGetMe();
+  const { pathname } = useLocation();
 
   return (
     <Drawer
@@ -20,7 +21,12 @@ const MobileSideBar = () => {
       direction="left"
       className="z-50 lg:hidden border-r border-slate-300"
       enableOverlay={false}
-      style={{ height: "calc(100vh - 50px)", top: "50px", boxShadow: "none", zIndex: 50 }}
+      style={{
+        height: "calc(100vh - 50px)",
+        top: "50px",
+        boxShadow: "none",
+        zIndex: 50,
+      }}
     >
       <PanelLeftClose
         onClick={() => setOpen(false)}
@@ -42,7 +48,13 @@ const MobileSideBar = () => {
               }
               key={id}
             >
-              <span className="group-hover:text-secondary">{link.icon}</span>
+              <span
+                className={`group-hover:text-secondary ${
+                  pathname === link.link && "text-secondary"
+                }`}
+              >
+                {link.icon}
+              </span>
               <span>{link.label}</span>
             </NavLink>
           ))}

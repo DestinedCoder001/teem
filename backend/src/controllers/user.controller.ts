@@ -44,7 +44,7 @@ const getUser = async (req: Request, res: Response) => {
 
 const findByEmail = async (req: Request, res: Response) => {
   if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" }); 
+    return res.status(401).json({ message: "Unauthorized" });
   }
   const results = validationResult(req);
 
@@ -54,7 +54,6 @@ const findByEmail = async (req: Request, res: Response) => {
     });
   }
 
-  
   try {
     const { email } = matchedData(req);
     await connectDb();
@@ -66,7 +65,7 @@ const findByEmail = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
 
 const editUserDetails = async (req: Request, res: Response) => {
   const { firstName, lastName } = req.body;
@@ -179,4 +178,40 @@ const getUserTasks = async (req: Request, res: Response) => {
   }
 };
 
-export { me, getUser, editUserDetails, deleteAccount, getUserTasks, findByEmail };
+// INVITES
+const getWorkspaceInvites = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    await connectDb();
+    const invites = await WorkspaceInvite.find({ receiver: req.user._id })
+      .populate({
+        path: "workspace",
+        select: "name",
+      })
+      .populate({
+        path: "sender",
+        select: "firstName lastName",
+      });
+
+    if (!invites) {
+      return res.status(404).json({ message: "Invite(s) not found" });
+    }
+
+    return res.status(200).json({ invites });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export {
+  me,
+  getUser,
+  editUserDetails,
+  deleteAccount,
+  getUserTasks,
+  findByEmail,
+  getWorkspaceInvites,
+};

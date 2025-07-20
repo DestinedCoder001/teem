@@ -13,6 +13,7 @@ import Channel from "./pages/main/Channel";
 import NotFound from "./components/custom/NotFound";
 import Settings from "./pages/main/Settings";
 import User from "./pages/main/User";
+import Notifications from "./pages/main/Notifications";
 function App() {
   return (
     <>
@@ -30,6 +31,7 @@ function App() {
             <Route path="channels/:channelId" element={<Channel />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="users/:userId" element={<User />} />
+            <Route path="notifications" element={<Notifications />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Route>
