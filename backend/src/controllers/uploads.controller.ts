@@ -82,7 +82,7 @@ const uploadWsProfilePic = async (req: Request, res: Response) => {
     );
 
     if (!ws) {
-      return res.status(404).json({ message: "Workspace not found" });
+      return res.status(404).json({ message: "Couldn't upload profile picture" });
     }
 
     return res
