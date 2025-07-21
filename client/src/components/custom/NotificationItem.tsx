@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { Invite } from "@/lib/types";
 import useAcceptInvite from "@/lib/hooks/useAcceptInvite";
 import useDeclineInvite from "@/lib/hooks/useDeclineInvite";
+import { useUserStore } from "@/lib/store/userStore";
 
 const NotificationItem = ({ invite }: { invite: Invite }) => {
   const [open, setOpen] = useState(false);
@@ -12,6 +13,7 @@ const NotificationItem = ({ invite }: { invite: Invite }) => {
   const [height, setHeight] = useState(0);
   const { isPending: acceptPending, mutate: accept } = useAcceptInvite();
   const { isPending: declinePending, mutate: decline } = useDeclineInvite();
+  const { user } = useUserStore((state) => state);
 
   useEffect(() => {
     if (open && contentRef.current) {
@@ -21,19 +23,31 @@ const NotificationItem = ({ invite }: { invite: Invite }) => {
     }
   }, [open]);
 
+  const isReceiver = user?._id === invite.receiver._id;
+
   return (
     <div className="rounded-lg border border-slate-300 overflow-hidden transition-all">
       <div
         className="flex justify-between items-center p-4 cursor-pointer text-slate-600 active:bg-slate-50 rounded-b-lg"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <p>
-          You have been invited to join{" "}
-          <span className="font-semibold text-slate-800">
-            {invite.workspace.name}
-          </span>
-          !
-        </p>
+        {isReceiver ? (
+          <p>
+            You have been invited to join{" "}
+            <span className="font-semibold text-slate-800">
+              {invite.workspace.name}
+            </span>
+            !
+          </p>
+        ) : (
+          <p>
+            You sent a join invite for{" "}
+            <span className="font-semibold text-slate-800">
+              {invite.workspace.name}
+            </span>
+            !
+          </p>
+        )}
         <ChevronDown
           className={`h-4 w-4 transition-transform shrink-0 ${
             open && "rotate-180"
@@ -46,46 +60,81 @@ const NotificationItem = ({ invite }: { invite: Invite }) => {
         style={{ height: `${height}px` }}
       >
         <div ref={contentRef} className="py-4 space-y-2 text-sm text-slate-700">
-          <p>
-            <span className="font-medium">Sender:</span>{" "}
-            {invite.sender.firstName} {invite.sender.lastName}
-          </p>
-          <p className="text-slate-500">
-            <span>Sent</span>{" "}
-            {formatDistanceToNow(new Date(invite.createdAt), {
-              addSuffix: true,
-            })}
-          </p>
+          {isReceiver ? (
+            <>
+              <p>
+                <span className="font-medium">Sender:</span>{" "}
+                {invite.sender.firstName} {invite.sender.lastName}
+              </p>
+              <p className="text-slate-500">
+                <span>Sent</span>{" "}
+                {formatDistanceToNow(new Date(invite.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                <span className="font-medium">Reveiver:</span>{" "}
+                {invite.receiver.firstName} {invite.receiver.lastName}
+              </p>
+              <p className="text-slate-500">
+                <span>Sent</span>{" "}
+                {formatDistanceToNow(new Date(invite.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+            </>
+          )}
 
           <div className="flex gap-2 pt-2">
-            <Button
-              disabled={acceptPending || declinePending}
-              variant="outline"
-              className="theme-text-gradient min-w-[5rem]"
-              size="sm"
-              onClick={() => {
-                accept({ workspaceId: invite.workspace._id });
-              }}
-            >
-              {acceptPending ? (
-                <Loader className="animate-spin text-slate-700" />
-              ) : (
-                "Accept"
-              )}
-            </Button>
-            <Button
-              disabled={acceptPending || declinePending}
-              variant="outline"
-              size="sm"
-              className="min-w-[5rem]"
-              onClick={() => decline({ inviteId: invite._id })}
-            >
-              {declinePending ? (
-                <Loader className="animate-spin text-slate-700" />
-              ) : (
-                "Decline"
-              )}
-            </Button>
+            {isReceiver ? (
+              <>
+                <Button
+                  disabled={acceptPending || declinePending}
+                  variant="outline"
+                  className="theme-text-gradient min-w-[5rem]"
+                  size="sm"
+                  onClick={() => {
+                    accept({ workspaceId: invite.workspace._id });
+                  }}
+                >
+                  {acceptPending ? (
+                    <Loader className="animate-spin text-slate-700" />
+                  ) : (
+                    "Accept"
+                  )}
+                </Button>
+                <Button
+                  disabled={acceptPending || declinePending}
+                  variant="outline"
+                  size="sm"
+                  className="min-w-[5rem]"
+                  onClick={() => decline({ inviteId: invite._id })}
+                >
+                  {declinePending ? (
+                    <Loader className="animate-spin text-slate-700" />
+                  ) : (
+                    "Decline"
+                  )}
+                </Button>
+              </>
+            ) : (
+              <Button
+                disabled={acceptPending || declinePending}
+                variant="outline"
+                size="sm"
+                className="min-w-[5rem]"
+                onClick={() => decline({ inviteId: invite._id })}
+              >
+                {declinePending ? (
+                  <Loader className="animate-spin text-slate-700" />
+                ) : (
+                  "Cancel"
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -259,9 +259,9 @@ const declineInvite = async (req: Request, res: Response) => {
     await WorkspaceInvite.deleteOne({ _id: invite._id });
     let msg = "";
     if (invite.sender.toString() === req.user._id) {
-      msg = "You declined the invite";
+      msg = "You canceled the invitation";
     } else {
-      msg = "Invite declined successfully";
+      msg = "You declined the invitation";
     }
     res.status(200).json({ message: msg });
   } catch (error: any) {

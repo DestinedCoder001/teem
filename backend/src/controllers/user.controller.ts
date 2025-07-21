@@ -186,13 +186,19 @@ const getWorkspaceInvites = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const invites = await WorkspaceInvite.find({ receiver: req.user._id })
+    const invites = await WorkspaceInvite.find({
+      $or: [{ receiver: req.user._id }, { sender: req.user._id }],
+    })
       .populate({
         path: "workspace",
         select: "name",
       })
       .populate({
         path: "sender",
+        select: "firstName lastName",
+      })
+      .populate({
+        path: "receiver",
         select: "firstName lastName",
       });
 

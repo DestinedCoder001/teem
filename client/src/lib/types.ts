@@ -54,6 +54,12 @@ export type Invite = {
     name: string;
   };
   sender: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  receiver: {
+    _id: string;
     firstName: string;
     lastName: string;
   };
