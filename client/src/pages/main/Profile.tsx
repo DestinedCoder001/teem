@@ -149,7 +149,7 @@ const UserProfile = () => {
                   {user?.lastName?.[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              {isOnline ? (
+              {isOnline && !isEditing ? (
                 <span
                   className="absolute bottom-2 right-1/15 w-4 h-4 border-2 border-white rounded-full
                   bg-secondary
@@ -161,7 +161,7 @@ const UserProfile = () => {
             {isEditing ? (
               <>
                 <div
-                  className="p-2 absolute -right-10 bottom-1 bg-primary rounded-full cursor-pointer hover:scale-[105%] transition-all"
+                  className="p-2 absolute -right-1 bottom-1 bg-primary rounded-full cursor-pointer hover:scale-[105%] transition-all"
                   onClick={handleCamClick}
                 >
                   <CameraIcon className="text-white size-4" />
