@@ -22,7 +22,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUpdateTaskStatus } from "@/lib/hooks/useUpdateTaskStatus";
 import { useDeleteTask } from "@/lib/hooks/useDeleteTask";
 import { useEditTaskDialogOpen, useTaskSheetOpen } from "@/lib/store/uiStore";
-import { currentEditingTask } from "@/lib/store/userStore";
+import { currentEditingTask, useUserStore } from "@/lib/store/userStore";
 import { formatTaskDueDate } from "@/utils/formatDueDate";
 
 interface TaskCardProps {
@@ -52,6 +52,7 @@ const TaskCard = ({
   const { setOpen } = useEditTaskDialogOpen((state) => state);
   const { setTask } = currentEditingTask((state) => state);
   const { setOpen: setTaskDrawerOpen } = useTaskSheetOpen((state) => state);
+  const user = useUserStore((state) => state.user);
 
   const handleTaskUpdate = (taskStatus: "pending" | "completed") => {
     setTimeout(() => {
@@ -113,16 +114,18 @@ const TaskCard = ({
                 className="text-slate-700 -translate-x-6 lg:-translate-x-0"
                 onClick={(e) => e.stopPropagation()}
               >
-                <DropdownMenuItem
-                  onSelect={() => {
-                    setOpen(true);
-                    setTask(taskDetails);
-                  }}
-                  className="cursor-pointer group"
-                >
-                  <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
-                  Edit
-                </DropdownMenuItem>
+                {user && user._id === assignedBy._id && (
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      setOpen(true);
+                      setTask(taskDetails);
+                    }}
+                    className="cursor-pointer group"
+                  >
+                    <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
+                    Edit
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem
                   onSelect={() => handleTaskUpdate("completed")}
                   className="cursor-pointer group"
@@ -137,13 +140,15 @@ const TaskCard = ({
                   <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500 group-focus:text-orange-500" />
                   Mark In Progress
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={handleDelete}
-                  className="cursor-pointer group"
-                >
-                  <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
-                  Delete Task
-                </DropdownMenuItem>
+                {user && user._id === assignedBy._id && (
+                  <DropdownMenuItem
+                    onSelect={handleDelete}
+                    className="cursor-pointer group"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
+                    Delete Task
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -156,7 +161,10 @@ const TaskCard = ({
               </div>
             )}
 
-            <div dangerouslySetInnerHTML={{ __html: modGuidlines }} className="text-sm text-slate-800" />
+            <div
+              dangerouslySetInnerHTML={{ __html: modGuidlines }}
+              className="text-sm text-slate-800"
+            />
           </div>
         </div>
 
