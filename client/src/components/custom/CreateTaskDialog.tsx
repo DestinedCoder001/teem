@@ -7,7 +7,6 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import type { CustomAxiosError } from "@/lib/types";
@@ -18,6 +17,7 @@ import { useCreateTask } from "@/lib/hooks/useCreateTask";
 import DateTimePicker from "./DateTimePicker";
 import { useEffect, useState } from "react";
 import AssignesDropdown from "./AssignesDropdown";
+import GuidelinesEditor from "./GuidlinesEditor";
 
 type FormValues = {
   taskTitle: string;
@@ -36,6 +36,7 @@ const CreateTaskDialog = () => {
     reset,
     setValue,
     trigger,
+    control,
     watch,
     formState: { errors },
   } = useForm<FormValues>({
@@ -69,11 +70,13 @@ const CreateTaskDialog = () => {
         title: data.taskTitle,
         guidelines: data.guidelines,
         dueDate: data.dueDate,
-        assignedTo: assignee
+        assignedTo: assignee,
       },
       {
         onSuccess: () => {
-          toast.success("Task created successfully", { position: "top-center" });
+          toast.success("Task created successfully", {
+            position: "top-center",
+          });
           reset();
           setOpen(false);
         },
@@ -134,29 +137,15 @@ const CreateTaskDialog = () => {
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="description" className="text-base text-gray-700">
+              <Label htmlFor="guidelines" className="text-base text-gray-700">
                 Guidelines
               </Label>
-              <Textarea
-                id="description"
-                placeholder="Guidelines for this task"
-                {...register("guidelines", {
-                  required: "Guidelines is required",
-                  minLength: {
-                    value: 10,
-                    message: "Guidelines must be at least 10 characters",
-                  },
-                  maxLength: {
-                    value: 1000,
-                    message: "Guidelines must be less than 1000 characters",
-                  },
-                })}
+              <GuidelinesEditor
+                name="guidelines"
+                control={control}
+                minCharacters={10}
+                maxCharacters={1000}
               />
-              {errors.guidelines && (
-                <span className="text-xs text-red-500">
-                  {errors.guidelines.message}
-                </span>
-              )}
             </div>
           </div>
 
@@ -166,11 +155,7 @@ const CreateTaskDialog = () => {
               disabled={isPending}
               className="min-w-[10rem]"
             >
-              {isPending ? (
-                <Loader className="animate-spin" />
-              ) : (
-                "Create Task"
-              )}
+              {isPending ? <Loader className="animate-spin" /> : "Create Task"}
             </Button>
           </div>
         </form>

@@ -14,6 +14,7 @@ import NotFound from "./components/custom/NotFound";
 import Settings from "./pages/main/Settings";
 import User from "./pages/main/User";
 import Notifications from "./pages/main/Notifications";
+
 function App() {
   return (
     <>

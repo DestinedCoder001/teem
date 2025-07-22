@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "prosemirror-view/style/prosemirror.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -152,3 +153,23 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
 }
+
+.tiptap h1 {
+  @apply text-2xl font-bold;
+}
+.tiptap h2 {
+  @apply text-xl font-semibold;
+}
+.tiptap h3 {
+  @apply text-lg font-semibold;
+}
+.tiptap ul {
+  @apply list-disc list-outside pl-2;
+}
+.tiptap ol {
+  @apply list-decimal list-outside pl-2;
+}
+.tiptap p {
+  @apply text-sm;
+}
+
