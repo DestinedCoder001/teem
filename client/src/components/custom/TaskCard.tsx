@@ -170,9 +170,9 @@ const TaskCard = ({
 
         <div className="space-y-2 lg:space-y-4 mt-4">
           <div className="flex items-center gap-x-3">
-            <Avatar className="h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8 rounded-full border border-slate-200 ">
               <AvatarImage
-                className="border border-slate-200 object-cover object-center w-full"
+                className="object-cover object-center w-full"
                 src={assignedBy?.profilePicture}
                 alt={assignedBy?.firstName}
               />
@@ -182,9 +182,9 @@ const TaskCard = ({
               </AvatarFallback>
             </Avatar>
             <MoveRight className="text-slate-500" />
-            <Avatar className="h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8 rounded-full border border-slate-200 ">
               <AvatarImage
-                className="border border-slate-200 object-cover object-center w-full"
+                className="object-cover object-center w-full"
                 src={assignedTo?.profilePicture}
                 alt={assignedTo?.firstName}
               />
