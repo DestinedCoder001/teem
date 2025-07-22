@@ -73,7 +73,7 @@ const TaskSheet = () => {
           </div>
         )}
 
-        <div className="font-medium break-words text-left p-4">
+        <div className="break-words text-left p-4">
           <div dangerouslySetInnerHTML={{ __html: task?.guidelines as string }} className="space-y-3 text-slate-700" />
         </div>
         <SheetFooter>
