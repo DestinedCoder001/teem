@@ -78,6 +78,9 @@ const TaskCard = ({
     isDue,
   };
 
+  const modGuidlines =
+    guidelines?.length > 100 ? guidelines.slice(0, 100) + "..." : guidelines;
+
   return (
     <>
       <div
@@ -107,7 +110,7 @@ const TaskCard = ({
                 </>
               )}
               <DropdownMenuContent
-                className="text-slate-600"
+                className="text-slate-700 -translate-x-6 lg:-translate-x-0"
                 onClick={(e) => e.stopPropagation()}
               >
                 <DropdownMenuItem
@@ -153,11 +156,7 @@ const TaskCard = ({
               </div>
             )}
 
-            <p className="text-gray-700 text-xs font-[500] tracking-wide break-all">
-              {guidelines?.length > 100
-                ? guidelines.slice(0, 100) + "..."
-                : guidelines}
-            </p>
+            <div dangerouslySetInnerHTML={{ __html: modGuidlines }} className="text-sm text-slate-800" />
           </div>
         </div>
 

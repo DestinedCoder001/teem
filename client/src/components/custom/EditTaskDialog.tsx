@@ -7,7 +7,6 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import type { CustomAxiosError } from "@/lib/types";
@@ -19,6 +18,7 @@ import AssignesDropdown from "./AssignesDropdown";
 import { useEditTaskDialogOpen } from "@/lib/store/uiStore";
 import { useEditTask } from "@/lib/hooks/useEditTask";
 import { currentEditingTask } from "@/lib/store/userStore";
+import GuidelinesEditor from "./GuidlinesEditor";
 
 type FormValues = {
   taskTitle: string;
@@ -38,6 +38,7 @@ const EditTaskDialog = () => {
     setValue,
     trigger,
     watch,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     mode: "onChange",
@@ -159,30 +160,16 @@ const EditTaskDialog = () => {
               <span className="text-xs text-red-500">Assignee is required</span>
             )}
 
-            <div className="grid gap-2">
-              <Label htmlFor="description" className="text-base text-gray-700">
+                        <div className="grid gap-2">
+              <Label htmlFor="guidelines" className="text-base text-gray-700">
                 Guidelines
               </Label>
-              <Textarea
-                id="description"
-                placeholder="Guidelines for this task"
-                {...register("guidelines", {
-                  required: "Guidelines is required",
-                  minLength: {
-                    value: 10,
-                    message: "Guidelines must be at least 10 characters",
-                  },
-                  maxLength: {
-                    value: 1000,
-                    message: "Guidelines must be less than 1000 characters",
-                  },
-                })}
+              <GuidelinesEditor
+                name="guidelines"
+                control={control}
+                minCharacters={10}
+                maxCharacters={1000}
               />
-              {errors.guidelines && (
-                <span className="text-xs text-red-500">
-                  {errors.guidelines.message}
-                </span>
-              )}
             </div>
           </div>
 

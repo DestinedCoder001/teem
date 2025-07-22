@@ -4,6 +4,7 @@ import { Task } from "../models/task.model";
 import Workspace from "../models/workspace.model";
 import { Types } from "mongoose";
 import { matchedData, validationResult } from "express-validator";
+import { sanitizeHtml } from "../utils/sanitizeHtml";
 
 const createTask = async (req: Request, res: Response) => {
   if (!req.user) {
@@ -40,7 +41,10 @@ const createTask = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspace = await Workspace.findOne({ _id: workspaceId, users: { $in: [req.user._id] } });
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: { $in: [req.user._id] },
+    });
     const isUserInWorkspace = workspace.users.includes(req.user._id);
     const isAssigneeInWorkspace = workspace.users.includes(assignedTo);
 
@@ -52,9 +56,11 @@ const createTask = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Assignee not in workspace" });
     }
 
+    const cleanedGuidlines = sanitizeHtml(guidelines);
+
     const newTask = await Task.create({
       title,
-      guidelines,
+      guidelines: cleanedGuidlines,
       assignedBy: req.user._id,
       assignedTo,
       workspace: workspace._id,
@@ -84,7 +90,10 @@ const getTasks = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const workspace = await Workspace.findOne({ _id: workspaceId, users: { $in: [req.user._id] } });
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+      users: { $in: [req.user._id] },
+    });
     if (!workspace) {
       return res.status(404).json({ message: "Workspace not found" });
     }
@@ -139,9 +148,11 @@ const editTask = async (req: Request, res: Response) => {
   try {
     await connectDb();
 
+    const cleanedGuidelines = sanitizeHtml(guidelines);
+
     const task = await Task.findOneAndUpdate(
       { _id: taskId, assignedBy: req.user._id },
-      { title, guidelines, dueDate, assignedTo }
+      { title, guidelines: cleanedGuidelines, dueDate, assignedTo }
     );
 
     if (!task) {

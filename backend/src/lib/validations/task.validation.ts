@@ -12,11 +12,11 @@ export const createTaskValidation = checkSchema({
   },
   guidelines: {
     isString: {
-      errorMessage: "Summary must be a string",
+      errorMessage: "Guidlines must be a string",
     },
     isLength: {
       options: { min: 10, max: 1000 },
-      errorMessage: "Summary must be between 10 and 1000 characters",
+      errorMessage: "Guidlines must be between 10 and 1000 characters",
     },
     trim: true,
   },
