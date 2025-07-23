@@ -15,6 +15,7 @@ import { AvatarImage } from "@radix-ui/react-avatar";
 import useGetMe from "@/lib/hooks/useGetMe";
 import ProfileSkeleton from "@/components/custom/ProfileSkeleton";
 import { useUpdateDp } from "@/lib/hooks/useUpdateDp";
+import { useActiveUsers } from "@/lib/store/uiStore";
 
 type FormValues = {
   firstName: string;
@@ -26,10 +27,11 @@ const UserProfile = () => {
   const { user, setUser } = useUserStore((state) => state);
   const { isFetching } = useGetMe();
   const [isEditing, setIsEditing] = useState(false);
-  const [isOnline] = useState(true);
   const [img, setImg] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { mutate: updateImg, isPending: imgUpdatePending } = useUpdateDp();
+  const { activeUsers } = useActiveUsers((state) => state);
+  const isOnline = activeUsers.includes(user?._id as string);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: { firstName: string; lastName: string }) => {

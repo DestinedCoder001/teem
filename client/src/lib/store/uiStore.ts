@@ -62,12 +62,22 @@ const useTaskSheetOpen = create<{
   isOpen: false,
   setOpen: (open) => set({ isOpen: open }),
 }));
+
 const useSendInviteOpen = create<{
   isOpen: boolean;
   setOpen: (open: boolean) => void;
 }>((set) => ({
   isOpen: false,
   setOpen: (open) => set({ isOpen: open }),
+}));
+
+const useActiveUsers = create<{
+  activeUsers: string[];
+  setActiveUsers: (users: string[]) => void;
+}>((set) => ({
+  activeUsers: [],
+  setActiveUsers: (users: string[]) =>
+    set({ activeUsers: users }),
 }));
 
 export {
@@ -80,4 +90,5 @@ export {
   useRemoveAlertOpen,
   useWsDeleteAlertOpen,
   useSendInviteOpen,
+  useActiveUsers
 };

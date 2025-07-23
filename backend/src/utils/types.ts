@@ -15,6 +15,12 @@ declare global {
   }
 }
 
+declare module "socket.io" {
+  interface Socket {
+    user?: JwtPayload;
+  }
+}
+
 interface SignUpBody {
   email: string;
   password: string;

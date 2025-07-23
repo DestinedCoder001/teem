@@ -8,10 +8,14 @@ import NotFound from "@/components/custom/NotFound";
 import type { AxiosError } from "axios";
 import { formatDates } from "@/utils/formatDates";
 import UserSkeleton from "@/components/custom/UserSkeleton";
+import { useActiveUsers } from "@/lib/store/uiStore";
 
 const User = () => {
   const { userId } = useParams();
-  const isOnline = true;
+  const { activeUsers } = useActiveUsers((state) => state);
+
+  const isOnline = activeUsers.includes(userId as string);
+
   const { data, isFetching, error } = useQuery({
     queryKey: ["get-user"],
     queryFn: async () => {

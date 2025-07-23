@@ -10,11 +10,13 @@ import { UserIconDropdown } from "../UserIconDropdown";
 import DesktopSidebar from "@/components/custom/DesktopSidebar";
 import MobileSideBar from "../MobileSidebar";
 import { PanelLeft } from "lucide-react";
-import { useSidebarOpen } from "@/lib/store/uiStore";
+import { useActiveUsers, useSidebarOpen } from "@/lib/store/uiStore";
 import useGetMe from "@/lib/hooks/useGetMe";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import CreateChannelDialog from "../CreateChannelDialog";
 import CreateWorkspaceDialog from "../CreateWorkspaceDialog";
+import { useAuthStore } from "@/lib/store/authStore";
+import { createSocket } from "@/lib/socket";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
@@ -36,6 +38,30 @@ const AppLayout = () => {
       setWorkspaceDetails(currentWsData);
     }
   }, [currentWsData, getCurrentWsSuccess, setWorkspaceDetails, isSuccess]);
+
+  const token = useAuthStore((state) => state.accessToken);
+
+  useEffect(() => {
+    if (token) {
+      const socket = createSocket(token);
+
+      const onConnect = () => console.log("Connected to socket");
+      const onDisconnect = () => console.log("Disconnected from socket");
+
+      socket.on("connect", onConnect);
+      socket.on("disconnect", onDisconnect);
+      socket.on("active_users", (data) => {
+        useActiveUsers.getState().setActiveUsers(data);
+      });
+
+      return () => {
+        socket.off("connect", onConnect);
+        socket.off("disconnect", onDisconnect);
+        socket.off("active_users");
+        socket.disconnect();
+      };
+    }
+  }, [token]);
 
   const toggleSidebar = () => {
     if (isOpen) return;
