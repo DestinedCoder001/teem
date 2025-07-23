@@ -85,7 +85,7 @@ const TaskCard = ({
   return (
     <>
       <div
-        className="flex flex-col justify-between bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer h-[16rem] lg:h-[17rem]"
+        className="flex flex-col justify-between bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer h-[16rem] lg:h-[19rem] xl:h-[17rem]"
         title={title}
         onClick={() => {
           setTask(taskDetails);

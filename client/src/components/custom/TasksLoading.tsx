@@ -13,7 +13,7 @@ const TasksLoading = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[1, 2, 3, 4, 5, 6].map((item) => (
           <Skeleton
-            className="w-full rounded-md h-[16rem] lg:h-[17rem]"
+            className="w-full rounded-md h-[16rem] lg:h-[19rem] xl:h-[17rem]"
             key={item}
           />
         ))}

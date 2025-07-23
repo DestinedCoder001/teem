@@ -1,43 +1,58 @@
 import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
-import api from "@/lib/axios";
-import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
-import { currentChannelDetails, currentWs } from "@/lib/store/userStore";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { currentChannelDetails } from "@/lib/store/userStore";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { AxiosError } from "axios";
 import ChannelNotFound from "@/components/custom/ChannelNotFound";
 import AppError from "@/components/custom/AppError";
+import useSendMessage from "@/lib/hooks/useSendMessage";
+import useGetChannelDetails from "@/lib/hooks/useGetChannelDetails";
+import MessageBubble from "@/components/custom/MessageBubble";
+import type { MessageProps } from "@/lib/types";
+import { Paperclip, SendHorizonal } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Textarea } from "@/components/ui/textarea";
 
 const Channel = () => {
-  const { wsId } = currentWs((state) => state);
-  const { getCurrentWsSuccess } = useGetWsDetails();
   const { channelId } = useParams();
-  const { name, setChannelDetails } = currentChannelDetails((state) => state);
-
-  const { data, isSuccess, isFetching, error } = useQuery({
-    queryKey: ["get-channel-details", channelId],
-    queryFn: async () => {
-      const { data } = await api.get(`/${wsId}/channels/${channelId}/`);
-      return data;
-    },
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
+  const {
+    name,
+    setChannelDetails,
+    _id: channelID,
+    createdBy,
+    members,
+  } = currentChannelDetails((state) => state);
+  const { mutate } = useSendMessage();
+  const { data, isSuccess, isPending, error } = useGetChannelDetails(
+    channelId as string
+  );
+  const [messagesList, setMessagesList] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
-    if (getCurrentWsSuccess && isSuccess) {
+    if (isSuccess) {
       const payload = {
-        name: data?.data.name,
-        description: data?.data.description,
+        _id: data?.channel._id,
+        name: data?.channel.name,
+        description: data?.channel.description,
+        members: data?.channel.members,
+        createdBy: data?.channel.createdBy,
       };
       setChannelDetails(payload);
+      setMessagesList(data?.messages);
     }
-  }, [getCurrentWsSuccess, isSuccess, data, setChannelDetails]);
+  }, [isSuccess, data, setChannelDetails]);
 
-  if (isFetching) return <ChannelSkeleton />;
+  const handleSendMessage = () => {
+    mutate({ message: newMessage, channelId: channelID });
+  };
+
+  if (isPending) return <ChannelSkeleton />;
 
   if (error) {
     const err = error as AxiosError;
@@ -47,58 +62,81 @@ const Channel = () => {
     return <AppError />;
   }
 
+  const parseMembers = () => {
+    if (members.length === 0) return "";
+    const names = members
+      .sort((a, b) => {
+        if (a._id === createdBy._id) return -1;
+        if (b._id === createdBy._id) return 1;
+        return 0;
+      })
+      .map((m) => `${m.firstName} ${m.lastName}`);
+    if (members.length === 1) {
+      return names[0];
+    }
+    if (members.length === 2) {
+      return `${names[0]} and ${names[1]}`;
+    }
+    const othersCount = members.length - 2;
+    return `${names[0]}, ${names[1]} and ${othersCount} ${
+      othersCount === 1 ? "other" : "others"
+    }`;
+  };
+
+  const membersList = parseMembers();
+
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-4 border-b">
-        <h1 className="text-xl text-slate-600 font-medium w-max">{name}</h1>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
-        <div className="flex items-start space-x-3">
-          <div className="h-10 w-10 rounded-full bg-gray-200" />
-          <div className="space-y-2">
-            <div className="h-4 w-64 rounded-full bg-gray-200" />
-            <div className="h-4 w-40 rounded-full bg-gray-200" />
-          </div>
+    <div className="h-[calc(100vh-50px)] overflow-hidden">
+      <div className="flex flex-col relative h-full">
+        <div className="p-4 border-b fixed top-[49px] w-full lg:w-[calc(100%-220px)] bg-white z-40">
+          <h1 className="text-xl theme-text-gradient font-medium w-max">
+            {name}
+          </h1>
+          <p className="text-xs text-slate-600 text-nowrap text-ellipsis">
+            {membersList}
+          </p>
         </div>
 
-        <div className="flex items-start justify-end space-x-3">
-          <div className="space-y-2 text-right">
-            <div className="h-4 w-64 rounded-full bg-gray-200 ml-auto" />
-            <div className="h-4 w-40 rounded-full bg-gray-200 ml-auto" />
-          </div>
-          <div className="h-10 w-10 rounded-full bg-gray-200" />
+        <div className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[110px] px-4">
+          {!isPending && messagesList.length > 0 && (
+            <div className="flex flex-col gap-y-4">
+              {messagesList.map((message: MessageProps) => (
+                <MessageBubble message={message} key={message._id} />
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="flex items-start space-x-3">
-          <div className="h-10 w-10 rounded-full bg-gray-200" />
-          <div className="space-y-2">
-            <div className="h-4 w-56 rounded-full bg-gray-200" />
-            <div className="h-4 w-36 rounded-full bg-gray-200" />
+        <div className="p-4 bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
+          <div className="flex items-center space-x-4">
+            <Tooltip>
+              <TooltipTrigger>
+                <Paperclip
+                  size={20}
+                  className="text-slate-500 shrink-0 cursor-pointer"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Attach files</p>
+              </TooltipContent>
+            </Tooltip>
+            <Textarea
+              cols={1}
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              autoComplete="off"
+              className="flex-1 rounded-lg resize-none"
+            />
+            <Button
+              type="button"
+              className="rounded-full size-10"
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim()}
+            >
+              <SendHorizonal />
+            </Button>
           </div>
-        </div>
-
-        <div className="flex items-start justify-end space-x-3">
-          <div className="space-y-2 text-right">
-            <div className="h-4 w-64 rounded-full bg-gray-200 ml-auto" />
-            <div className="h-4 w-40 rounded-full bg-gray-200 ml-auto" />
-          </div>
-          <div className="h-10 w-10 rounded-full bg-gray-200" />
-        </div>
-
-        <div className="flex items-start space-x-3">
-          <div className="h-10 w-10 rounded-full bg-gray-200" />
-          <div className="space-y-2">
-            <div className="h-4 w-56 rounded-full bg-gray-200" />
-            <div className="h-4 w-36 rounded-full bg-gray-200" />
-          </div>
-        </div>
-      </div>
-
-      <div className="p-4 border-t bg-white/80 backdrop-blur-sm">
-        <div className="flex items-center space-x-2">
-          <Input placeholder="Type a message..." className="flex-1" />
-          <Button type="button">Send</Button>
         </div>
       </div>
     </div>

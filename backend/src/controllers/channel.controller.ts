@@ -244,10 +244,12 @@ const getChannelDetails = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
+
     const workspace = await Workspace.findOne({
       _id: workspaceId,
       users: { $in: [req.user._id] },
     });
+
     if (!workspace) {
       return res.status(403).json({ message: "Channel not available" });
     }
@@ -257,34 +259,23 @@ const getChannelDetails = async (req: Request, res: Response) => {
     }).populate({
       path: "members",
       select: "firstName lastName",
+    }).populate({
+      path: "createdBy",
+      select: "firstName lastName",
     });
 
     if (!channel) {
       return res.status(404).json({ message: "Channel not found" });
     }
-    res.status(200).json({ data: channel });
-  } catch (error: any) {
-    res.status(500).json(error.message);
-  }
-};
 
-const getChannelMessages = async (req: Request, res: Response) => {
-  const { channelId } = req.params;
-
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  if (!Types.ObjectId.isValid(channelId)) {
-    return res.status(400).json({ message: "Invalid channel id" });
-  }
-
-  try {
-    await connectDb();
     const messages = await Message.find({
       channel: channelId,
+    }).populate({
+      path: "sender",
+      select: "firstName lastName profilePicture",
     });
-    res.status(200).json({ data: messages });
+
+    res.status(200).json({ channel, messages });
   } catch (error: any) {
     res.status(500).json(error.message);
   }
@@ -436,7 +427,6 @@ export {
   addMembers,
   joinChannel,
   leaveChannel,
-  getChannelMessages,
   getChannelDetails,
   removeMembers,
   deleteChannel,

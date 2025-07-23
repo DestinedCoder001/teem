@@ -46,6 +46,7 @@ const WsSwitch = () => {
       profilePicture: "",
     });
     setChannelDetails({
+      _id: "",
       name: "",
       description: "",
     });
@@ -57,6 +58,7 @@ const WsSwitch = () => {
     if (id === wsId) return;
     setCurrentWs({ id, name });
     setChannelDetails({
+      _id: "",
       name: "",
       description: "",
     });

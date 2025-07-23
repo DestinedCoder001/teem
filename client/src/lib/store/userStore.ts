@@ -62,6 +62,9 @@ const currentChannelDetails = create<
   }
 >((set) => ({
   name: "",
+  members: [],
+  createdBy: { _id: "", firstName: "", lastName: "" },
+  _id: "",
   description: "",
   setChannelDetails: (details: ChannelPayload) => set(details),
 }));

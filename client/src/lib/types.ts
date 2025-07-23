@@ -31,8 +31,11 @@ export type WorkspacePayload = {
 };
 
 export type ChannelPayload = {
+  _id: string;
   name: string;
   description: string;
+  members: { _id: string; firstName: string; lastName: string }[];
+  createdBy: { _id: string; firstName: string; lastName: string };
 };
 
 export type TaskPayload = {
@@ -65,5 +68,17 @@ export type Invite = {
   };
   createdAt: string;
 };
+
+export type MessageProps = {
+  _id: string;
+  sender: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    profilePicture: string;
+  };
+  content: string;
+  createdAt: Date;
+}
 
 export type CustomAxiosError = AxiosError<{ message: string }>;

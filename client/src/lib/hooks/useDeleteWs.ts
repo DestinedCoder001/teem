@@ -23,6 +23,7 @@ const useDeleteWs = () => {
       profilePicture: "",
     });
     setChannelDetails({
+      _id: "",
       name: "",
       description: "",
     });

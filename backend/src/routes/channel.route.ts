@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addMembers, createChannel, deleteChannel, editChannelDetails, getChannelDetails, getChannelMessages, joinChannel, leaveChannel, removeMembers } from "../controllers/channel.controller";
+import { addMembers, createChannel, deleteChannel, editChannelDetails, getChannelDetails, joinChannel, leaveChannel, removeMembers } from "../controllers/channel.controller";
 
 const router = Router({mergeParams: true});
 
@@ -18,10 +18,6 @@ router.post("/:channelId/add-members", (req, res) => {
 
 router.post("/:channelId/remove-members", (req, res) => {
     removeMembers(req, res);
-});
-
-router.get("/:channelId/messages", (req, res) => {
-    getChannelMessages(req, res);
 });
 
 router.get("/:channelId", (req, res) => {
