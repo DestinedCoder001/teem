@@ -80,6 +80,14 @@ const useActiveUsers = create<{
     set({ activeUsers: users }),
 }));
 
+const useUserOnline= create<{
+  isOnline: boolean;
+  setIsOnline: (open: boolean) => void;
+}>((set) => ({
+  isOnline: false,
+  setIsOnline: (open) => set({ isOnline: open }),
+}));
+
 export {
   useSidebarOpen,
   useCreateWsDialogOpen,
@@ -90,5 +98,6 @@ export {
   useRemoveAlertOpen,
   useWsDeleteAlertOpen,
   useSendInviteOpen,
-  useActiveUsers
+  useActiveUsers,
+  useUserOnline
 };

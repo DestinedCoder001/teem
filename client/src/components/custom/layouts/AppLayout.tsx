@@ -10,21 +10,28 @@ import { UserIconDropdown } from "../UserIconDropdown";
 import DesktopSidebar from "@/components/custom/DesktopSidebar";
 import MobileSideBar from "../MobileSidebar";
 import { PanelLeft } from "lucide-react";
-import { useActiveUsers, useSidebarOpen } from "@/lib/store/uiStore";
+import {
+  useActiveUsers,
+  useSidebarOpen,
+  useUserOnline,
+} from "@/lib/store/uiStore";
 import useGetMe from "@/lib/hooks/useGetMe";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import CreateChannelDialog from "../CreateChannelDialog";
 import CreateWorkspaceDialog from "../CreateWorkspaceDialog";
 import { useAuthStore } from "@/lib/store/authStore";
-import { createSocket } from "@/lib/socket";
+import { createSocket, getSocket } from "@/lib/socket";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
   const { setWorkspaces } = useUserWorkspaces((state) => state);
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
-  const { setWorkspaceDetails } = currentWsDetails();
+  const { setWorkspaceDetails, _id } = currentWsDetails();
   const { currentWsData, getCurrentWsSuccess } = useGetWsDetails();
   const { user, workspaces, isSuccess } = useGetMe();
+  const token = useAuthStore((state) => state.accessToken);
+  const authSocket = getSocket()!;
+  const { setIsOnline } = useUserOnline((state) => state);
 
   useEffect(() => {
     if (isSuccess) {
@@ -37,16 +44,43 @@ const AppLayout = () => {
     if (isSuccess && getCurrentWsSuccess) {
       setWorkspaceDetails(currentWsData);
     }
-  }, [currentWsData, getCurrentWsSuccess, setWorkspaceDetails, isSuccess]);
 
-  const token = useAuthStore((state) => state.accessToken);
+    if (authSocket) {
+      setIsOnline(true);
+      authSocket.emit("connect_ws", _id);
+    }
+
+  }, [
+    currentWsData,
+    getCurrentWsSuccess,
+    setWorkspaceDetails,
+    isSuccess,
+    authSocket,
+    _id,
+    setIsOnline,
+  ]);
 
   useEffect(() => {
-    if (token) {
+    if (token && _id) {
       const socket = createSocket(token);
 
-      const onConnect = () => console.log("Connected to socket");
-      const onDisconnect = () => console.log("Disconnected from socket");
+      const onConnect = () => {
+        if (_id) {
+          socket.emit("connect_ws", _id);
+          setIsOnline(true);
+        }
+        console.log("Connected to socket");
+      };
+
+      const onDisconnect = () => {
+        socket.emit("disconnect_ws", _id);
+        setIsOnline(false);
+        console.log("Disconnected from socket");
+      };
+
+      const handleBeforeUnload = () => {
+        socket.emit("disconnect_ws", _id);
+      };
 
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
@@ -54,14 +88,19 @@ const AppLayout = () => {
         useActiveUsers.getState().setActiveUsers(data);
       });
 
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
         socket.off("active_users");
+
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+
         socket.disconnect();
       };
     }
-  }, [token]);
+  }, [token, _id, setIsOnline]);
 
   const toggleSidebar = () => {
     if (isOpen) return;

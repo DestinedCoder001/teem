@@ -15,7 +15,7 @@ import { AvatarImage } from "@radix-ui/react-avatar";
 import useGetMe from "@/lib/hooks/useGetMe";
 import ProfileSkeleton from "@/components/custom/ProfileSkeleton";
 import { useUpdateDp } from "@/lib/hooks/useUpdateDp";
-import { useActiveUsers } from "@/lib/store/uiStore";
+import { useUserOnline } from "@/lib/store/uiStore";
 
 type FormValues = {
   firstName: string;
@@ -25,14 +25,13 @@ type FormValues = {
 
 const UserProfile = () => {
   const { user, setUser } = useUserStore((state) => state);
-  const { isFetching } = useGetMe();
+  const { isPending: getMePending } = useGetMe();
   const [isEditing, setIsEditing] = useState(false);
   const [img, setImg] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { mutate: updateImg, isPending: imgUpdatePending } = useUpdateDp();
-  const { activeUsers } = useActiveUsers((state) => state);
-  const isOnline = activeUsers.includes(user?._id as string);
 
+  const isOnline = useUserOnline((state) => state.isOnline);
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: { firstName: string; lastName: string }) => {
       const { data } = await api.patch("/users/edit", payload);
@@ -121,7 +120,7 @@ const UserProfile = () => {
     setIsEditing(false);
   };
 
-  if (isFetching) {
+  if (getMePending) {
     return <ProfileSkeleton />;
   }
 

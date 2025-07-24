@@ -16,7 +16,7 @@ const User = () => {
 
   const isOnline = activeUsers.includes(userId as string);
 
-  const { data, isFetching, error } = useQuery({
+  const { data, isPending, error } = useQuery({
     queryKey: ["get-user"],
     queryFn: async () => {
       const { data } = await api.get(`/users/${userId}`);
@@ -26,7 +26,7 @@ const User = () => {
     refetchOnWindowFocus: false,
   });
 
-  if (isFetching) {
+  if (isPending) {
     return <UserSkeleton />;
   }
 

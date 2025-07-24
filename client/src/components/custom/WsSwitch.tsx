@@ -18,6 +18,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useCreateWsDialogOpen } from "@/lib/store/uiStore";
+import { getSocket } from "@/lib/socket";
 
 const WsSwitch = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -33,6 +34,7 @@ const WsSwitch = () => {
   const { setTasks } = useUserTasks((state) => state);
   const navigate = useNavigate();
   const { setOpen } = useCreateWsDialogOpen((state) => state);
+  const authSocket = getSocket()!;
 
   // if (!workspaces?.length) return null;
 
@@ -48,6 +50,8 @@ const WsSwitch = () => {
     setChannelDetails({
       _id: "",
       name: "",
+      createdBy: { _id: "", firstName: "", lastName: "" },
+      members: [],
       description: "",
     });
     setTasks([]);
@@ -60,6 +64,8 @@ const WsSwitch = () => {
     setChannelDetails({
       _id: "",
       name: "",
+      createdBy: { _id: "", firstName: "", lastName: "" },
+      members: [],
       description: "",
     });
     setTasks([]);
@@ -68,6 +74,7 @@ const WsSwitch = () => {
   };
 
   const handleSignOut = () => {
+    authSocket.disconnect();
     signOut();
     resetAndRedirect();
   };
@@ -106,9 +113,8 @@ const WsSwitch = () => {
       <DropdownMenuContent className="w-56 bg-white text-slate-600 ml-4 z-[120]">
         {workspaces.length > 0 &&
           workspaces?.map((ws) => (
-            <>
+            <div key={ws._id}>
               <DropdownMenuItem
-                key={ws._id}
                 onClick={() => handleToggle(ws._id, ws.name)}
                 className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2"
               >
@@ -134,13 +140,13 @@ const WsSwitch = () => {
                   {ws.name.length > 20 ? ws.name.slice(0, 20) + "..." : ws.name}
                 </span>
               </DropdownMenuItem>
-            </>
+            </div>
           ))}
 
         {workspaces.length < 3 && (
           <DropdownMenuItem
-          onClick={() => setOpen(true)}
-          className="focus:bg-slate-100 cursor-pointer flex items-center justify-center space-x-2"
+            onClick={() => setOpen(true)}
+            className="focus:bg-slate-100 cursor-pointer flex items-center justify-center space-x-2"
           >
             <Plus strokeWidth={3} />
             <span>New workspace</span>
