@@ -1,5 +1,5 @@
 import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
-import { currentChannelDetails } from "@/lib/store/userStore";
+import { currentChannelDetails, currentWsDetails } from "@/lib/store/userStore";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
+import { getSocket } from "@/lib/socket";
+import { useActiveChannelUsers } from "@/lib/store/uiStore";
 
 const Channel = () => {
   const { channelId } = useParams();
+  const wsId = currentWsDetails.getState()._id;
   const {
     name,
     setChannelDetails,
@@ -27,12 +30,16 @@ const Channel = () => {
     createdBy,
     members,
   } = currentChannelDetails((state) => state);
+  const { activeChannelUsers, setActiveChannelUsers } = useActiveChannelUsers(
+    (state) => state
+  );
   const { mutate } = useSendMessage();
   const { data, isSuccess, isPending, error } = useGetChannelDetails(
     channelId as string
   );
   const [messagesList, setMessagesList] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const authSocket = getSocket()!;
 
   useEffect(() => {
     if (isSuccess) {
@@ -47,6 +54,41 @@ const Channel = () => {
       setMessagesList(data?.messages);
     }
   }, [isSuccess, data, setChannelDetails]);
+
+  useEffect(() => {
+    if (authSocket && wsId && channelID) {
+      authSocket.emit("connect_channel", { wsId, id: channelID });
+
+      const handleActiveUsers = (data: string[]) => {
+        setActiveChannelUsers(data);
+      };
+
+      const handleSocketDisconnect = () => {
+        authSocket.emit("disconnect_channel", { wsId, id: channelID });
+      };
+
+      const handleBeforeUnload = () => {
+        authSocket.emit("disconnect_channel", { wsId, id: channelID });
+      };
+
+      authSocket.on("connect", () => {
+        authSocket.emit("connect_channel", { wsId, id: channelID });
+      });
+
+      authSocket.on("active_channel_users", handleActiveUsers);
+      authSocket.on("disconnect", handleSocketDisconnect);
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      return () => {
+        authSocket.emit("disconnect_channel", { wsId, id: channelID });
+        authSocket.off("active_channel_users", handleActiveUsers);
+        authSocket.off("disconnect", handleSocketDisconnect);
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+
+        setActiveChannelUsers([]);
+      };
+    }
+  }, [authSocket, channelID, wsId, setActiveChannelUsers]);
 
   const handleSendMessage = () => {
     mutate({ message: newMessage, channelId: channelID });
@@ -92,6 +134,14 @@ const Channel = () => {
           <h1 className="text-xl theme-text-gradient font-medium w-max">
             {name}
           </h1>
+          {activeChannelUsers.length > 0 && (
+            <div className="flex items-center gap-x-1">
+              <span className="w-2 h-2 bg-green-600 rounded-full" />
+              <span className="text-slate-600 text-xs">
+                {activeChannelUsers.length} active
+              </span>
+            </div>
+          )}
           <p className="text-xs text-slate-600 text-nowrap text-ellipsis">
             {membersList}
           </p>

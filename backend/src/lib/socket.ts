@@ -31,6 +31,7 @@ io.use((socket, next) => {
 });
 
 const activeUsers: { [key: string]: string } = {};
+const activeChannelUsers: Record<string, Set<string>> = {};
 
 io.on("connection", (socket) => {
   const user = socket.user?.UserInfo;
@@ -46,16 +47,60 @@ io.on("connection", (socket) => {
 
     activeUsers[socket.id] = user!._id;
     io.to(wsId).emit("active_users", Object.values(activeUsers));
-    console.log(user?.firstName, "Connected to ws", wsId);
+  });
+
+  socket.on("connect_channel", (payload) => {
+    const { wsId, id } = payload;
+    const channelId = `${wsId}-${id}`;
+
+    socket.join(channelId);
+    socket.data.channelId = channelId;
+    if (!activeChannelUsers[channelId]) {
+      activeChannelUsers[channelId] = new Set();
+    }
+    activeChannelUsers[channelId].add(user!._id);
+    io.to(channelId).emit(
+      "active_channel_users",
+      Array.from(activeChannelUsers[channelId] || [])
+    );
+  });
+
+  socket.on("disconnect_channel", (payload) => {
+    const data = `${payload.wsId}-${payload.id}`;
+    const channelId = socket.data.channelId;
+    if (data === channelId) {
+      socket.leave(channelId);
+      activeChannelUsers[channelId].delete(user!._id);
+      if (activeChannelUsers[channelId].size === 0) {
+        delete activeChannelUsers[channelId];
+      }
+
+      io.to(channelId).emit(
+        "active_channel_users",
+        Array.from(activeChannelUsers[channelId] || [])
+      );
+    }
   });
 
   socket.on("disconnect", () => {
     const wsId = socket.data.wsId;
+    const channelId = socket.data.channelId;
     if (wsId) {
       socket.leave(wsId);
       delete activeUsers[socket.id];
       io.to(wsId).emit("active_users", Object.values(activeUsers));
-      console.log(user?.firstName, "Auto disconnected from ws", wsId);
+    }
+    if (channelId) {
+      socket.leave(channelId);
+      activeChannelUsers[channelId]?.delete(user!._id);
+      if (activeChannelUsers[channelId]?.size === 0) {
+        delete activeChannelUsers[channelId];
+      }
+
+      io.to(channelId).emit(
+        "active_channel_users",
+        Array.from(activeChannelUsers[channelId] || [])
+      );
     }
   });
 });
