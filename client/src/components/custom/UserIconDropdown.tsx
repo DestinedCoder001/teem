@@ -11,6 +11,7 @@ import { LogOut, Settings, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { useNavigate } from "react-router-dom";
+import { useUserOnline } from "@/lib/store/uiStore";
 
 export const UserIconDropdown = () => {
   const { user } = useUserStore((state) => state);
@@ -22,11 +23,12 @@ export const UserIconDropdown = () => {
       window.location.href = "/login";
     });
   };
+  const isOnline = useUserOnline.getState().isOnline;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-8 w-8 rounded-full cursor-pointer border border-slate-200">
+        <Avatar className={`h-8 w-8 rounded-full cursor-pointer border border-slate-200 ${isOnline && "ring ring-offset-1 ring-green-600"}`}>
           <AvatarImage
             src={user?.profilePicture}
             alt={user?.firstName}
@@ -37,7 +39,7 @@ export const UserIconDropdown = () => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mr-2 lg:mr-4" align="start">
+      <DropdownMenuContent className="mr-2 lg:mr-4 bg-white/80 backdrop-blur-sm" align="start">
         <DropdownMenuItem
           className="cursor-pointer text-slate-600 font-medium gap-2"
           onClick={() => navigate("/profile")}

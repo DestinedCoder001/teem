@@ -110,7 +110,7 @@ const WsSwitch = () => {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-56 bg-white text-slate-600 ml-4 z-[120]">
+      <DropdownMenuContent className="w-56 bg-white/80 backdrop-blur-sm text-slate-600 ml-4 z-[120]">
         {workspaces.length > 0 &&
           workspaces?.map((ws) => (
             <div key={ws._id}>

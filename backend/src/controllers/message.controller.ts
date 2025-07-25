@@ -4,7 +4,6 @@ import Channel from "../models/channel.model";
 import Message from "../models/message.model";
 import { Request, Response } from "express";
 
-
 const sendMessage = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
   const { message } = req.body;
@@ -42,9 +41,13 @@ const sendMessage = async (req: Request, res: Response) => {
       workspace: workspaceId,
     });
 
+    await newMessage.populate({
+      path: "sender",
+      select: "firstName lastName profilePicture",
+    });
+
     res.status(200).json({
-      message: "Message sent successfully",
-      data: newMessage,
+      message: newMessage,
     });
   } catch (error: any) {
     res.status(500).json(error.message);

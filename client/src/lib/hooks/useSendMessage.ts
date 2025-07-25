@@ -10,7 +10,7 @@ const useSendMessage = () => {
                 `/${wsId}/${payload.channelId}/send-message`,
                 { message: payload.message }
             );
-            return data;
+            return data.message;
         },
     });
 };

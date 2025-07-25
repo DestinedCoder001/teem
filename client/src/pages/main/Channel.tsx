@@ -1,6 +1,6 @@
 import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
 import { currentChannelDetails, currentWsDetails } from "@/lib/store/userStore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { AxiosError } from "axios";
@@ -10,7 +10,7 @@ import useSendMessage from "@/lib/hooks/useSendMessage";
 import useGetChannelDetails from "@/lib/hooks/useGetChannelDetails";
 import MessageBubble from "@/components/custom/MessageBubble";
 import type { MessageProps } from "@/lib/types";
-import { Paperclip, SendHorizonal } from "lucide-react";
+import { Loader, Paperclip, SendHorizonal } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +19,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { getSocket } from "@/lib/socket";
 import { useActiveChannelUsers } from "@/lib/store/uiStore";
+import messageTone from "@/assets/incoming-msg.mp3";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -33,13 +35,20 @@ const Channel = () => {
   const { activeChannelUsers, setActiveChannelUsers } = useActiveChannelUsers(
     (state) => state
   );
-  const { mutate } = useSendMessage();
+  const { mutate, data: msg, isPending: isSending } = useSendMessage();
   const { data, isSuccess, isPending, error } = useGetChannelDetails(
     channelId as string
   );
-  const [messagesList, setMessagesList] = useState([]);
+  const [messagesList, setMessagesList] = useState<MessageProps[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const authSocket = getSocket()!;
+  const divRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const queryClient = useQueryClient();
+
+  if (audioRef.current) {
+    audioRef.current.volume = 0.1; // reduced volume to avoid scare lol
+  }
 
   useEffect(() => {
     if (isSuccess) {
@@ -55,8 +64,11 @@ const Channel = () => {
     }
   }, [isSuccess, data, setChannelDetails]);
 
+  console.log(messagesList);
+
   useEffect(() => {
     if (authSocket && wsId && channelID) {
+      const audio = audioRef.current;
       authSocket.emit("connect_channel", { wsId, id: channelID });
 
       const handleActiveUsers = (data: string[]) => {
@@ -67,21 +79,35 @@ const Channel = () => {
         authSocket.emit("disconnect_channel", { wsId, id: channelID });
       };
 
+      const handleMessageSend = (data: MessageProps) => {
+        if (data.channel !== channelId) return;
+        if (audio) {
+          audio.play();
+        }
+        setMessagesList((prev) => [...prev, { ...data }]);
+      };
+
       const handleBeforeUnload = () => {
         authSocket.emit("disconnect_channel", { wsId, id: channelID });
       };
 
       authSocket.on("connect", () => {
         authSocket.emit("connect_channel", { wsId, id: channelID });
+        queryClient.invalidateQueries({ queryKey: ["get-channel-details"] });
       });
 
       authSocket.on("active_channel_users", handleActiveUsers);
+
+      authSocket.on("new_message", handleMessageSend);
+
       authSocket.on("disconnect", handleSocketDisconnect);
       window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
         authSocket.emit("disconnect_channel", { wsId, id: channelID });
+        authSocket.off("new_message", handleMessageSend);
         authSocket.off("active_channel_users", handleActiveUsers);
+        audio?.pause();
         authSocket.off("disconnect", handleSocketDisconnect);
         window.removeEventListener("beforeunload", handleBeforeUnload);
 
@@ -92,7 +118,26 @@ const Channel = () => {
 
   const handleSendMessage = () => {
     mutate({ message: newMessage, channelId: channelID });
+    setNewMessage("");
   };
+
+  useEffect(() => {
+    if (msg) {
+      setMessagesList((prev) => [...prev, { ...msg }]);
+      if (authSocket) {
+        authSocket.emit("send_message", { wsId, id: channelID, message: msg });
+      }
+    }
+  }, [msg]);
+
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.scrollTo({
+        top: divRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messagesList]);
 
   if (isPending) return <ChannelSkeleton />;
 
@@ -147,7 +192,11 @@ const Channel = () => {
           </p>
         </div>
 
-        <div className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[110px] px-4">
+        <div
+          ref={divRef}
+          className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[110px] px-4"
+        >
+          <audio ref={audioRef} src={messageTone} controls className="hidden" />
           {!isPending && messagesList.length > 0 && (
             <div className="flex flex-col gap-y-4">
               {messagesList.map((message: MessageProps) => (
@@ -171,20 +220,25 @@ const Channel = () => {
               </TooltipContent>
             </Tooltip>
             <Textarea
-              cols={1}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Type a message..."
               autoComplete="off"
-              className="flex-1 rounded-lg resize-none"
+              className="flex-1 rounded-lg resize-none max-h-[60px]"
             />
             <Button
               type="button"
               className="rounded-full size-10"
               onClick={handleSendMessage}
-              disabled={!newMessage.trim()}
+              disabled={
+                !newMessage.trim() || isSending || !authSocket.connected
+              }
             >
-              <SendHorizonal />
+              {isSending ? (
+                <Loader className="animate-spin" />
+              ) : (
+                <SendHorizonal />
+              )}
             </Button>
           </div>
         </div>

@@ -11,8 +11,8 @@ const io = new Server(server, {
     origin: "http://localhost:5173",
     credentials: true,
   },
-  pingTimeout: 5000,
-  pingInterval: 2500,
+  pingTimeout: 3000,
+  pingInterval: 2000,
 });
 
 io.use((socket, next) => {
@@ -81,6 +81,17 @@ io.on("connection", (socket) => {
       );
     }
   });
+
+  socket.on("send_message", (payload) => {
+    const { wsId, id, message } = payload;
+    const channelId = `${wsId}-${id}`;
+    if (channelId !== socket.data.channelId) return;
+    socket.to(channelId).emit("new_message", message);
+  });
+
+  // socket.onAny((event, ...args) => {
+  //   console.log(event, ...args);
+  // });
 
   socket.on("disconnect", () => {
     const wsId = socket.data.wsId;

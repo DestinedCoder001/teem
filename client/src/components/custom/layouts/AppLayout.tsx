@@ -21,6 +21,7 @@ import CreateChannelDialog from "../CreateChannelDialog";
 import CreateWorkspaceDialog from "../CreateWorkspaceDialog";
 import { useAuthStore } from "@/lib/store/authStore";
 import { createSocket, getSocket } from "@/lib/socket";
+import { toast } from "sonner";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
@@ -74,6 +75,7 @@ const AppLayout = () => {
 
       const onDisconnect = () => {
         socket.emit("disconnect_ws", _id);
+        toast.warning("You're offline", {position: "top-center"});
         setIsOnline(false);
         console.log("Disconnected from socket");
       };
@@ -82,18 +84,20 @@ const AppLayout = () => {
         socket.emit("disconnect_ws", _id);
       };
 
+      const handleActiveUsers = (data: string[]) => {
+        useActiveUsers.getState().setActiveUsers(data);
+      }
+
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
-      socket.on("active_users", (data) => {
-        useActiveUsers.getState().setActiveUsers(data);
-      });
+      socket.on("active_users", handleActiveUsers);
 
       window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
-        socket.off("active_users");
+        socket.off("active_users", handleActiveUsers);
 
         window.removeEventListener("beforeunload", handleBeforeUnload);
 

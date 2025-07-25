@@ -7,7 +7,11 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
   const isSender = userId === message.sender._id;
   return (
     <div className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
-      <div className={`flex items-end gap-x-1 max-w-5/6 md:max-w-2/3 lg:max-w-1/2 ${isSender ? "flex-row-reverse" : ""}`}>
+      <div
+        className={`flex items-end gap-x-1 max-w-5/6 md:max-w-2/3 lg:max-w-1/2 ${
+          isSender ? "flex-row-reverse" : ""
+        }`}
+      >
         <Avatar className="h-7 w-7 lg:h-6 lg:w-6 rounded-full border border-slate-200 sticky -bottom-3">
           <AvatarImage
             className="object-cover object-center w-full"
@@ -22,7 +26,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
         <div
           className={`px-4 py-2 text-[0.9rem] break-words ${
             isSender
-              ? "rounded-t-lg rounded-bl-lg bg-gradient-to-tr from-primary/10 to-secondary/10 text-black"
+              ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
               : "rounded-t-lg rounded-br-lg border border-slate-300 text-slate-700"
           }`}
         >

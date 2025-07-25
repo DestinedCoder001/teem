@@ -79,6 +79,7 @@ export type MessageProps = {
   };
   content: string;
   createdAt: Date;
+  channel: string
 }
 
 export type CustomAxiosError = AxiosError<{ message: string }>;
