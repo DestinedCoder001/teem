@@ -28,6 +28,7 @@ import TypingIndicator from "@/components/custom/TypingIndicator";
 import NoMessages from "@/components/custom/NoMessages";
 import JoinChannel from "@/components/custom/JoinChannel";
 import { parseMembers } from "@/utils/parseMembers";
+import { useInView } from "react-intersection-observer";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -53,6 +54,10 @@ const Channel = () => {
   const divRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { ref: inViewRef, inView: isNearBottom } = useInView({
+    threshold: 0.1,
+  });
+
   const queryClient = useQueryClient();
   const membersList = parseMembers({ createdBy, members });
 
@@ -63,6 +68,15 @@ const Channel = () => {
   if (inputRef.current) {
     inputRef.current.onblur = () => setIsTyping(false);
   }
+
+  const handleAutoScroll = () => {
+    if (divRef.current) {
+      divRef.current.scrollTo({
+        top: divRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
 
   useEffect(() => {
     const user = useUserStore.getState().user?._id;
@@ -153,12 +167,7 @@ const Channel = () => {
   }, [msg]);
 
   useEffect(() => {
-    if (divRef.current) {
-      divRef.current.scrollTo({
-        top: divRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    handleAutoScroll();
   }, [messagesList]);
 
   useEffect(() => {
@@ -168,6 +177,12 @@ const Channel = () => {
       authSocket.emit("stopped_typing", { wsId, id: channelID });
     };
   }, [isTyping]);
+
+  useEffect(() => {
+    if (isNearBottom) {
+      handleAutoScroll();
+    }
+  }, [typingUsers]);
 
   const handleSendMessage = () => {
     mutate({ message: newMessage, channelId: channelID });
@@ -213,7 +228,7 @@ const Channel = () => {
 
         <div
           ref={divRef}
-          className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[110px] px-4"
+          className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[90px] px-4"
         >
           <audio ref={audioRef} src={messageTone} controls className="hidden" />
           {!isPending && !messagesList.length && !typingUsers.length && (
@@ -226,6 +241,7 @@ const Channel = () => {
                   <MessageBubble message={message} key={message._id} />
                 ))}
               <TypingIndicator images={typingUsers} />
+              <div ref={inViewRef} className="h-0" />
             </div>
           )}
         </div>
