@@ -21,6 +21,7 @@ import { getSocket } from "@/lib/socket";
 import messageTone from "@/assets/incoming-msg.mp3";
 import { useQueryClient } from "@tanstack/react-query";
 import TypingIndicator from "@/components/custom/TypingIndicator";
+import NoMessages from "@/components/custom/NoMessages";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -220,11 +221,13 @@ const Channel = () => {
           className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[110px] px-4"
         >
           <audio ref={audioRef} src={messageTone} controls className="hidden" />
+          {!isPending && !messagesList.length && !typingUsers.length && <NoMessages />}
           {!isPending && (
             <div className="flex flex-col gap-y-4">
-              {messagesList.length > 0 && messagesList.map((message: MessageProps) => (
-                <MessageBubble message={message} key={message._id} />
-              ))}
+              {messagesList.length > 0 &&
+                messagesList.map((message: MessageProps) => (
+                  <MessageBubble message={message} key={message._id} />
+                ))}
               <TypingIndicator images={typingUsers} />
             </div>
           )}
