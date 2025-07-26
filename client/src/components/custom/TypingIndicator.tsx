@@ -16,12 +16,11 @@ const TypingIndicator = ({ images }: { images: string[] }) => {
         )}
         <div className="flex -space-x-2 items-center opacity-50">
           {mapImages.map((image, index) => (
-            <div className="h-7 w-7 lg:h-6 lg:w-6 rounded-full border border-slate-200 overflow-hidden">
-              <img
-                key={index}
-                className="w-full h-full object-cover"
-                src={image}
-              />
+            <div
+              key={index}
+              className="h-7 w-7 lg:h-6 lg:w-6 rounded-full border border-slate-200 overflow-hidden"
+            >
+              <img className="w-full h-full object-cover" src={image} />
             </div>
           ))}
         </div>
