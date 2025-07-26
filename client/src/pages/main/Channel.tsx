@@ -1,5 +1,9 @@
 import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
-import { currentChannelDetails, currentWsDetails } from "@/lib/store/userStore";
+import {
+  currentChannelDetails,
+  currentWsDetails,
+  useUserStore,
+} from "@/lib/store/userStore";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,6 +26,8 @@ import messageTone from "@/assets/incoming-msg.mp3";
 import { useQueryClient } from "@tanstack/react-query";
 import TypingIndicator from "@/components/custom/TypingIndicator";
 import NoMessages from "@/components/custom/NoMessages";
+import JoinChannel from "@/components/custom/JoinChannel";
+import { parseMembers } from "@/utils/parseMembers";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -42,11 +48,13 @@ const Channel = () => {
   const [messagesList, setMessagesList] = useState<MessageProps[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isMember, setIsMember] = useState(false);
   const authSocket = getSocket()!;
   const divRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
+  const membersList = parseMembers({ createdBy, members });
 
   if (audioRef.current) {
     audioRef.current.volume = 0.1; // reduced volume to avoid scare lol
@@ -55,6 +63,16 @@ const Channel = () => {
   if (inputRef.current) {
     inputRef.current.onblur = () => setIsTyping(false);
   }
+
+  useEffect(() => {
+    const user = useUserStore.getState().user?._id;
+    const isMember = members.find((member) => member._id === user);
+    if (user) {
+      if (isMember) {
+        setIsMember(true);
+      }
+    }
+  }, [members]);
 
   useEffect(() => {
     if (isSuccess) {
@@ -71,7 +89,7 @@ const Channel = () => {
   }, [isSuccess, data, setChannelDetails]);
 
   useEffect(() => {
-    if (authSocket && wsId && channelID) {
+    if (authSocket && wsId && channelID && isMember) {
       const audio = audioRef.current;
       authSocket.emit("connect_channel", { wsId, id: channelID });
 
@@ -123,7 +141,7 @@ const Channel = () => {
         setActiveChannelUsers([]);
       };
     }
-  }, [authSocket, channelID, wsId, setActiveChannelUsers]);
+  }, [authSocket, channelID, wsId, setActiveChannelUsers, isMember]);
 
   useEffect(() => {
     if (msg) {
@@ -173,29 +191,6 @@ const Channel = () => {
     return <AppError />;
   }
 
-  const parseMembers = () => {
-    if (members.length === 0) return "";
-    const names = members
-      .sort((a, b) => {
-        if (a._id === createdBy._id) return -1;
-        if (b._id === createdBy._id) return 1;
-        return 0;
-      })
-      .map((m) => `${m.firstName} ${m.lastName}`);
-    if (members.length === 1) {
-      return names[0];
-    }
-    if (members.length === 2) {
-      return `${names[0]} and ${names[1]}`;
-    }
-    const othersCount = members.length - 2;
-    return `${names[0]}, ${names[1]} and ${othersCount} ${
-      othersCount === 1 ? "other" : "others"
-    }`;
-  };
-
-  const membersList = parseMembers();
-
   return (
     <div className="h-[calc(100vh-50px)] overflow-hidden">
       <div className="flex flex-col relative h-full">
@@ -221,7 +216,9 @@ const Channel = () => {
           className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[110px] px-4"
         >
           <audio ref={audioRef} src={messageTone} controls className="hidden" />
-          {!isPending && !messagesList.length && !typingUsers.length && <NoMessages />}
+          {!isPending && !messagesList.length && !typingUsers.length && (
+            <NoMessages />
+          )}
           {!isPending && (
             <div className="flex flex-col gap-y-4">
               {messagesList.length > 0 &&
@@ -234,41 +231,47 @@ const Channel = () => {
         </div>
 
         <div className="p-4 bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
-          <div className="flex items-center space-x-4">
-            <Tooltip>
-              <TooltipTrigger>
-                <Paperclip
-                  size={20}
-                  className="text-slate-500 shrink-0 cursor-pointer"
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Attach files</p>
-              </TooltipContent>
-            </Tooltip>
-            <Textarea
-              value={newMessage}
-              ref={inputRef}
-              onChange={handleInputChange}
-              placeholder="Type a message..."
-              autoComplete="off"
-              className="flex-1 rounded-lg resize-none max-h-[60px]"
-            />
-            <Button
-              type="button"
-              className="rounded-full size-10"
-              onClick={handleSendMessage}
-              disabled={
-                !newMessage.trim().length || isSending || !authSocket.connected
-              }
-            >
-              {isSending ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <SendHorizonal />
-              )}
-            </Button>
-          </div>
+          {isMember ? (
+            <div className="flex items-center space-x-4">
+              <Tooltip>
+                <TooltipTrigger>
+                  <Paperclip
+                    size={20}
+                    className="text-slate-500 shrink-0 cursor-pointer"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Attach files</p>
+                </TooltipContent>
+              </Tooltip>
+              <Textarea
+                value={newMessage}
+                ref={inputRef}
+                onChange={handleInputChange}
+                placeholder="Type a message..."
+                autoComplete="off"
+                className="flex-1 rounded-lg resize-none max-h-[60px]"
+              />
+              <Button
+                type="button"
+                className="rounded-full size-10"
+                onClick={handleSendMessage}
+                disabled={
+                  !newMessage.trim().length ||
+                  isSending ||
+                  !authSocket.connected
+                }
+              >
+                {isSending ? (
+                  <Loader className="animate-spin" />
+                ) : (
+                  <SendHorizonal />
+                )}
+              </Button>
+            </div>
+          ) : (
+            <JoinChannel />
+          )}
         </div>
       </div>
     </div>
