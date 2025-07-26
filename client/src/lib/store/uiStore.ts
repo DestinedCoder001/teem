@@ -88,15 +88,6 @@ const useUserOnline= create<{
   setIsOnline: (open) => set({ isOnline: open }),
 }));
 
-const useActiveChannelUsers = create<{
-  activeChannelUsers: string[];
-  setActiveChannelUsers: (users: string[]) => void;
-}>((set) => ({
-  activeChannelUsers: [],
-  setActiveChannelUsers: (users: string[]) =>
-    set({ activeChannelUsers: users }),
-}));
-
 export {
   useSidebarOpen,
   useCreateWsDialogOpen,
@@ -108,6 +99,5 @@ export {
   useWsDeleteAlertOpen,
   useSendInviteOpen,
   useActiveUsers,
-  useActiveChannelUsers,
   useUserOnline
 };

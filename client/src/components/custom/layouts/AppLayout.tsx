@@ -21,7 +21,6 @@ import CreateChannelDialog from "../CreateChannelDialog";
 import CreateWorkspaceDialog from "../CreateWorkspaceDialog";
 import { useAuthStore } from "@/lib/store/authStore";
 import { createSocket, getSocket } from "@/lib/socket";
-import { toast } from "sonner";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
@@ -75,7 +74,6 @@ const AppLayout = () => {
 
       const onDisconnect = () => {
         socket.emit("disconnect_ws", _id);
-        toast.warning("You're offline", {position: "top-center"});
         setIsOnline(false);
         console.log("Disconnected from socket");
       };

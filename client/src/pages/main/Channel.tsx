@@ -1,6 +1,6 @@
 import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
 import { currentChannelDetails, currentWsDetails } from "@/lib/store/userStore";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import type { AxiosError } from "axios";
@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
 import { getSocket } from "@/lib/socket";
-import { useActiveChannelUsers } from "@/lib/store/uiStore";
 import messageTone from "@/assets/incoming-msg.mp3";
 import { useQueryClient } from "@tanstack/react-query";
+import TypingIndicator from "@/components/custom/TypingIndicator";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -32,22 +32,27 @@ const Channel = () => {
     createdBy,
     members,
   } = currentChannelDetails((state) => state);
-  const { activeChannelUsers, setActiveChannelUsers } = useActiveChannelUsers(
-    (state) => state
-  );
+  const [activeChannelUsers, setActiveChannelUsers] = useState<string[]>([]);
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const { mutate, data: msg, isPending: isSending } = useSendMessage();
   const { data, isSuccess, isPending, error } = useGetChannelDetails(
     channelId as string
   );
   const [messagesList, setMessagesList] = useState<MessageProps[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const authSocket = getSocket()!;
   const divRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const queryClient = useQueryClient();
 
   if (audioRef.current) {
     audioRef.current.volume = 0.1; // reduced volume to avoid scare lol
+  }
+
+  if (inputRef.current) {
+    inputRef.current.onblur = () => setIsTyping(false);
   }
 
   useEffect(() => {
@@ -64,8 +69,6 @@ const Channel = () => {
     }
   }, [isSuccess, data, setChannelDetails]);
 
-  console.log(messagesList);
-
   useEffect(() => {
     if (authSocket && wsId && channelID) {
       const audio = audioRef.current;
@@ -75,7 +78,12 @@ const Channel = () => {
         setActiveChannelUsers(data);
       };
 
+      const handleTypingUsers = (data: string[]) => {
+        setTypingUsers(data);
+      };
+
       const handleSocketDisconnect = () => {
+        authSocket.emit("stopped_typing", { wsId, id: channelID });
         authSocket.emit("disconnect_channel", { wsId, id: channelID });
       };
 
@@ -97,7 +105,7 @@ const Channel = () => {
       });
 
       authSocket.on("active_channel_users", handleActiveUsers);
-
+      authSocket.on("typing_users", handleTypingUsers);
       authSocket.on("new_message", handleMessageSend);
 
       authSocket.on("disconnect", handleSocketDisconnect);
@@ -116,11 +124,6 @@ const Channel = () => {
     }
   }, [authSocket, channelID, wsId, setActiveChannelUsers]);
 
-  const handleSendMessage = () => {
-    mutate({ message: newMessage, channelId: channelID });
-    setNewMessage("");
-  };
-
   useEffect(() => {
     if (msg) {
       setMessagesList((prev) => [...prev, { ...msg }]);
@@ -138,6 +141,26 @@ const Channel = () => {
       });
     }
   }, [messagesList]);
+
+  useEffect(() => {
+    if (!isTyping) return;
+    authSocket.emit("typing", { wsId, id: channelID });
+    return () => {
+      authSocket.emit("stopped_typing", { wsId, id: channelID });
+    };
+  }, [isTyping]);
+
+  const handleSendMessage = () => {
+    mutate({ message: newMessage, channelId: channelID });
+    setNewMessage("");
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setNewMessage(val);
+    if (!val.trim().length) return;
+    setIsTyping(true);
+  };
 
   if (isPending) return <ChannelSkeleton />;
 
@@ -197,11 +220,12 @@ const Channel = () => {
           className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[110px] px-4"
         >
           <audio ref={audioRef} src={messageTone} controls className="hidden" />
-          {!isPending && messagesList.length > 0 && (
+          {!isPending && (
             <div className="flex flex-col gap-y-4">
-              {messagesList.map((message: MessageProps) => (
+              {messagesList.length > 0 && messagesList.map((message: MessageProps) => (
                 <MessageBubble message={message} key={message._id} />
               ))}
+              <TypingIndicator images={typingUsers} />
             </div>
           )}
         </div>
@@ -221,7 +245,8 @@ const Channel = () => {
             </Tooltip>
             <Textarea
               value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              ref={inputRef}
+              onChange={handleInputChange}
               placeholder="Type a message..."
               autoComplete="off"
               className="flex-1 rounded-lg resize-none max-h-[60px]"
@@ -231,7 +256,7 @@ const Channel = () => {
               className="rounded-full size-10"
               onClick={handleSendMessage}
               disabled={
-                !newMessage.trim() || isSending || !authSocket.connected
+                !newMessage.trim().length || isSending || !authSocket.connected
               }
             >
               {isSending ? (

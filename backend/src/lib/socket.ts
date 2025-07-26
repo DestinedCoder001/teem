@@ -32,6 +32,7 @@ io.use((socket, next) => {
 
 const activeUsers: { [key: string]: string } = {};
 const activeChannelUsers: Record<string, Set<string>> = {};
+const channelTypingUsers: Record<string, Set<string>> = {};
 
 io.on("connection", (socket) => {
   const user = socket.user?.UserInfo;
@@ -87,6 +88,35 @@ io.on("connection", (socket) => {
     const channelId = `${wsId}-${id}`;
     if (channelId !== socket.data.channelId) return;
     socket.to(channelId).emit("new_message", message);
+  });
+
+  socket.on("typing", (payload) => {
+    const { wsId, id } = payload;
+    const channelId = `${wsId}-${id}`;
+
+    if (!channelTypingUsers[channelId]) {
+      channelTypingUsers[channelId] = new Set();
+    }
+
+    channelTypingUsers[channelId].add(user!.profilePicture);
+    socket
+      .to(channelId)
+      .emit("typing_users", Array.from(channelTypingUsers[channelId] || []));
+  });
+
+  socket.on("stopped_typing", (payload) => {
+    const data = `${payload.wsId}-${payload.id}`;
+    const channelId = socket.data.channelId;
+    if (data === channelId) {
+      channelTypingUsers[channelId].delete(user!.profilePicture);
+      if (channelTypingUsers[channelId].size === 0) {
+        delete channelTypingUsers[channelId];
+      }
+
+      socket
+        .to(channelId)
+        .emit("typing_users", Array.from(channelTypingUsers[channelId] || []));
+    }
   });
 
   // socket.onAny((event, ...args) => {
