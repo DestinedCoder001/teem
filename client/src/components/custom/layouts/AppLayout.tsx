@@ -123,7 +123,7 @@ const AppLayout = () => {
         </Link>
         <UserIconDropdown />
       </nav>
-      <div className="flex h-[calc(100vh-50px)]">
+      <div className="flex h-[calc(100dvh-50px)]">
         <DesktopSidebar />
         <MobileSideBar />
 

@@ -5,7 +5,7 @@ const ChannelSkeleton = () => {
     <div className="flex flex-col h-full">
 
       <div className="p-4 border-b">
-        <Skeleton className="h-12 w-64 rounded-md" />
+        <Skeleton className="h-12 w-64 rounded-md mx-auto" />
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-4 no-scrollbar">

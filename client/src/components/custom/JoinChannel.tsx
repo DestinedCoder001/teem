@@ -6,7 +6,7 @@ const JoinChannel = () => {
   const { mutate: join, isPending: joinPending } = useJoinChannel();
 
   return (
-    <div className="flex justify-center items-center py-2 border-t border-e-slate-300">
+    <div className="flex justify-center items-center py-4 border-t border-e-slate-300">
       <div className="gap-y-2 flex flex-col items-center">
         <p className="text-slate-800">Join to send messages</p>
         <Button

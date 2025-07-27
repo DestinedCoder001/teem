@@ -44,4 +44,11 @@ interface User {
   profilePicture: string;
 }
 
-export { SignUpBody, JwtPayload, User };
+interface ChannelUser {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string;
+};
+
+export { SignUpBody, JwtPayload, User, ChannelUser };

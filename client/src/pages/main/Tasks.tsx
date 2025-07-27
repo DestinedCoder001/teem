@@ -139,7 +139,7 @@ const Tasks = () => {
             )}
           </div>
         ) : getTasksSuccess ? (
-          <div className="text-center text-slate-600 h-[calc(100vh-200px)] w-full flex justify-center items-center">
+          <div className="text-center text-slate-600 h-[calc(100dvh-200px)] w-full flex justify-center items-center">
             No tasks found
           </div>
         ) : null}

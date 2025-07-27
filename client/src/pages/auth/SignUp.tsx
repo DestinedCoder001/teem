@@ -59,7 +59,7 @@ const SignUp = () => {
     <>
       <OTPDialog action="signup" onOpenChange={setOpen} open={isOpen} />
       <div className="px-4">
-        <div className="min-h-[calc(100vh-100px)] flex justify-center items-center sm:pb-4">
+        <div className="min-h-[calc(100dvh-100px)] flex justify-center items-center sm:pb-4">
           <div className="flex justify-center items-center h-full w-full">
             <div className="w-full md:w-1/2 lg:w-1/3">
               <div className="mb-6">

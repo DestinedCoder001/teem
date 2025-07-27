@@ -84,7 +84,7 @@ const Login = () => {
         onOpenChange={setOtpDialogOpen}
       />
       <div className="px-4">
-        <div className="h-[calc(100vh-100px)] lg:h-full lg:pb-8">
+        <div className="h-[calc(100dvh-100px)] lg:h-full lg:pb-8">
           <div className="flex justify-center items-center h-full w-full">
             <div className="w-full md:w-1/2 lg:w-1/3">
               <div className="mb-6">

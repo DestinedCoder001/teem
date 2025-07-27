@@ -82,4 +82,11 @@ export type MessageProps = {
   channel: string
 }
 
+export type ChannelUser = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  profilePicture: string;
+};
+
 export type CustomAxiosError = AxiosError<{ message: string }>;

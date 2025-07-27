@@ -13,7 +13,7 @@ import AppError from "@/components/custom/AppError";
 import useSendMessage from "@/lib/hooks/useSendMessage";
 import useGetChannelDetails from "@/lib/hooks/useGetChannelDetails";
 import MessageBubble from "@/components/custom/MessageBubble";
-import type { MessageProps } from "@/lib/types";
+import type { ChannelUser, MessageProps } from "@/lib/types";
 import { Loader, Paperclip, SendHorizonal } from "lucide-react";
 import {
   Tooltip,
@@ -37,11 +37,11 @@ const Channel = () => {
     name,
     setChannelDetails,
     _id: channelID,
-    createdBy,
     members,
+    description,
   } = currentChannelDetails((state) => state);
-  const [activeChannelUsers, setActiveChannelUsers] = useState<string[]>([]);
-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [activeChannelUsers, setActiveChannelUsers] = useState<ChannelUser[]>([]);
+  const [typingUsers, setTypingUsers] = useState<ChannelUser[]>([]);
   const { mutate, data: msg, isPending: isSending } = useSendMessage();
   const { data, isSuccess, isPending, error } = useGetChannelDetails(
     channelId as string
@@ -59,7 +59,8 @@ const Channel = () => {
   });
 
   const queryClient = useQueryClient();
-  const membersList = parseMembers({ createdBy, members });
+
+  const membersList = parseMembers({ members: activeChannelUsers });
 
   if (audioRef.current) {
     audioRef.current.volume = 0.1; // reduced volume to avoid scare lol
@@ -80,7 +81,7 @@ const Channel = () => {
 
   useEffect(() => {
     const user = useUserStore.getState().user?._id;
-    const isMember = members.find((member) => member._id === user);
+    const isMember = !!members.find((member) => member._id === user);
     if (user) {
       if (isMember) {
         setIsMember(true);
@@ -107,11 +108,11 @@ const Channel = () => {
       const audio = audioRef.current;
       authSocket.emit("connect_channel", { wsId, id: channelID });
 
-      const handleActiveUsers = (data: string[]) => {
+      const handleActiveUsers = (data: ChannelUser[]) => {
         setActiveChannelUsers(data);
       };
 
-      const handleTypingUsers = (data: string[]) => {
+      const handleTypingUsers = (data: ChannelUser[]) => {
         setTypingUsers(data);
       };
 
@@ -153,6 +154,7 @@ const Channel = () => {
         window.removeEventListener("beforeunload", handleBeforeUnload);
 
         setActiveChannelUsers([]);
+        setNewMessage("");
       };
     }
   }, [authSocket, channelID, wsId, setActiveChannelUsers, isMember]);
@@ -207,23 +209,31 @@ const Channel = () => {
   }
 
   return (
-    <div className="h-[calc(100vh-50px)] overflow-hidden">
+    <div className="h-[calc(100dvh-50px)] overflow-hidden">
       <div className="flex flex-col relative h-full">
         <div className="p-4 border-b fixed top-[49px] w-full lg:w-[calc(100%-220px)] bg-white z-40">
-          <h1 className="text-xl theme-text-gradient font-medium w-max">
+          <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
             {name}
           </h1>
+          <p className="text-slate-600 text-xs text-center" title={description}>
+            {description.length > 40
+              ? `${description.slice(0, 40)}...`
+              : description}
+          </p>
           {activeChannelUsers.length > 0 && (
-            <div className="flex items-center gap-x-1">
-              <span className="w-2 h-2 bg-green-600 rounded-full" />
-              <span className="text-slate-600 text-xs">
-                {activeChannelUsers.length} active
-              </span>
+            <div className="flex items-center gap-x-1 justify-center">
+              <p className="text-slate-600 text-xs flex items-center gap-x-0.5">
+                <span className="text-sm font-medium text-secondary">
+                  {activeChannelUsers.length}
+                </span>{" "}
+                active
+              </p>
+              <div className="h-2 w-2 bg-slate-600 rounded-full" />
+              <p className="text-xs text-slate-600 text-nowrap text-ellipsis">
+                {membersList}
+              </p>
             </div>
           )}
-          <p className="text-xs text-slate-600 text-nowrap text-ellipsis">
-            {membersList}
-          </p>
         </div>
 
         <div
@@ -240,15 +250,15 @@ const Channel = () => {
                 messagesList.map((message: MessageProps) => (
                   <MessageBubble message={message} key={message._id} />
                 ))}
-              <TypingIndicator images={typingUsers} />
+              <TypingIndicator users={typingUsers} />
               <div ref={inViewRef} className="h-0" />
             </div>
           )}
         </div>
 
-        <div className="p-4 bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
+        <div className="bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
           {isMember ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 p-4">
               <Tooltip>
                 <TooltipTrigger>
                   <Paperclip

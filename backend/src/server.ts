@@ -32,6 +32,6 @@ app.use("/api/:workspaceId/:channelId", verifyToken, messagesRoute);
 app.use("/api/:workspaceId/tasks", verifyToken, tasksRoute);
 app.use("/api/uploads", verifyToken, uploadsRoute);
 
-server.listen(3001, () => {
+server.listen(3001, "0.0.0.0", () => {
   console.log("Server is running on port 3001");
 });

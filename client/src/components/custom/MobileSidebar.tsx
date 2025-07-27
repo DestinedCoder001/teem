@@ -11,7 +11,7 @@ import { Skeleton } from "../ui/skeleton";
 
 const MobileSideBar = () => {
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
-  const { isFetching } = useGetMe();
+  const { isPending } = useGetMe();
   const { pathname } = useLocation();
 
   return (
@@ -22,7 +22,7 @@ const MobileSideBar = () => {
       className="z-50 lg:hidden border-r border-slate-300"
       enableOverlay={false}
       style={{
-        height: "calc(100vh - 50px)",
+        height: "calc(100dvh - 50px)",
         top: "50px",
         boxShadow: "none",
         zIndex: 50,
@@ -61,7 +61,7 @@ const MobileSideBar = () => {
         </div>
 
         <div className="my-8">
-          {isFetching ? <Skeleton className="h-12 w-full" /> : <WsSwitch />}
+          {isPending ? <Skeleton className="h-12 w-full" /> : <WsSwitch />}
         </div>
       </div>
     </Drawer>

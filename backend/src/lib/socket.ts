@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
-import { JwtPayload } from "../utils/types";
+import { ChannelUser, JwtPayload } from "../utils/types";
 const app = express();
 const server = http.createServer(app);
 
@@ -31,8 +31,8 @@ io.use((socket, next) => {
 });
 
 const activeUsers: { [key: string]: string } = {};
-const activeChannelUsers: Record<string, Set<string>> = {};
-const channelTypingUsers: Record<string, Set<string>> = {};
+const activeChannelUsers: Record<string, Set<ChannelUser>> = {};
+const channelTypingUsers: Record<string, Set<ChannelUser>> = {};
 
 io.on("connection", (socket) => {
   const user = socket.user?.UserInfo;
@@ -59,7 +59,7 @@ io.on("connection", (socket) => {
     if (!activeChannelUsers[channelId]) {
       activeChannelUsers[channelId] = new Set();
     }
-    activeChannelUsers[channelId].add(user!._id);
+    activeChannelUsers[channelId].add(user!);
     io.to(channelId).emit(
       "active_channel_users",
       Array.from(activeChannelUsers[channelId] || [])
@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
     const channelId = socket.data.channelId;
     if (data === channelId) {
       socket.leave(channelId);
-      activeChannelUsers[channelId].delete(user!._id);
+      activeChannelUsers[channelId].delete(user!);
       if (activeChannelUsers[channelId].size === 0) {
         delete activeChannelUsers[channelId];
       }
@@ -87,7 +87,7 @@ io.on("connection", (socket) => {
     const { wsId, id, message } = payload;
     const channelId = `${wsId}-${id}`;
     if (channelId !== socket.data.channelId) return;
-    socket.to(channelId).emit("new_message", message);
+    socket.broadcast.to(channelId).emit("new_message", message);
   });
 
   socket.on("typing", (payload) => {
@@ -98,8 +98,8 @@ io.on("connection", (socket) => {
       channelTypingUsers[channelId] = new Set();
     }
 
-    channelTypingUsers[channelId].add(user!.profilePicture);
-    socket
+    channelTypingUsers[channelId].add(user!);
+    socket.broadcast
       .to(channelId)
       .emit("typing_users", Array.from(channelTypingUsers[channelId] || []));
   });
@@ -108,7 +108,7 @@ io.on("connection", (socket) => {
     const data = `${payload.wsId}-${payload.id}`;
     const channelId = socket.data.channelId;
     if (data === channelId) {
-      channelTypingUsers[channelId].delete(user!.profilePicture);
+      channelTypingUsers[channelId].delete(user!);
       if (channelTypingUsers[channelId].size === 0) {
         delete channelTypingUsers[channelId];
       }
@@ -133,7 +133,7 @@ io.on("connection", (socket) => {
     }
     if (channelId) {
       socket.leave(channelId);
-      activeChannelUsers[channelId]?.delete(user!._id);
+      activeChannelUsers[channelId]?.delete(user!);
       if (activeChannelUsers[channelId]?.size === 0) {
         delete activeChannelUsers[channelId];
       }
