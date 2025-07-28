@@ -34,8 +34,8 @@ export type ChannelPayload = {
   _id: string;
   name: string;
   description: string;
-  members: { _id: string; firstName: string; lastName: string }[];
-  createdBy: { _id: string; firstName: string; lastName: string };
+  members: { _id: string; firstName: string; lastName: string, profilePicture: string }[];
+  createdBy: { _id: string; firstName: string; lastName: string, profilePicture: string };
 };
 
 export type TaskPayload = {

@@ -13,7 +13,7 @@ import AppError from "@/components/custom/AppError";
 import useSendMessage from "@/lib/hooks/useSendMessage";
 import useGetChannelDetails from "@/lib/hooks/useGetChannelDetails";
 import MessageBubble from "@/components/custom/MessageBubble";
-import type { ChannelUser, MessageProps } from "@/lib/types";
+import type { ChannelPayload, ChannelUser, MessageProps } from "@/lib/types";
 import { Loader, Paperclip, SendHorizonal } from "lucide-react";
 import {
   Tooltip,
@@ -29,6 +29,7 @@ import NoMessages from "@/components/custom/NoMessages";
 import JoinChannel from "@/components/custom/JoinChannel";
 import { parseMembers } from "@/utils/parseMembers";
 import { useInView } from "react-intersection-observer";
+import ChannelDrawer from "@/components/custom/ChannelDrawer";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -39,8 +40,18 @@ const Channel = () => {
     _id: channelID,
     members,
     description,
+    createdBy
   } = currentChannelDetails((state) => state);
-  const [activeChannelUsers, setActiveChannelUsers] = useState<ChannelUser[]>([]);
+  const channel: ChannelPayload = {
+    name,
+    _id: channelID,
+    members,
+    description,
+    createdBy,
+  };
+  const [activeChannelUsers, setActiveChannelUsers] = useState<ChannelUser[]>(
+    []
+  );
   const [typingUsers, setTypingUsers] = useState<ChannelUser[]>([]);
   const { mutate, data: msg, isPending: isSending } = useSendMessage();
   const { data, isSuccess, isPending, error } = useGetChannelDetails(
@@ -50,6 +61,8 @@ const Channel = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isMember, setIsMember] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const authSocket = getSocket()!;
   const divRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -211,15 +224,18 @@ const Channel = () => {
   return (
     <div className="h-[calc(100dvh-50px)] overflow-hidden">
       <div className="flex flex-col relative h-full">
-        <div className="p-4 border-b fixed top-[49px] w-full lg:w-[calc(100%-220px)] bg-white z-40">
+        <div
+          className="p-4 border-b fixed top-[49px] w-full lg:w-[calc(100%-220px)] bg-white/80 backdrop-blur-sm z-40 cursor-pointer"
+          onClick={() => setDrawerOpen(true)}
+        >
           <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
             {name}
           </h1>
-          <p className="text-slate-600 text-xs text-center" title={description}>
+          {/* <p className="text-slate-600 text-xs text-center" title={description}>
             {description.length > 40
               ? `${description.slice(0, 40)}...`
               : description}
-          </p>
+          </p> */}
           {activeChannelUsers.length > 0 && (
             <div className="flex items-center gap-x-1 justify-center">
               <p className="text-slate-600 text-xs flex items-center gap-x-0.5">
@@ -228,12 +244,15 @@ const Channel = () => {
                 </span>{" "}
                 active
               </p>
-              <div className="h-2 w-2 bg-slate-600 rounded-full" />
+              <div className="size-1 bg-slate-600 rounded-full" />
               <p className="text-xs text-slate-600 text-nowrap text-ellipsis">
                 {membersList}
               </p>
             </div>
           )}
+          <p className="text-slate-600 text-xs text-center">
+            Click to view details &raquo;
+          </p>
         </div>
 
         <div
@@ -254,6 +273,12 @@ const Channel = () => {
               <div ref={inViewRef} className="h-0" />
             </div>
           )}
+          <ChannelDrawer
+            open={drawerOpen}
+            setOpen={setDrawerOpen}
+            activeUsers={activeChannelUsers}
+            channel={channel}
+          />
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
@@ -274,7 +299,7 @@ const Channel = () => {
                 value={newMessage}
                 ref={inputRef}
                 onChange={handleInputChange}
-                placeholder="Type a message..."
+                placeholder="Type a message"
                 autoComplete="off"
                 className="flex-1 rounded-lg resize-none max-h-[60px]"
               />
@@ -285,7 +310,7 @@ const Channel = () => {
                 disabled={
                   !newMessage.trim().length ||
                   isSending ||
-                  !authSocket.connected
+                  !authSocket?.connected
                 }
               >
                 {isSending ? (

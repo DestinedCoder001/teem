@@ -28,7 +28,7 @@ export const UserIconDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className={`h-8 w-8 rounded-full cursor-pointer border border-slate-200 ${isOnline && "ring ring-offset-1 ring-green-600"}`}>
+        <Avatar className={`h-8 w-8 rounded-full cursor-pointer border border-slate-200 ${isOnline && "ring ring-offset-1 ring-secondary"}`}>
           <AvatarImage
             src={user?.profilePicture}
             alt={user?.firstName}

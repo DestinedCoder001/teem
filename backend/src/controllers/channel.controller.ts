@@ -258,10 +258,10 @@ const getChannelDetails = async (req: Request, res: Response) => {
       workspace: workspaceId,
     }).populate({
       path: "members",
-      select: "firstName lastName",
+      select: "firstName lastName profilePicture",
     }).populate({
       path: "createdBy",
-      select: "firstName lastName",
+      select: "firstName lastName profilePicture",
     });
 
     if (!channel) {

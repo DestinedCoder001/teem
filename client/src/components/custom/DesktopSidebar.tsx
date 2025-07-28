@@ -6,7 +6,7 @@ import useGetMe from "@/lib/hooks/useGetMe";
 import { Skeleton } from "../ui/skeleton";
 
 const DesktopSidebar = () => {
-  const { isFetching } = useGetMe();
+  const { isPending } = useGetMe();
   const { pathname } = useLocation();
 
   return (
@@ -38,7 +38,7 @@ const DesktopSidebar = () => {
           ))}
         </div>
         <div className="my-4">
-          {isFetching ? <Skeleton className="h-12 w-full" /> : <WsSwitch />}
+          {isPending ? <Skeleton className="h-12 w-full" /> : <WsSwitch />}
         </div>
       </div>
     </aside>
