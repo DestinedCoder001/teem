@@ -7,7 +7,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Button } from "../ui/button";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import type { ChannelPayload, ChannelUser } from "@/lib/types";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUserStore } from "@/lib/store/userStore";
 import useExitChannel from "@/lib/hooks/useExitChannel";
 import useDeleteChannel from "@/lib/hooks/useDeleteChannel";
+import EditChannelDialog from "./EditChannelDialog";
 
 type DrawerProps = {
   open: boolean;
@@ -38,7 +39,10 @@ const ChannelDrawer = ({
   const navigate = useNavigate();
   const me = useUserStore((state) => state.user);
   const { mutate: exit, isPending: isExitPending } = useExitChannel();
-  const { mutate: deleteChannel, isPending: isDeletePending } = useDeleteChannel();
+  const { mutate: deleteChannel, isPending: isDeletePending } =
+    useDeleteChannel();
+  const [editOpen, setEditOpen] = useState(false);
+
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
@@ -120,6 +124,21 @@ const ChannelDrawer = ({
           })}
           <div className="mt-12 space-y-4">
             <h3 className="text-lg text-slate-600 font-semibold">Actions</h3>
+            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 border">
+              <div className="space-y-1">
+                <p className="text-lg text-primary font-medium">
+                  Edit channel details
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                disabled={isExitPending || isDeletePending}
+                className="w-full sm:w-max theme-text-gradient"
+                onClick={() => setEditOpen(true)}
+              >
+                {isExitPending ? <Loader className="animate-spin" /> : "Edit"}
+              </Button>
+            </div>
             <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
               <div className="space-y-1">
                 <p className="text-lg text-red-500 font-medium">Exit channel</p>
@@ -154,12 +173,24 @@ const ChannelDrawer = ({
                   className="w-full sm:w-max"
                   onClick={() => deleteChannel({ channelId: channel?._id })}
                 >
-                  {isDeletePending ? <Loader className="animate-spin" /> : "Delete"}
+                  {isDeletePending ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Delete"
+                  )}
                 </Button>
               </div>
             )}
           </div>
         </div>
+        <EditChannelDialog
+          open={editOpen}
+          setOpen={setEditOpen}
+          defaultValues={{
+            name: channel?.name,
+            description: channel?.description,
+          }}
+        />
       </DrawerContent>
     </Drawer>
   );

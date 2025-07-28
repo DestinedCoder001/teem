@@ -3,9 +3,9 @@ import { ChevronDown, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import type { Invite } from "@/lib/types";
+import { useUserStore } from "@/lib/store/userStore";
 import useAcceptInvite from "@/lib/hooks/useAcceptInvite";
 import useDeclineInvite from "@/lib/hooks/useDeclineInvite";
-import { useUserStore } from "@/lib/store/userStore";
 
 const NotificationItem = ({ invite }: { invite: Invite }) => {
   const [open, setOpen] = useState(false);
