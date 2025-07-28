@@ -20,6 +20,7 @@ import { Loader, MoreHorizontal } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUserStore } from "@/lib/store/userStore";
 import useExitChannel from "@/lib/hooks/useExitChannel";
+import useDeleteChannel from "@/lib/hooks/useDeleteChannel";
 
 type DrawerProps = {
   open: boolean;
@@ -36,10 +37,11 @@ const ChannelDrawer = ({
 }: DrawerProps) => {
   const navigate = useNavigate();
   const me = useUserStore((state) => state.user);
-  const { mutate, isPending } = useExitChannel();
+  const { mutate: exit, isPending: isExitPending } = useExitChannel();
+  const { mutate: deleteChannel, isPending: isDeletePending } = useDeleteChannel();
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerOverlay  className="bg-black/10 backdrop-blur-[0.75px]" />
+      <DrawerOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
       <DrawerContent className="h-[calc(100dvh-100px)] outline-none">
         <DrawerHeader>
           <div className="bg-slate-100 border-2 border-slate-500 rounded-full size-14 flex items-center justify-center mx-auto text-slate-600 font-bold text-xl">
@@ -48,7 +50,7 @@ const ChannelDrawer = ({
           <DrawerTitle className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
             {channel?.name}
           </DrawerTitle>
-          <DrawerDescription className="text-slate-600">
+          <DrawerDescription className="text-slate-800">
             {channel?.description}
           </DrawerDescription>
         </DrawerHeader>
@@ -116,24 +118,46 @@ const ChannelDrawer = ({
               </div>
             );
           })}
-          <div className="mt-12">
-            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50">
+          <div className="mt-12 space-y-4">
+            <h3 className="text-lg text-slate-600 font-semibold">Actions</h3>
+            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
               <div className="space-y-1">
                 <p className="text-lg text-red-500 font-medium">Exit channel</p>
                 <p className="text-slate-700 text-sm text-center md:text-left">
-                  Exit {channel?.name} and stop participating in discussions. You
-                  can rejoin at any time.
+                  Exit {channel?.name} and stop participating in discussions.
+                  You can rejoin at any time.
                 </p>
               </div>
               <Button
                 variant="destructive"
-                disabled={isPending}
+                disabled={isExitPending}
                 className="w-full sm:w-max"
-                onClick={() => mutate({ channelId: channel?._id })}
+                onClick={() => exit({ channelId: channel?._id })}
               >
-                {isPending ? <Loader className="animate-spin" /> : "Exit"}
+                {isExitPending ? <Loader className="animate-spin" /> : "Exit"}
               </Button>
             </div>
+            {me?._id === channel?.createdBy._id && (
+              <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
+                <div className="space-y-1">
+                  <p className="text-lg text-red-500 font-medium">
+                    Delete channel
+                  </p>
+                  <p className="text-slate-700 text-sm text-center md:text-left">
+                    Delete {channel?.name} and remove all discussions. This
+                    action cannot be undone.
+                  </p>
+                </div>
+                <Button
+                  variant="destructive"
+                  disabled={isDeletePending}
+                  className="w-full sm:w-max"
+                  onClick={() => deleteChannel({ channelId: channel?._id })}
+                >
+                  {isDeletePending ? <Loader className="animate-spin" /> : "Delete"}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </DrawerContent>

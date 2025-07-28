@@ -40,7 +40,7 @@ const Channel = () => {
     _id: channelID,
     members,
     description,
-    createdBy
+    createdBy,
   } = currentChannelDetails((state) => state);
   const channel: ChannelPayload = {
     name,
@@ -212,6 +212,11 @@ const Channel = () => {
     setIsTyping(true);
   };
 
+  const handleOpenDrawer = () => {
+    if (!isMember) return;
+    setDrawerOpen(true);
+  };
+
   if (isPending) return <ChannelSkeleton />;
 
   if (error) {
@@ -227,16 +232,11 @@ const Channel = () => {
       <div className="flex flex-col relative h-full">
         <div
           className="p-4 border-b fixed top-[49px] w-full lg:w-[calc(100%-220px)] bg-white/80 backdrop-blur-sm z-40 cursor-pointer"
-          onClick={() => setDrawerOpen(true)}
+          onClick={handleOpenDrawer}
         >
           <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
             {name}
           </h1>
-          {/* <p className="text-slate-600 text-xs text-center" title={description}>
-            {description.length > 40
-              ? `${description.slice(0, 40)}...`
-              : description}
-          </p> */}
           {activeChannelUsers.length > 0 && (
             <div className="flex items-center gap-x-1 justify-center">
               <p className="text-slate-600 text-xs flex items-center gap-x-0.5">
@@ -251,9 +251,11 @@ const Channel = () => {
               </p>
             </div>
           )}
-          <p className="text-slate-600 text-xs text-center">
-            Click to view details &raquo;
-          </p>
+          {isMember && (
+            <p className="text-slate-600 text-xs text-center">
+              Click to view details &raquo;
+            </p>
+          )}
         </div>
 
         <div
