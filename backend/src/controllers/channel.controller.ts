@@ -414,6 +414,7 @@ const deleteChannel = async (req: Request, res: Response) => {
     }
 
     await Channel.findOneAndDelete({ _id: channelId, workspace: workspaceId });
+    await Message.deleteMany({ channel: channelId });
 
     res.status(200).json({ message: "Channel deleted successfully" });
   } catch (error: any) {

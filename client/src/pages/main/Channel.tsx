@@ -167,6 +167,7 @@ const Channel = () => {
         window.removeEventListener("beforeunload", handleBeforeUnload);
 
         setActiveChannelUsers([]);
+        setDrawerOpen(false);
         setNewMessage("");
       };
     }

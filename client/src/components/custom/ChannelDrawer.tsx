@@ -3,6 +3,7 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
+  DrawerOverlay,
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Button } from "../ui/button";
@@ -15,9 +16,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
+import { Loader, MoreHorizontal } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUserStore } from "@/lib/store/userStore";
+import useExitChannel from "@/lib/hooks/useExitChannel";
 
 type DrawerProps = {
   open: boolean;
@@ -34,23 +36,25 @@ const ChannelDrawer = ({
 }: DrawerProps) => {
   const navigate = useNavigate();
   const me = useUserStore((state) => state.user);
+  const { mutate, isPending } = useExitChannel();
   return (
     <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerOverlay  className="bg-black/10 backdrop-blur-[0.75px]" />
       <DrawerContent className="h-[calc(100dvh-100px)] outline-none">
         <DrawerHeader>
           <div className="bg-slate-100 border-2 border-slate-500 rounded-full size-14 flex items-center justify-center mx-auto text-slate-600 font-bold text-xl">
-            {channel.name[0]?.toUpperCase()}
+            {channel?.name[0]?.toUpperCase()}
           </div>
           <DrawerTitle className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
-            {channel.name}
+            {channel?.name}
           </DrawerTitle>
           <DrawerDescription className="text-slate-600">
-            {channel.description}
+            {channel?.description}
           </DrawerDescription>
         </DrawerHeader>
         <div className="px-4 py-8 flex flex-col gap-y-4 h-full overflow-auto no-scrollbar">
           <h3 className="text-lg text-slate-600 font-semibold">Members</h3>
-          {channel.members?.map((user) => {
+          {channel?.members?.map((user) => {
             let name = user.firstName + " " + user.lastName;
             if (name.length > 25) {
               name = name.slice(0, 25) + "...";
@@ -83,7 +87,7 @@ const ChannelDrawer = ({
                     </Avatar>
                     <p className="text-sm">{name}</p>
                   </div>
-                  {me?._id === channel.createdBy._id && (
+                  {me?._id === channel?.createdBy._id && (
                     <DropdownMenu>
                       <>
                         <DropdownMenuTrigger asChild>
@@ -117,12 +121,17 @@ const ChannelDrawer = ({
               <div className="space-y-1">
                 <p className="text-lg text-red-500 font-medium">Exit channel</p>
                 <p className="text-slate-700 text-sm text-center md:text-left">
-                  Exit {channel.name} and stop participating in discussions. You
+                  Exit {channel?.name} and stop participating in discussions. You
                   can rejoin at any time.
                 </p>
               </div>
-              <Button variant="destructive" className="w-full sm:w-max">
-                Exit
+              <Button
+                variant="destructive"
+                disabled={isPending}
+                className="w-full sm:w-max"
+                onClick={() => mutate({ channelId: channel?._id })}
+              >
+                {isPending ? <Loader className="animate-spin" /> : "Exit"}
               </Button>
             </div>
           </div>
