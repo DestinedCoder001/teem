@@ -82,7 +82,9 @@ const uploadWsProfilePic = async (req: Request, res: Response) => {
     );
 
     if (!ws) {
-      return res.status(404).json({ message: "Couldn't upload profile picture" });
+      return res
+        .status(404)
+        .json({ message: "Couldn't upload profile picture" });
     }
 
     return res
@@ -94,4 +96,37 @@ const uploadWsProfilePic = async (req: Request, res: Response) => {
   }
 };
 
-export { uploadProfilePic, uploadWsProfilePic };
+const addMsgAttachment = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const { file, channelName } = req.body;
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    const folder = channelName.toLowerCase().replace(" ", "-");
+
+    const uploadResult = await cloudinary.uploader
+      .upload(file, {
+        folder,
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    if (!uploadResult) {
+      return res.status(500).json({ message: "Error uploading file" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "File uploaded successfully", data: uploadResult });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" + error });
+  }
+};
+
+export { uploadProfilePic, uploadWsProfilePic, addMsgAttachment };

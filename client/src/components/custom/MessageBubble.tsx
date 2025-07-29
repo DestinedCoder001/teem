@@ -25,16 +25,31 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
             {message.sender?.lastName[0]?.toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        <div className={`flex flex-col gap-y-1 ${isSender ? "items-end" : "items-start"}`}>
-          <div
-            className={`px-4 py-2 text-[0.9rem] break-words ${
-              isSender
-                ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
-                : "rounded-t-lg rounded-br-lg border border-slate-300 text-slate-700"
-            }`}
-          >
-            {message.content}
-          </div>
+        <div
+          className={`flex flex-col gap-y-1 ${
+            isSender ? "items-end" : "items-start"
+          }`}
+        >
+          {message.attachment?.url && (
+            <div className="size-52 rounded-lg overflow-hidden">
+              <img
+                src={message.attachment.url}
+                alt={message.content}
+                className="w-full h-full object-cover object-center"
+              />
+            </div>
+          )}
+          {message.content && (
+            <div
+              className={`px-4 py-2 text-[0.9rem] break-words ${
+                isSender
+                  ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
+                  : "rounded-t-lg rounded-br-lg border border-slate-300 text-slate-700"
+              }`}
+            >
+              {message.content}
+            </div>
+          )}
           <span className="text-slate-500 text-[0.7rem]">{sentTime}</span>
         </div>
       </div>

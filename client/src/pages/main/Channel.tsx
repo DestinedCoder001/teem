@@ -6,7 +6,6 @@ import {
 } from "@/lib/store/userStore";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import type { AxiosError } from "axios";
 import ChannelNotFound from "@/components/custom/ChannelNotFound";
 import AppError from "@/components/custom/AppError";
@@ -14,13 +13,6 @@ import useSendMessage from "@/lib/hooks/useSendMessage";
 import useGetChannelDetails from "@/lib/hooks/useGetChannelDetails";
 import MessageBubble from "@/components/custom/MessageBubble";
 import type { ChannelPayload, ChannelUser, MessageProps } from "@/lib/types";
-import { Loader, Paperclip, SendHorizonal } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Textarea } from "@/components/ui/textarea";
 import { getSocket } from "@/lib/socket";
 import messageTone from "@/assets/incoming-msg.mp3";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,6 +22,7 @@ import JoinChannel from "@/components/custom/JoinChannel";
 import { parseMembers } from "@/utils/parseMembers";
 import { useInView } from "react-intersection-observer";
 import ChannelDrawer from "@/components/custom/ChannelDrawer";
+import MessageInput from "@/components/custom/MessageInput";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -58,7 +51,13 @@ const Channel = () => {
     channelId as string
   );
   const [messagesList, setMessagesList] = useState<MessageProps[]>([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState({
+    message: "",
+    attachment: {
+      type: "",
+      url: "",
+    },
+  });
   const [isTyping, setIsTyping] = useState(false);
   const [isMember, setIsMember] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -168,7 +167,7 @@ const Channel = () => {
 
         setActiveChannelUsers([]);
         setDrawerOpen(false);
-        setNewMessage("");
+        setNewMessage({ message: "", attachment: { type: "", url: "" } });
       };
     }
   }, [authSocket, channelID, wsId, setActiveChannelUsers, isMember]);
@@ -201,13 +200,13 @@ const Channel = () => {
   }, [typingUsers]);
 
   const handleSendMessage = () => {
-    mutate({ message: newMessage, channelId: channelID });
-    setNewMessage("");
+    mutate({ message: newMessage.message, channelId: channelID, attachment: newMessage.attachment });
+    setNewMessage({ message: "", attachment: { type: "", url: "" } });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
-    setNewMessage(val);
+    setNewMessage(prev => ({ ...prev, message: val }));
     if (!val.trim().length) return;
     setIsTyping(true);
   };
@@ -286,43 +285,15 @@ const Channel = () => {
 
         <div className="bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
           {isMember ? (
-            <div className="flex items-center space-x-4 p-4">
-              <Tooltip>
-                <TooltipTrigger>
-                  <Paperclip
-                    size={20}
-                    className="text-slate-500 shrink-0 cursor-pointer"
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Attach files</p>
-                </TooltipContent>
-              </Tooltip>
-              <Textarea
-                value={newMessage}
-                ref={inputRef}
-                onChange={handleInputChange}
-                placeholder="Type a message"
-                autoComplete="off"
-                className="flex-1 rounded-lg resize-none max-h-[60px]"
-              />
-              <Button
-                type="button"
-                className="rounded-full size-10"
-                onClick={handleSendMessage}
-                disabled={
-                  !newMessage.trim().length ||
-                  isSending ||
-                  !authSocket?.connected
-                }
-              >
-                {isSending ? (
-                  <Loader className="animate-spin" />
-                ) : (
-                  <SendHorizonal />
-                )}
-              </Button>
-            </div>
+            <MessageInput
+              message={newMessage}
+              setMessage={setNewMessage}
+              inputRef={inputRef}
+              isSending={isSending}
+              handleInputChange={handleInputChange}
+              handleSendMessage={handleSendMessage}
+              authSocket={authSocket}
+            />
           ) : (
             <JoinChannel />
           )}

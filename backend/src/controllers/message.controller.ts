@@ -6,7 +6,7 @@ import { Request, Response } from "express";
 
 const sendMessage = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
-  const { message } = req.body;
+  const { message, attachment } = req.body;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -39,6 +39,7 @@ const sendMessage = async (req: Request, res: Response) => {
       channel: channelId,
       content: message,
       workspace: workspaceId,
+      attachment,
     });
 
     await newMessage.populate({
