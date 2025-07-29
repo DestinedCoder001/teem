@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  useActiveUsers,
   useRemoveAlertOpen,
   useSendInviteOpen,
   useWsDeleteAlertOpen,
@@ -40,6 +41,7 @@ const WorkspaceSettings = () => {
   );
   const { setUser } = userToBeRemoved((state) => state);
   const setInviteOpen = useSendInviteOpen((state) => state.setOpen);
+    const { activeUsers } = useActiveUsers((state) => state);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -174,6 +176,7 @@ const WorkspaceSettings = () => {
               if (name.length > 25) {
                 name = name.slice(0, 25) + "...";
               }
+              const isOnline = activeUsers.includes(user._id);
               return (
                 <div
                   onClick={() => navigate(`/users/${user._id}`)}
@@ -183,7 +186,7 @@ const WorkspaceSettings = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6 rounded-full cursor-pointer border border-slate-200">
+                      <Avatar className={`h-6 w-6 rounded-full cursor-pointer border border-slate-200 ${isOnline && "ring ring-offset-1 ring-secondary"}`}>
                         <AvatarImage
                           src={user?.profilePicture}
                           alt={user?.firstName}
