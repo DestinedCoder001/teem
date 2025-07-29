@@ -16,7 +16,7 @@ router.post("/:channelId/add-members", (req, res) => {
     addMembers(req, res);
 });
 
-router.post("/:channelId/remove-members", (req, res) => {
+router.post("/:channelId/remove-member", (req, res) => {
     removeMembers(req, res);
 });
 

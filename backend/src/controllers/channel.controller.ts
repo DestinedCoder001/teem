@@ -169,13 +169,13 @@ const addMembers = async (req: Request, res: Response) => {
 
 const removeMembers = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
-  const { toBeRemoved } = req.body;
+  const { userId } = req.body;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  if (!toBeRemoved) {
+  if (!userId) {
     return res.status(400).json({ message: "Payload is required" });
   }
 
@@ -187,15 +187,9 @@ const removeMembers = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid channel id" });
   }
 
-  toBeRemoved.map((id: string) => {
-    if (!Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid user id", data: id });
-    }
-  });
-
-  const userIds = toBeRemoved.map((id: string) => {
-    return new Types.ObjectId(id);
-  });
+  if (!Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user id" });
+  }
 
   try {
     await connectDb();
@@ -203,23 +197,28 @@ const removeMembers = async (req: Request, res: Response) => {
       _id: channelId,
       workspace: workspaceId,
     });
+
     if (channel.createdBy.toString() !== req.user._id) {
       return res.status(403).json({ message: "Action not permitted" });
+    }
+
+    if (userId === req.user._id) {
+      return res
+        .status(403)
+        .json({ message: "Cannot remove yourself. Leave channel instead" });
     }
 
     if (!channel) {
       return res.status(404).json({ message: "Channel not found" });
     }
 
-    const updatedChannel = await Channel.findOneAndUpdate(
+    await Channel.findOneAndUpdate(
       { _id: channelId, workspace: workspaceId },
-      { $pull: { members: { $in: userIds } } },
-      { new: true }
+      { $pull: { members: userId } }
     );
 
     res.status(200).json({
-      message: "Member(s) removed successfully",
-      data: updatedChannel,
+      message: "Member removed successfully",
     });
   } catch (error: any) {
     console.log(error);
@@ -256,13 +255,15 @@ const getChannelDetails = async (req: Request, res: Response) => {
     const channel = await Channel.findOne({
       _id: channelId,
       workspace: workspaceId,
-    }).populate({
-      path: "members",
-      select: "firstName lastName profilePicture",
-    }).populate({
-      path: "createdBy",
-      select: "firstName lastName profilePicture",
-    });
+    })
+      .populate({
+        path: "members",
+        select: "firstName lastName profilePicture",
+      })
+      .populate({
+        path: "createdBy",
+        select: "firstName lastName profilePicture",
+      });
 
     if (!channel) {
       return res.status(404).json({ message: "Channel not found" });

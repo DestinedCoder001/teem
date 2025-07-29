@@ -22,6 +22,7 @@ import { useUserStore } from "@/lib/store/userStore";
 import useExitChannel from "@/lib/hooks/useExitChannel";
 import useDeleteChannel from "@/lib/hooks/useDeleteChannel";
 import EditChannelDialog from "./EditChannelDialog";
+import useRemoveMember from "@/lib/hooks/useRemoveMember";
 
 type DrawerProps = {
   open: boolean;
@@ -39,6 +40,7 @@ const ChannelDrawer = ({
   const navigate = useNavigate();
   const me = useUserStore((state) => state.user);
   const { mutate: exit, isPending: isExitPending } = useExitChannel();
+  const { mutate: remove, isPending: removePending } = useRemoveMember();
   const { mutate: deleteChannel, isPending: isDeletePending } =
     useDeleteChannel();
   const [editOpen, setEditOpen] = useState(false);
@@ -93,31 +95,35 @@ const ChannelDrawer = ({
                     </Avatar>
                     <p className="text-sm">{name}</p>
                   </div>
-                  {me?._id === channel?.createdBy._id && (
-                    <DropdownMenu>
-                      <>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4 text-slate-700" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                      </>
-                      <DropdownMenuContent
-                        className="-translate-x-8
-                      "
-                      >
-                        <DropdownMenuItem
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                          className="cursor-pointer text-red-500"
-                        >
-                          Remove User
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
+                  {me?._id === channel?.createdBy._id &&
+                    user._id !== me?._id && (
+                      <DropdownMenu>
+                        <>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4 text-slate-700" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                        </>
+                        <DropdownMenuContent className="-translate-x-8">
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (removePending) return;
+                              remove({ userId: user._id });
+                            }}
+                            className="cursor-pointer text-red-500 min-w-[8rem]"
+                          >
+                            {removePending ? (
+                              <Loader className="animate-spin mx-auto" />
+                            ) : (
+                              "Remove member"
+                            )}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                 </div>
               </div>
             );
