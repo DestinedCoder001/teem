@@ -23,6 +23,7 @@ import { parseMembers } from "@/utils/parseMembers";
 import { useInView } from "react-intersection-observer";
 import ChannelDrawer from "@/components/custom/ChannelDrawer";
 import MessageInput from "@/components/custom/MessageInput";
+import { ChevronDown } from "lucide-react";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -168,7 +169,10 @@ const Channel = () => {
 
         setActiveChannelUsers([]);
         setDrawerOpen(false);
-        setNewMessage({ message: "", attachment: { type: "", url: "", fileName: "" } });
+        setNewMessage({
+          message: "",
+          attachment: { type: "", url: "", fileName: "" },
+        });
       };
     }
   }, [authSocket, channelID, wsId, setActiveChannelUsers, isMember]);
@@ -201,13 +205,20 @@ const Channel = () => {
   }, [typingUsers]);
 
   const handleSendMessage = () => {
-    mutate({ message: newMessage.message, channelId: channelID, attachment: newMessage.attachment });
-    setNewMessage({ message: "", attachment: { type: "", url: "", fileName: "" } });
+    mutate({
+      message: newMessage.message,
+      channelId: channelID,
+      attachment: newMessage.attachment,
+    });
+    setNewMessage({
+      message: "",
+      attachment: { type: "", url: "", fileName: "" },
+    });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
-    setNewMessage(prev => ({ ...prev, message: val }));
+    setNewMessage((prev) => ({ ...prev, message: val }));
     if (!val.trim().length) return;
     setIsTyping(true);
   };
@@ -284,6 +295,12 @@ const Channel = () => {
           />
         </div>
 
+        {!isNearBottom && (
+          <div onClick={handleAutoScroll} className="bg-white/80 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:left-[60%] xl:left-[58%] -translate-x-1/2 rounded-full p-1 cursor-pointer">
+            <ChevronDown className="text-slate-600 translate-y-[0.08rem]" />
+          </div>
+        )}
+        
         <div className="bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
           {isMember ? (
             <MessageInput
