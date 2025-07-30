@@ -71,16 +71,25 @@ const useSendInviteOpen = create<{
   setOpen: (open) => set({ isOpen: open }),
 }));
 
+const photoViewer = create<{
+  image: string;
+  isOpen: boolean;
+  setOpen: (open: boolean, image: string) => void;
+}>((set) => ({
+  image: "",
+  isOpen: false,
+  setOpen: (open, image) => set({ isOpen: open, image }),
+}));
+
 const useActiveUsers = create<{
   activeUsers: string[];
   setActiveUsers: (users: string[]) => void;
 }>((set) => ({
   activeUsers: [],
-  setActiveUsers: (users: string[]) =>
-    set({ activeUsers: users }),
+  setActiveUsers: (users: string[]) => set({ activeUsers: users }),
 }));
 
-const useUserOnline= create<{
+const useUserOnline = create<{
   isOnline: boolean;
   setIsOnline: (open: boolean) => void;
 }>((set) => ({
@@ -99,5 +108,6 @@ export {
   useWsDeleteAlertOpen,
   useSendInviteOpen,
   useActiveUsers,
-  useUserOnline
+  useUserOnline,
+  photoViewer,
 };

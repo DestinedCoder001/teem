@@ -3,9 +3,11 @@ import type { MessageProps } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatMessageTime } from "@/utils/formatMsgTime";
 import Attachment from "./Attachment";
+import { photoViewer } from "@/lib/store/uiStore";
 
 const MessageBubble = ({ message }: { message: MessageProps }) => {
   const userId = useUserStore((state) => state.user?._id);
+  const { setOpen } = photoViewer((state) => state);
   const isSender = userId === message.sender._id;
   const sentTime = formatMessageTime(message.createdAt);
   const extensions = ["pdf", "txt", "docx"];
@@ -43,7 +45,10 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
                 url={message.attachment.url}
               />
             ) : (
-              <div className="size-52 rounded-lg overflow-hidden">
+              <div
+                className="size-52 rounded-lg overflow-hidden cursor-pointer"
+                onClick={() => setOpen(true, message.attachment.url)}
+              >
                 <img
                   src={message.attachment.url}
                   className="w-full h-full object-cover object-center"

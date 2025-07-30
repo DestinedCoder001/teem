@@ -21,6 +21,7 @@ import CreateChannelDialog from "../CreateChannelDialog";
 import CreateWorkspaceDialog from "../CreateWorkspaceDialog";
 import { useAuthStore } from "@/lib/store/authStore";
 import { createSocket, getSocket } from "@/lib/socket";
+import PhotoViewer from "../PhotoViewer";
 
 const AppLayout = () => {
   const { setUser } = useUserStore((state) => state);
@@ -131,6 +132,7 @@ const AppLayout = () => {
           <CreateWorkspaceDialog />
           <CreateChannelDialog />
           <Outlet />
+          <PhotoViewer />
         </main>
       </div>
     </>
