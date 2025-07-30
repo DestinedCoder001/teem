@@ -56,6 +56,7 @@ const Channel = () => {
     attachment: {
       type: "",
       url: "",
+      fileName: "",
     },
   });
   const [isTyping, setIsTyping] = useState(false);
@@ -167,7 +168,7 @@ const Channel = () => {
 
         setActiveChannelUsers([]);
         setDrawerOpen(false);
-        setNewMessage({ message: "", attachment: { type: "", url: "" } });
+        setNewMessage({ message: "", attachment: { type: "", url: "", fileName: "" } });
       };
     }
   }, [authSocket, channelID, wsId, setActiveChannelUsers, isMember]);
@@ -201,7 +202,7 @@ const Channel = () => {
 
   const handleSendMessage = () => {
     mutate({ message: newMessage.message, channelId: channelID, attachment: newMessage.attachment });
-    setNewMessage({ message: "", attachment: { type: "", url: "" } });
+    setNewMessage({ message: "", attachment: { type: "", url: "", fileName: "" } });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {

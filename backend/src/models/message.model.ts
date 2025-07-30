@@ -9,6 +9,7 @@ const messageSchema = new Schema(
     edited: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false },
     attachment: {
+      fileName: { type: String, default: "" },
       type: { type: String, default: "" },
       url: { type: String, default: "" },
     },

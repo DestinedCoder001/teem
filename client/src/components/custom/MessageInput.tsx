@@ -1,17 +1,21 @@
-import { Loader, Paperclip, SendHorizonal, X } from "lucide-react";
+import { Loader, Paperclip, SendHorizonal } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { useRef, type ChangeEvent, type RefObject } from "react";
 import type { Socket } from "socket.io-client";
 import { useAttachFile } from "@/lib/hooks/useAttachFile";
 import { currentChannelDetails } from "@/lib/store/userStore";
+import AttachmentPreview from "./AttachmentPreview";
 
 type Props = {
-  message: { message: string; attachment: { type: string; url: string } };
+  message: {
+    message: string;
+    attachment: { type: string; url: string; fileName: string };
+  };
   setMessage: React.Dispatch<
     React.SetStateAction<{
       message: string;
-      attachment: { type: string; url: string };
+      attachment: { type: string; url: string; fileName: string };
     }>
   >;
   inputRef: RefObject<HTMLTextAreaElement | null>;
@@ -43,6 +47,8 @@ const MessageInput = ({
 
   const handleAttach = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    const extension = file?.name.split(".").pop()?.toLowerCase();
+    const fileName = file?.name.split(".")[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -53,14 +59,15 @@ const MessageInput = ({
               setMessage((prev) => ({
                 ...prev,
                 attachment: {
-                  type: data.format,
+                  type: extension || data.format || "file",
                   url: data.secure_url,
+                  fileName: fileName || "upload",
                 },
               }));
-              e.target.value = "";
             },
           }
         );
+        e.target.value = "";
       };
       reader.readAsDataURL(file);
     }
@@ -69,7 +76,7 @@ const MessageInput = ({
   const handleRemoveAttachment = () => {
     setMessage((prev) => ({
       ...prev,
-      attachment: { type: "", url: "" },
+      attachment: { type: "", url: "", fileName: "" },
     }));
   };
 
@@ -83,20 +90,10 @@ const MessageInput = ({
         onChange={handleAttach}
       />
       {message.attachment.url && (
-        <div className="absolute bottom-full left-4 size-28 rounded-md">
-          <div
-            className="absolute -top-2 -right-2 cursor-pointer bg-white rounded-full border p-1"
-            onClick={handleRemoveAttachment}
-          >
-            <X size={12} className="text-slate-800" />
-          </div>
-          {message.attachment && (
-            <img
-              src={message.attachment.url}
-              className="w-full h-full object-cover object-center rounded-sm"
-            />
-          )}
-        </div>
+        <AttachmentPreview
+          attachment={message.attachment}
+          handleRemoveAttachment={handleRemoveAttachment}
+        />
       )}
 
       {attachPending ? (

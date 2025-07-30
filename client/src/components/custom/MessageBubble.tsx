@@ -2,11 +2,16 @@ import { useUserStore } from "@/lib/store/userStore";
 import type { MessageProps } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatMessageTime } from "@/utils/formatMsgTime";
+import Attachment from "./Attachment";
 
 const MessageBubble = ({ message }: { message: MessageProps }) => {
   const userId = useUserStore((state) => state.user?._id);
   const isSender = userId === message.sender._id;
   const sentTime = formatMessageTime(message.createdAt);
+  const extensions = ["pdf", "txt", "docx"];
+  const isDoc = extensions
+    .map((ext) => message.attachment.type === ext)
+    .some(Boolean);
   return (
     <div className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
       <div
@@ -30,15 +35,21 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
             isSender ? "items-end" : "items-start"
           }`}
         >
-          {message.attachment?.url && (
-            <div className="size-52 rounded-lg overflow-hidden">
-              <img
-                src={message.attachment.url}
-                alt={message.content}
-                className="w-full h-full object-cover object-center"
+          {message.attachment?.url &&
+            (isDoc ? (
+              <Attachment
+                fileName={message.attachment.fileName}
+                type={message.attachment.type}
+                url={message.attachment.url}
               />
-            </div>
-          )}
+            ) : (
+              <div className="size-52 rounded-lg overflow-hidden">
+                <img
+                  src={message.attachment.url}
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+            ))}
           {message.content && (
             <div
               className={`px-4 py-2 text-[0.9rem] break-words ${

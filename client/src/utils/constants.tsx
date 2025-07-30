@@ -13,13 +13,4 @@ const navlinks = [
   },
 ];
 
-const allowedAttachments = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "application/pdf",
-  "text/plain",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
-
-export { navlinks, allowedAttachments };
+export { navlinks };

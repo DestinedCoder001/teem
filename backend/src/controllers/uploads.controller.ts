@@ -3,6 +3,7 @@ import { v2 as cloudinary } from "cloudinary";
 import User from "../models/user.model";
 import { connectDb } from "../lib/connectDb";
 import Workspace from "../models/workspace.model";
+import { getCloudinaryResourceType, isValidFile } from "../utils/helpers";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -106,10 +107,18 @@ const addMsgAttachment = async (req: Request, res: Response) => {
     if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
+
+    const isValid = isValidFile(file);
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid file type" });
+    }
+    
+    const resourseType = getCloudinaryResourceType(file);
     const folder = channelName.toLowerCase().replace(" ", "-");
 
     const uploadResult = await cloudinary.uploader
       .upload(file, {
+        resource_type: resourseType,
         folder,
       })
       .catch((error) => {

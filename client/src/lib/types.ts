@@ -77,7 +77,7 @@ export type MessageProps = {
     lastName: string;
     profilePicture: string;
   };
-  attachment: { type: string; url: string };
+  attachment: { type: string; url: string, fileName: string };
   content: string;
   createdAt: Date;
   channel: string
