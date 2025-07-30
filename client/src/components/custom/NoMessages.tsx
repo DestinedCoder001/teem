@@ -1,10 +1,13 @@
-
+import noMessages from "@/assets/no-messages.svg";
 const NoMessages = () => {
   return (
-    <div className="h-full flex items-center justify-center text-slate-600">
-        No messages yet
+    <div className="h-full flex flex-col items-center justify-center text-slate-600">
+      <div className="w-72 h-auto">
+        <img src={noMessages} alt="No messages" />
+      </div>
+      <p>No messages yet</p>
     </div>
-  )
-}
+  );
+};
 
-export default NoMessages
+export default NoMessages;
