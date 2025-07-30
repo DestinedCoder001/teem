@@ -1,5 +1,3 @@
-"use client";
-
 import { photoViewer } from "@/lib/store/uiStore";
 import { X } from "lucide-react";
 import { useEffect } from "react";
