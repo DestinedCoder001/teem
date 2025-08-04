@@ -3,7 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { currentWsDetails, userToBeRemoved } from "@/lib/store/userStore";
+import {
+  currentWsDetails,
+  userToBeRemoved,
+  useUserStore,
+} from "@/lib/store/userStore";
 import { Loader, MoreHorizontal, Trash } from "lucide-react";
 import { useUpdateWsDp } from "@/lib/hooks/useUpdateWsDp";
 import { useUpdateWsName } from "@/lib/hooks/useUpdateWsName";
@@ -29,6 +33,7 @@ const WorkspaceSettings = () => {
     name: currentWsName,
     profilePicture,
     _id,
+    createdBy,
   } = currentWsDetails((state) => state);
   const [workspaceImage, setWorkspaceImage] = useState("");
   const { mutate, isPending } = useUpdateWsDp();
@@ -41,7 +46,8 @@ const WorkspaceSettings = () => {
   );
   const { setUser } = userToBeRemoved((state) => state);
   const setInviteOpen = useSendInviteOpen((state) => state.setOpen);
-    const { activeUsers } = useActiveUsers((state) => state);
+  const { activeUsers } = useActiveUsers((state) => state);
+  const { user } = useUserStore((state) => state);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -79,6 +85,8 @@ const WorkspaceSettings = () => {
     }
   };
 
+  const isOwner = createdBy === user?._id;
+
   return (
     <>
       <h2 className="text-xl font-medium">Workspace</h2>
@@ -90,6 +98,7 @@ const WorkspaceSettings = () => {
           <Button
             onClick={() => setWsDeleteAlertOpen(true)}
             variant="outline"
+            disabled={!isOwner}
             className="absolute top-4 right-4"
           >
             <Trash className="text-red-500" />
@@ -118,11 +127,12 @@ const WorkspaceSettings = () => {
                 variant="outline"
                 className="theme-text-gradient"
                 onClick={triggerFileInput}
-                disabled={isPending || nameUpdatePending}
+                disabled={isPending || nameUpdatePending || !isOwner}
               >
                 Upload New Image
               </Button>
               <Input
+                disabled={!isOwner}
                 id="imageUpload"
                 type="file"
                 accept="image/*"
@@ -138,6 +148,7 @@ const WorkspaceSettings = () => {
             <div className="flex items-center gap-x-4">
               <Input
                 id="workspaceName"
+                disabled={!isOwner}
                 value={newWsName}
                 onChange={(e) => setNewWsName(e.target.value)}
                 placeholder="Enter workspace name"
@@ -146,7 +157,7 @@ const WorkspaceSettings = () => {
                 variant="default"
                 onClick={handleNameChange}
                 className="min-w-[5rem]"
-                disabled={nameUpdatePending || isPending}
+                disabled={nameUpdatePending || isPending || !isOwner}
               >
                 {nameUpdatePending ? (
                   <Loader className="animate-spin" />
@@ -162,6 +173,7 @@ const WorkspaceSettings = () => {
           <div className="border-b border-slate-300 p-4 flex justify-between items-center">
             <h2 className="font-medium text-gray-700">Members</h2>
             <Button
+              disabled={!isOwner}
               variant="outline"
               className="theme-text-gradient"
               size="sm"
@@ -186,7 +198,11 @@ const WorkspaceSettings = () => {
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <Avatar className={`h-6 w-6 rounded-full cursor-pointer border border-slate-200 ${isOnline && "ring ring-offset-1 ring-secondary"}`}>
+                      <Avatar
+                        className={`h-6 w-6 rounded-full cursor-pointer border border-slate-200 ${
+                          isOnline && "ring ring-offset-1 ring-secondary"
+                        }`}
+                      >
                         <AvatarImage
                           src={user?.profilePicture}
                           alt={user?.firstName}
@@ -205,7 +221,11 @@ const WorkspaceSettings = () => {
                           asChild
                           disabled={isPending || nameUpdatePending}
                         >
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            disabled={!isOwner}
+                          >
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4 text-slate-700" />
                           </Button>
