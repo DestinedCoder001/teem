@@ -167,6 +167,49 @@ const addMembers = async (req: Request, res: Response) => {
   }
 };
 
+const clearMessages = async (req: Request, res: Response) => {
+  const { channelId, workspaceId } = req.params;
+
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  if (!Types.ObjectId.isValid(channelId)) {
+    return res.status(400).json({ message: "Invalid channel id" });
+  }
+
+  try {
+    await connectDb();
+    const channel = await Channel.findOne({
+      _id: channelId,
+      workspace: workspaceId,
+    });
+
+    if (!channel) {
+      return res.status(404).json({ message: "Channel not found" });
+    }
+
+    if (channel.createdBy.toString() !== req.user._id) {
+      return res.status(403).json({ message: "Action not permitted." });
+    }
+
+    await Message.deleteMany({ channel: channelId });
+    res.status(200).json({
+      message: "Channel messages cleared successfully",
+      data: {
+        channel: channel,
+      },
+    });
+  } catch (error: any) {
+    console.log("Error in clearing channel messages: ", error);
+    res.status(500).json(error.message);
+  }
+};
+
 const removeMembers = async (req: Request, res: Response) => {
   const { channelId, workspaceId } = req.params;
   const { userId } = req.body;
@@ -430,6 +473,7 @@ export {
   joinChannel,
   leaveChannel,
   getChannelDetails,
+  clearMessages,
   removeMembers,
   deleteChannel,
 };

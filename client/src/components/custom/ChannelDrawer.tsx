@@ -23,6 +23,7 @@ import useExitChannel from "@/lib/hooks/useExitChannel";
 import useDeleteChannel from "@/lib/hooks/useDeleteChannel";
 import EditChannelDialog from "./EditChannelDialog";
 import useRemoveMember from "@/lib/hooks/useRemoveMember";
+import useClearMessages from "@/lib/hooks/useClearMessages";
 
 type DrawerProps = {
   open: boolean;
@@ -43,6 +44,7 @@ const ChannelDrawer = ({
   const { mutate: remove, isPending: removePending } = useRemoveMember();
   const { mutate: deleteChannel, isPending: isDeletePending } =
     useDeleteChannel();
+  const { mutate: clear, isPending: isClearPending } = useClearMessages();
   const [editOpen, setEditOpen] = useState(false);
 
   return (
@@ -145,12 +147,42 @@ const ChannelDrawer = ({
                 {isExitPending ? <Loader className="animate-spin" /> : "Edit"}
               </Button>
             </div>
+
+            {me?._id === channel?.createdBy._id && (
+              <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
+                <div className="space-y-1">
+                  <p className="text-lg text-red-500 font-medium">
+                    Clear messages
+                  </p>
+                  <p className="text-slate-700 text-sm text-center md:text-left">
+                    Delete all conversations in{" "}
+                    <span className="font-semibold">{channel?.name}</span>.
+                  </p>
+                </div>
+                <Button
+                  variant="destructive"
+                  disabled={isClearPending}
+                  className="w-full sm:w-max"
+                  onClick={() =>
+                    clear(undefined, { onSuccess: () => setOpen(false) })
+                  }
+                >
+                  {isClearPending ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Clear"
+                  )}
+                </Button>
+              </div>
+            )}
+
             <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
               <div className="space-y-1">
                 <p className="text-lg text-red-500 font-medium">Exit channel</p>
                 <p className="text-slate-700 text-sm text-center md:text-left">
-                  Exit {channel?.name} and stop participating in discussions.
-                  You can rejoin at any time.
+                  Exit <span className="font-semibold">{channel?.name}</span>{" "}
+                  and stop participating in discussions. You can rejoin at any
+                  time.
                 </p>
               </div>
               <Button
@@ -169,8 +201,9 @@ const ChannelDrawer = ({
                     Delete channel
                   </p>
                   <p className="text-slate-700 text-sm text-center md:text-left">
-                    Delete {channel?.name} and remove all discussions. This
-                    action cannot be undone.
+                    Delete{" "}
+                    <span className="font-semibold">{channel?.name}</span> and
+                    remove all discussions. This action cannot be undone.
                   </p>
                 </div>
                 <Button
