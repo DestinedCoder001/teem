@@ -90,6 +90,13 @@ io.on("connection", (socket) => {
     socket.broadcast.to(channelId).emit("new_message", message);
   });
 
+  socket.on("delete_message", (messageId) => {
+    const channelId = socket.data.channelId;
+    if (channelId) {
+      socket.broadcast.to(channelId).emit("message_deleted", messageId);
+    }
+  });
+
   socket.on("typing", (payload) => {
     const { wsId, id } = payload;
     const channelId = `${wsId}-${id}`;

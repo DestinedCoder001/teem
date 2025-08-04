@@ -14,7 +14,7 @@ router.patch("/edit-message", (req, res) => {
   editMessage(req, res);
 });
 
-router.put("/delete-message", (req, res) => {
+router.post("/delete-message", (req, res) => {
   deleteMessage(req, res);
 });
 

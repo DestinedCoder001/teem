@@ -104,12 +104,20 @@ const deleteMessage = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const deletedMessage = await Message.replaceOne(
+    const deletedMessage = await Message.findOneAndUpdate(
       {
         _id: messageId,
         sender: req.user._id,
       },
-      { deleted: true }
+      {
+        deleted: true,
+        content: "",
+        attachment: {
+          fileName: "",
+          type: "",
+          url: "",
+        },
+      }
     );
 
     if (!deletedMessage || deletedMessage.matchedCount === 0) {

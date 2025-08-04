@@ -187,7 +187,12 @@ const Channel = () => {
   }, [msg]);
 
   useEffect(() => {
-    handleAutoScroll();
+    const timeout = setTimeout(() => {
+      handleAutoScroll();
+    }, 50); 
+    // ensure all messagebubble components are rendered before scrolling.
+    // Avoids messages not scrolling all the way to the bottom.
+    return () => clearTimeout(timeout);
   }, [messagesList]);
 
   useEffect(() => {
@@ -296,11 +301,14 @@ const Channel = () => {
         </div>
 
         {!isNearBottom && (
-          <div onClick={handleAutoScroll} className="bg-white/80 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:left-[60%] xl:left-[58%] -translate-x-1/2 rounded-full p-1 cursor-pointer">
+          <div
+            onClick={handleAutoScroll}
+            className="bg-white/80 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:left-[60%] xl:left-[58%] -translate-x-1/2 rounded-full p-1 cursor-pointer"
+          >
             <ChevronDown className="text-slate-600 translate-y-[0.08rem]" />
           </div>
         )}
-        
+
         <div className="bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
           {isMember ? (
             <MessageInput
