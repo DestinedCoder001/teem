@@ -157,6 +157,7 @@ const WsSwitch = () => {
           <>
             <DropdownMenuSeparator className="bg-slate-200" />
             <DropdownMenuItem
+              id="sign-out"
               className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 group"
               onClick={() => handleSignOut()}
             >

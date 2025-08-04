@@ -130,6 +130,14 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  div,
+  p,
+  a,
+  svg,
+  button:not(#sign-out) {
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+  }
 }
 
 body {
@@ -179,8 +187,3 @@ body {
   background-position: top left;
   background-repeat: no-repeat;
 }
-
-*{
-  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-}
-
