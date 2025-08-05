@@ -174,7 +174,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
             </div>
           )}
           <span className="text-slate-500 text-[0.7rem]">{sentTime}</span>
-          {edited && (
+          {edited && !isDeleted && (
             <span className="text-slate-500 text-[0.7rem] -mt-1">Edited</span>
           )}
         </div>
