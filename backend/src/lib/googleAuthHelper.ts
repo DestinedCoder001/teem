@@ -5,7 +5,7 @@ dotenv.config();
 
 const clientId = process.env.GOOGLE_CLIENT_ID
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-const redirectUri = "http://localhost:5173"
+const redirectUri = process.env.CLIENT_URL
 const client = new OAuth2Client(
   clientId,
   clientSecret,

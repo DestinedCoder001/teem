@@ -56,7 +56,7 @@ const Login = () => {
           if (err.code === "ERR_NETWORK") {
             message = "Network error";
           } else if (err.status !== 500) {
-            message = err.response?.data.message as string || "Log in errora";
+            message = err.response?.data.message as string || "Log in error";
           } else {
             message = "Couldn't log in. Try again";
           }

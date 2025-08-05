@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 
 const AuthError = ({error}: {error: string}) => {
   return (
-    <div className="h-screen flex flex-col items-center justify-center gap-4 text-center">
+    <div className="h-[100dvh] flex flex-col items-center justify-center gap-4 text-center">
       <p className="text-lg font-medium ">
         {error || "Something went wrong"}
       </p>

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "@/lib/store/authStore";
 
 const api = axios.create({
-  baseURL: "http://localhost:3001/api",
+  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
   withCredentials: true,
 });
 
@@ -25,7 +25,7 @@ api.interceptors.response.use(
       original._retry = true;
       try {
         const { data } = await axios.post(
-          "http://localhost:3001/api/auth/refresh",
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/refresh`,
           {},
           { withCredentials: true }
         );
