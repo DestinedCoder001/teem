@@ -24,6 +24,7 @@ import { useInView } from "react-intersection-observer";
 import ChannelDrawer from "@/components/custom/ChannelDrawer";
 import MessageInput from "@/components/custom/MessageInput";
 import { ChevronDown } from "lucide-react";
+import { useEditingMessage } from "@/lib/store/uiStore";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -48,6 +49,7 @@ const Channel = () => {
   );
   const [typingUsers, setTypingUsers] = useState<ChannelUser[]>([]);
   const { mutate, data: msg, isPending: isSending } = useSendMessage();
+  const { setEditing } = useEditingMessage((state) => state);
   const { data, isSuccess, isPending, error } = useGetChannelDetails(
     channelId as string
   );
@@ -173,6 +175,7 @@ const Channel = () => {
           message: "",
           attachment: { type: "", url: "", fileName: "" },
         });
+        setEditing(false);
       };
     }
   }, [authSocket, channelID, wsId, setActiveChannelUsers, isMember]);
@@ -189,7 +192,7 @@ const Channel = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       handleAutoScroll();
-    }, 50); 
+    }, 50);
     // ensure all messagebubble components are rendered before scrolling.
     // Avoids messages not scrolling all the way to the bottom.
     return () => clearTimeout(timeout);

@@ -97,6 +97,13 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("edit_message", (payload) => {
+    const { wsId, id, message } = payload;
+    const channelId = `${wsId}-${id}`;
+    if (channelId !== socket.data.channelId) return;
+    io.to(channelId).emit("edited_message", message);
+  });
+
   socket.on("typing", (payload) => {
     const { wsId, id } = payload;
     const channelId = `${wsId}-${id}`;

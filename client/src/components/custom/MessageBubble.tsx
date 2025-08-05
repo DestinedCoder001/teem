@@ -3,7 +3,7 @@ import type { MessageProps } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatMessageTime } from "@/utils/formatMsgTime";
 import Attachment from "./Attachment";
-import { photoViewer } from "@/lib/store/uiStore";
+import { photoViewer, useEditingMessage } from "@/lib/store/uiStore";
 import { MoreVertical, PenLine, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
@@ -18,9 +18,12 @@ import { getSocket } from "@/lib/socket";
 
 const MessageBubble = ({ message }: { message: MessageProps }) => {
   const [isDeleted, setIsDeleted] = useState(false);
+  const [edited, setEdited] = useState(message.edited);
+  const [msgContent, setMsgContent] = useState(message.content);
   const userId = useUserStore((state) => state.user?._id);
   const { setOpen } = photoViewer((state) => state);
   const { mutate: deleteMessage, isPending: isDeleting } = useDeleteMessage();
+  const { setEditing, setMessage } = useEditingMessage((state) => state);
   const [editOpen, setEditOpen] = useState(false);
   const isSender = userId === message.sender._id;
   const sentTime = formatMessageTime(message.createdAt);
@@ -43,6 +46,15 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
     }
   }, [message]);
 
+  const handleEdit = () => {
+    setEditing(true);
+    setMessage({
+      _id: message._id,
+      content: msgContent,
+      channel: message.channel,
+    });
+  };
+
   const handleDelete = () => {
     deleteMessage(
       { messageId: message._id, channelId: message.channel },
@@ -61,7 +73,14 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
         setIsDeleted(true);
       }
     });
+    authSocket.on("edited_message", (msg: MessageProps) => {
+      if (message._id === msg._id) {
+        setMsgContent(msg.content);
+        setEdited(msg.edited);
+      }
+    });
     return () => {
+      authSocket.off("edited_message");
       authSocket.off("message_deleted");
     };
   }, [authSocket, message._id]);
@@ -93,7 +112,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
             <DropdownMenu open={editOpen} onOpenChange={setEditOpen}>
               <DropdownMenuTrigger asChild disabled={isDeleting}>
                 <MoreVertical
-                  className={`absolute text-slate-500 hover:bg-slate-50 hover:border hover:rounded-full p-1 size-6 cursor-pointer ${iconPosition} ${
+                  className={`absolute text-slate-500 hover:bg-slate-50 hover:border rounded-full p-1 size-6 cursor-pointer ${iconPosition} ${
                     isSender ? "right-[103%]" : "left-[103%]"
                   }`}
                 />
@@ -104,7 +123,10 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
               >
                 {message.content && (
                   <>
-                    <DropdownMenuItem className="cursor-pointer group">
+                    <DropdownMenuItem
+                      className="cursor-pointer group py-1"
+                      onClick={handleEdit}
+                    >
                       <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
                       Edit
                     </DropdownMenuItem>
@@ -112,7 +134,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
                   </>
                 )}
                 <DropdownMenuItem
-                  className="cursor-pointer group"
+                  className="cursor-pointer group py-1"
                   onClick={handleDelete}
                 >
                   <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
@@ -149,7 +171,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
                   : "rounded-t-lg rounded-br-lg border border-slate-300 text-slate-700"
               }`}
             >
-              {message.content}
+              {msgContent}
             </div>
           )}
           {isDeleted && (
@@ -164,6 +186,9 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
             </div>
           )}
           <span className="text-slate-500 text-[0.7rem]">{sentTime}</span>
+          {edited && (
+            <span className="text-slate-500 text-[0.7rem] -mt-1">Edited</span>
+          )}
         </div>
       </div>
     </div>

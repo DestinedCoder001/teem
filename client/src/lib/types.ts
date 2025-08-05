@@ -34,8 +34,18 @@ export type ChannelPayload = {
   _id: string;
   name: string;
   description: string;
-  members: { _id: string; firstName: string; lastName: string, profilePicture: string }[];
-  createdBy: { _id: string; firstName: string; lastName: string, profilePicture: string };
+  members: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    profilePicture: string;
+  }[];
+  createdBy: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    profilePicture: string;
+  };
 };
 
 export type TaskPayload = {
@@ -78,11 +88,17 @@ export type MessageProps = {
     profilePicture: string;
   };
   deleted: boolean;
-  attachment: { type: string; url: string, fileName: string };
+  edited: boolean;
+  attachment: { type: string; url: string; fileName: string };
   content: string;
   createdAt: Date;
-  channel: string
-}
+  channel: string;
+};
+
+export type EditingMessageProps = Omit<
+  MessageProps,
+  "createdAt" | "deleted" | "attachment" | "edited" | "sender"
+>;
 
 export type ChannelUser = {
   _id: string;

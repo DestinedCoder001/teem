@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { EditingMessageProps } from "../types";
 
 const useSidebarOpen = create<{
   isOpen: boolean;
@@ -97,6 +98,18 @@ const useUserOnline = create<{
   setIsOnline: (open) => set({ isOnline: open }),
 }));
 
+const useEditingMessage = create<{
+  isEditing: boolean;
+  setEditing: (editing: boolean) => void;
+  message: EditingMessageProps;
+  setMessage: (msg: EditingMessageProps) => void;
+}>((set) => ({
+  isEditing: false,
+  setEditing: (editing) => set({isEditing: editing}),
+  setMessage: (msg) => set({message: {...msg}}),
+  message: { content: "", _id: "", channel: "" },
+}));
+
 export {
   useSidebarOpen,
   useCreateWsDialogOpen,
@@ -110,4 +123,5 @@ export {
   useActiveUsers,
   useUserOnline,
   photoViewer,
+  useEditingMessage
 };

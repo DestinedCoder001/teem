@@ -1,11 +1,19 @@
-import { Loader, Paperclip, SendHorizonal } from "lucide-react";
+import { Loader, Paperclip, SendHorizonal, XIcon } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { useRef, type ChangeEvent, type RefObject } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type RefObject,
+} from "react";
 import type { Socket } from "socket.io-client";
 import { useAttachFile } from "@/lib/hooks/useAttachFile";
 import { currentChannelDetails } from "@/lib/store/userStore";
 import AttachmentPreview from "./AttachmentPreview";
+import { useEditingMessage } from "@/lib/store/uiStore";
+import useEditMessage from "@/lib/hooks/useEditMessage";
 
 type Props = {
   message: {
@@ -36,10 +44,27 @@ const MessageInput = ({
 }: Props) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const channelName = currentChannelDetails((state) => state.name);
+  const {
+    isEditing,
+    message: msg,
+    setMessage: setMsg,
+    setEditing,
+  } = useEditingMessage((state) => state);
+  const [newEditingMessage, setNewEditingMessage] = useState({ value: "" });
   const { mutate, isPending: attachPending } = useAttachFile();
+  const { mutate: edit, isPending: editPending } = useEditMessage();
+
+  const handleMsgChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    if (isEditing) {
+      setNewEditingMessage((prev) => ({ ...prev, value: val }));
+    } else {
+      handleInputChange(e);
+    }
+  };
 
   const handleAttachClick = () => {
-    if (message.attachment.url) return;
+    if (message.attachment.url || isEditing) return;
     if (fileRef.current) {
       fileRef.current.click();
     }
@@ -80,6 +105,36 @@ const MessageInput = ({
     }));
   };
 
+  const handleMsgSend = () => {
+    if (isEditing) {
+      edit({ messageId: msg._id, message: newEditingMessage.value });
+      setMsg({ _id: "", content: "", channel: "" });
+      setNewEditingMessage({ value: "" });
+      setEditing(false);
+    } else {
+      handleSendMessage();
+    }
+  };
+
+  const cancelEditing = () => {
+    setEditing(false);
+    setMsg({ _id: "", content: "", channel: "" });
+  };
+
+  useEffect(() => {
+    setNewEditingMessage({ value: msg.content });
+    handleRemoveAttachment();
+  }, [msg]);
+
+  const sendingDisableConditions =
+    (!message.message.trim().length &&
+      !message.attachment.url &&
+      (!newEditingMessage.value.trim().length ||
+        newEditingMessage.value === msg.content)) ||
+    isSending ||
+    !authSocket?.connected ||
+    attachPending;
+
   return (
     <div className="flex items-center space-x-4 p-4 relative">
       <input
@@ -95,21 +150,35 @@ const MessageInput = ({
           handleRemoveAttachment={handleRemoveAttachment}
         />
       )}
+      {isEditing && (
+        <div className="absolute bottom-full left-[3.3rem] w-max px-4 py-1 bg-white border border-slate-300 rounded-t-lg rounded-bl-lg text-sm">
+          <div
+            className="absolute bottom-0 left-[110%] cursor-pointer bg-white rounded-full border p-1"
+            onClick={cancelEditing}
+          >
+            <XIcon size={14} className="text-slate-800" />
+          </div>
+          <p className="theme-text-gradient">Editing </p>
+          <p className="font-medium text-slate-600">
+            {msg.content.length > 20 ? msg.content.slice(0, 20) : msg.content}
+          </p>
+        </div>
+      )}
 
       {attachPending ? (
         <Loader className="animate-spin text-slate-500" />
       ) : (
         <Paperclip
-          onClick={handleAttachClick}
           size={20}
           className="text-slate-500 shrink-0 cursor-pointer"
+          onClick={handleAttachClick}
         />
       )}
 
       <Textarea
-        value={message.message}
+        value={isEditing ? newEditingMessage.value : message.message}
         ref={inputRef}
-        onChange={handleInputChange}
+        onChange={handleMsgChange}
         placeholder="Type a message"
         autoComplete="off"
         className="flex-1 rounded-lg resize-none max-h-[60px]"
@@ -117,15 +186,14 @@ const MessageInput = ({
       <Button
         type="button"
         className="rounded-full size-10"
-        onClick={handleSendMessage}
-        disabled={
-          (!message.message.trim().length && !message.attachment.url) ||
-          isSending ||
-          !authSocket?.connected ||
-          attachPending
-        }
+        onClick={handleMsgSend}
+        disabled={sendingDisableConditions}
       >
-        {isSending ? <Loader className="animate-spin" /> : <SendHorizonal />}
+        {isSending || editPending ? (
+          <Loader className="animate-spin" />
+        ) : (
+          <SendHorizonal />
+        )}
       </Button>
     </div>
   );

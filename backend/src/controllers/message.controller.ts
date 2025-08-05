@@ -76,12 +76,19 @@ const editMessage = async (req: Request, res: Response) => {
     await connectDb();
     const updatedMessage = await Message.findOneAndUpdate(
       { _id: messageId, sender: req.user._id },
-      { content: message, edited: true }
+      { content: message, edited: true },
+      { new: true }
     );
+
+    await updatedMessage.populate({
+      path: "sender",
+      select: "firstName lastName profilePicture",
+    });
+
     if (!updatedMessage) {
       return res.status(404).json({ message: "Message not found" });
     }
-    res.status(200).json({ message: "Message updated successfully" });
+    res.status(200).json({ message: updatedMessage });
   } catch (error: any) {
     res.status(500).json("Error updating message: " + error.message);
   }
