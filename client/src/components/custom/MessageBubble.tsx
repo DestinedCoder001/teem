@@ -102,14 +102,16 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
             !isDeleted &&
             (isDoc ? (
               <div className="relative">
-                <MsgOptionsDropdown
-                  message={message}
-                  editOpen={editOpen}
-                  setEditOpen={setEditOpen}
-                  isDeleting={isDeleting}
-                  handleDelete={handleDelete}
-                  handleEdit={handleEdit}
-                />
+                {!message.content && (
+                  <MsgOptionsDropdown
+                    message={message}
+                    editOpen={editOpen}
+                    setEditOpen={setEditOpen}
+                    isDeleting={isDeleting}
+                    handleDelete={handleDelete}
+                    handleEdit={handleEdit}
+                  />
+                )}
 
                 <Attachment
                   fileName={message.attachment.fileName}
@@ -122,14 +124,16 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
                 className="size-52 cursor-pointer relative"
                 onClick={() => setOpen(true, message.attachment.url)}
               >
-                <MsgOptionsDropdown
-                  message={message}
-                  editOpen={editOpen}
-                  setEditOpen={setEditOpen}
-                  isDeleting={isDeleting}
-                  handleDelete={handleDelete}
-                  handleEdit={handleEdit}
-                />
+                {!message.content && (
+                  <MsgOptionsDropdown
+                    message={message}
+                    editOpen={editOpen}
+                    setEditOpen={setEditOpen}
+                    isDeleting={isDeleting}
+                    handleDelete={handleDelete}
+                    handleEdit={handleEdit}
+                  />
+                )}
                 <img
                   src={message.attachment.url}
                   className="w-full h-full object-cover object-center rounded-lg"
