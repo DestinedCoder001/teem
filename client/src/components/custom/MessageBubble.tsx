@@ -4,17 +4,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatMessageTime } from "@/utils/formatMsgTime";
 import Attachment from "./Attachment";
 import { photoViewer, useEditingMessage } from "@/lib/store/uiStore";
-import { MoreVertical, PenLine, Trash2 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { useEffect, useState } from "react";
 import useDeleteMessage from "@/lib/hooks/useDeleteMessage";
 import { getSocket } from "@/lib/socket";
+import MsgOptionsDropdown from "./MsgOptionsDropdown";
 
 const MessageBubble = ({ message }: { message: MessageProps }) => {
   const [isDeleted, setIsDeleted] = useState(false);
@@ -87,7 +80,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
       >
         <Avatar
           className={`h-7 w-7 lg:h-6 lg:w-6 rounded-full border border-slate-200 sticky bottom-2 ${
-            (edited && !isDeleted) ? "mb-9" : "mb-5"
+            edited && !isDeleted ? "mb-9" : "mb-5"
           }`}
         >
           <AvatarImage
@@ -108,19 +101,38 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
           {message.attachment?.url &&
             !isDeleted &&
             (isDoc ? (
-              <Attachment
-                fileName={message.attachment.fileName}
-                type={message.attachment.type}
-                url={message.attachment.url}
-              />
+              <div className="relative">
+                <MsgOptionsDropdown
+                  message={message}
+                  editOpen={editOpen}
+                  setEditOpen={setEditOpen}
+                  isDeleting={isDeleting}
+                  handleDelete={handleDelete}
+                  handleEdit={handleEdit}
+                />
+
+                <Attachment
+                  fileName={message.attachment.fileName}
+                  type={message.attachment.type}
+                  url={message.attachment.url}
+                />
+              </div>
             ) : (
               <div
-                className="size-52 rounded-lg overflow-hidden cursor-pointer"
+                className="size-52 cursor-pointer relative"
                 onClick={() => setOpen(true, message.attachment.url)}
               >
+                <MsgOptionsDropdown
+                  message={message}
+                  editOpen={editOpen}
+                  setEditOpen={setEditOpen}
+                  isDeleting={isDeleting}
+                  handleDelete={handleDelete}
+                  handleEdit={handleEdit}
+                />
                 <img
                   src={message.attachment.url}
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-center rounded-lg"
                 />
               </div>
             ))}
@@ -132,36 +144,15 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
                   : "rounded-t-lg rounded-br-lg border border-slate-300 text-slate-700"
               }`}
             >
-              {!isDeleted && message.sender._id === userId && (
-                <DropdownMenu open={editOpen} onOpenChange={setEditOpen}>
-                  <DropdownMenuTrigger asChild disabled={isDeleting}>
-                    <MoreVertical className="absolute text-slate-500 hover:bg-slate-50 hover:border rounded-full p-1 size-6 cursor-pointer top-1/2 -translate-y-1/2 -left-7" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    onClick={(e) => e.stopPropagation()}
-                    className="z-50 bg-white/90 backdrop-blur-sm"
-                  >
-                    {message.content && (
-                      <>
-                        <DropdownMenuItem
-                          className="cursor-pointer group py-1"
-                          onClick={handleEdit}
-                        >
-                          <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                      </>
-                    )}
-                    <DropdownMenuItem
-                      className="cursor-pointer group py-1"
-                      onClick={handleDelete}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              {!isDeleted && (
+                <MsgOptionsDropdown
+                  message={message}
+                  editOpen={editOpen}
+                  setEditOpen={setEditOpen}
+                  isDeleting={isDeleting}
+                  handleDelete={handleDelete}
+                  handleEdit={handleEdit}
+                />
               )}
               {msgContent}
             </div>
