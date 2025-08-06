@@ -158,9 +158,9 @@ const MessageInput = ({
           >
             <XIcon size={14} className="text-slate-800" />
           </div>
-          <p className="theme-text-gradient">Editing </p>
+          <p className="theme-text-gradient w-max">Editing </p>
           <p className="font-medium text-slate-600">
-            {msg.content.length > 20 ? msg.content.slice(0, 20) : msg.content}
+            {msg.content.length > 20 ? msg.content.slice(0, 20)+"..." : msg.content}
           </p>
         </div>
       )}

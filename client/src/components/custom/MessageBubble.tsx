@@ -85,7 +85,11 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
           isSender ? "flex-row-reverse" : ""
         }`}
       >
-        <Avatar className="h-7 w-7 lg:h-6 lg:w-6 rounded-full border border-slate-200 sticky bottom-2 mb-5">
+        <Avatar
+          className={`h-7 w-7 lg:h-6 lg:w-6 rounded-full border border-slate-200 sticky bottom-2 ${
+            (edited && !isDeleted) ? "mb-9" : "mb-5"
+          }`}
+        >
           <AvatarImage
             className="object-cover object-center w-full"
             src={message.sender?.profilePicture}

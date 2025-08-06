@@ -149,12 +149,12 @@ const ChannelDrawer = ({
             </div>
 
             {me?._id === channel?.createdBy._id && (
-              <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
+              <div className="rounded-md flex flex-col md:flex-row gap-y-4 justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
                 <div className="space-y-1">
                   <p className="text-lg text-red-500 font-medium">
                     Clear messages
                   </p>
-                  <p className="text-slate-700 text-sm text-center md:text-left">
+                  <p className="text-slate-700 text-sm md:text-left">
                     Delete all conversations in{" "}
                     <span className="font-semibold">{channel?.name}</span>.
                   </p>
