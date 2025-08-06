@@ -12,7 +12,7 @@ const AttachmentPreview = ({ handleRemoveAttachment, attachment }: Props) => {
     .some(Boolean);
   return (
     <div
-      className={`absolute bottom-full left-4 rounded-md ${
+      className={`absolute bottom-full bg-white left-4 rounded-md ${
         isImage && "size-28"
       }`}
     >
