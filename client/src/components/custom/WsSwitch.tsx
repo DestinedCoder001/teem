@@ -17,7 +17,7 @@ import {
 } from "@/lib/store/userStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useCreateWsDialogOpen } from "@/lib/store/uiStore";
+import { useCreateWsDialogOpen, useSidebarOpen } from "@/lib/store/uiStore";
 import { getSocket } from "@/lib/socket";
 
 const WsSwitch = () => {
@@ -34,6 +34,7 @@ const WsSwitch = () => {
   const { setTasks } = useUserTasks((state) => state);
   const navigate = useNavigate();
   const { setOpen } = useCreateWsDialogOpen((state) => state);
+  const isSidebarOpen = useSidebarOpen((state) => state.isOpen);
   const authSocket = getSocket()!;
 
   // if (!workspaces?.length) return null;
@@ -50,7 +51,7 @@ const WsSwitch = () => {
     setChannelDetails({
       _id: "",
       name: "",
-      createdBy: { _id: "", firstName: "", lastName: "" },
+      createdBy: { _id: "", firstName: "", lastName: "", profilePicture: "" },
       members: [],
       description: "",
     });
@@ -64,7 +65,7 @@ const WsSwitch = () => {
     setChannelDetails({
       _id: "",
       name: "",
-      createdBy: { _id: "", firstName: "", lastName: "" },
+      createdBy: { _id: "", firstName: "", lastName: "", profilePicture: "" },
       members: [],
       description: "",
     });
@@ -84,10 +85,13 @@ const WsSwitch = () => {
       <DropdownMenuTrigger asChild>
         <Button
           title={currentWsName}
+          style={!isSidebarOpen ? { padding: 0 } : {}}
           variant="ghost"
-          className="w-full flex justify-between items-center px-4 py-6 text-slate-600 hover:bg-slate-100 rounded-md"
+          className={`flex justify-between items-center ${
+            isSidebarOpen ? "px-4 py-6 w-full" : "w-max p-0 mx-auto"
+          }  text-slate-600 hover:bg-slate-100 rounded-md`}
         >
-          <div className="flex items-center space-x-2">
+          <div className={`flex items-center ${isSidebarOpen && "space-x-2"}`}>
             {wsId && (
               <Avatar className="h-8 w-8 rounded-md border border-primary">
                 <AvatarImage
@@ -100,13 +104,19 @@ const WsSwitch = () => {
                 </AvatarFallback>
               </Avatar>
             )}
-            <span className="text-xs font-medium">
+            <span
+              className={`text-xs font-medium ${!isSidebarOpen && "lg:hidden"}`}
+            >
               {currentWsName?.length > 10
                 ? currentWsName.slice(0, 10) + "..."
                 : currentWsName || "Select"}
             </span>
           </div>
-          <ChevronsUpDown className="h-4 w-4 text-slate-400" />
+          <ChevronsUpDown
+            className={`h-4 w-4 text-slate-400 ${
+              !isSidebarOpen && "lg:hidden"
+            }`}
+          />
         </Button>
       </DropdownMenuTrigger>
 

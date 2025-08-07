@@ -1,13 +1,21 @@
 import { create } from "zustand";
 import type { EditingMessageProps } from "../types";
+import { persist } from "zustand/middleware";
 
 const useSidebarOpen = create<{
   isOpen: boolean;
   setOpen: (open: boolean) => void;
-}>((set) => ({
-  isOpen: false,
-  setOpen: (open) => set({ isOpen: open }),
-}));
+}>()(
+  persist(
+    (set) => ({
+      isOpen: false,
+      setOpen: (open) => set({ isOpen: open }),
+    }),
+    {
+      name: "teem-sidebar",
+    }
+  )
+);
 
 const useCreateWsDialogOpen = create<{
   isOpen: boolean;
@@ -105,8 +113,8 @@ const useEditingMessage = create<{
   setMessage: (msg: EditingMessageProps) => void;
 }>((set) => ({
   isEditing: false,
-  setEditing: (editing) => set({isEditing: editing}),
-  setMessage: (msg) => set({message: {...msg}}),
+  setEditing: (editing) => set({ isEditing: editing }),
+  setMessage: (msg) => set({ message: { ...msg } }),
   message: { content: "", _id: "", channel: "" },
 }));
 
@@ -123,5 +131,5 @@ export {
   useActiveUsers,
   useUserOnline,
   photoViewer,
-  useEditingMessage
+  useEditingMessage,
 };

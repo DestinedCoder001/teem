@@ -79,8 +79,8 @@ const TaskCard = ({
     isDue,
   };
 
-  const modGuidlines =
-    guidelines?.length > 100 ? guidelines.slice(0, 100) + "..." : guidelines;
+  // const modGuidlines =
+  //   guidelines?.length > 100 ? guidelines.slice(0, 100) + "..." : guidelines;
 
   return (
     <>
@@ -162,8 +162,8 @@ const TaskCard = ({
             )}
 
             <div
-              dangerouslySetInnerHTML={{ __html: modGuidlines }}
-              className="text-sm text-slate-800"
+              dangerouslySetInnerHTML={{ __html: guidelines }}
+              className="text-sm text-slate-800 custom-ellipsis"
             />
           </div>
         </div>

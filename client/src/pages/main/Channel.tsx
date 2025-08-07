@@ -24,11 +24,12 @@ import { useInView } from "react-intersection-observer";
 import ChannelDrawer from "@/components/custom/ChannelDrawer";
 import MessageInput from "@/components/custom/MessageInput";
 import { ChevronDown } from "lucide-react";
-import { useEditingMessage } from "@/lib/store/uiStore";
+import { useEditingMessage, useSidebarOpen } from "@/lib/store/uiStore";
 
 const Channel = () => {
   const { channelId } = useParams();
   const wsId = currentWsDetails.getState()._id;
+  const isSidebarOpen = useSidebarOpen((state) => state.isOpen);
   const {
     name,
     setChannelDetails,
@@ -250,7 +251,11 @@ const Channel = () => {
     <div className="h-[calc(100dvh-50px)] overflow-hidden">
       <div className="flex flex-col relative h-full">
         <div
-          className="p-4 border-b fixed top-[49px] w-full lg:w-[calc(100%-220px)] bg-white/80 backdrop-blur-sm z-40 cursor-pointer"
+          className={`p-4 border-b fixed top-[49px] w-full ${
+            isSidebarOpen
+              ? "lg:w-[calc(100%-220px)]"
+              : "lg:w-[calc(100%-4.5rem)]"
+          } bg-white/80 backdrop-blur-sm z-40 cursor-pointer`}
           onClick={handleOpenDrawer}
         >
           <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
@@ -306,13 +311,19 @@ const Channel = () => {
         {!isNearBottom && (
           <div
             onClick={handleAutoScroll}
-            className="bg-white/80 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:left-[60%] xl:left-[58%] -translate-x-1/2 rounded-full p-1 cursor-pointer"
+            className={`bg-white/80 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"} -translate-x-1/2 rounded-full p-1 cursor-pointer`}
           >
             <ChevronDown className="text-slate-600 translate-y-[0.08rem]" />
           </div>
         )}
 
-        <div className="bg-white/80 backdrop-blur-sm fixed bottom-0 w-full lg:w-[calc(100%-220px)] z-40">
+        <div
+          className={`bg-white/80 backdrop-blur-sm fixed bottom-0 w-full ${
+            isSidebarOpen
+              ? "lg:w-[calc(100%-220px)]"
+              : "lg:w-[calc(100%-4.5rem)]"
+          } z-40`}
+        >
           {isMember ? (
             <MessageInput
               message={newMessage}

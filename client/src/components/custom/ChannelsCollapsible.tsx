@@ -10,6 +10,7 @@ import { currentWsDetails, useUserWorkspaces } from "@/lib/store/userStore";
 import CreateChannelBtn from "./CreateChannelBtn";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import { Skeleton } from "../ui/skeleton";
+import { useSidebarOpen } from "@/lib/store/uiStore";
 
 const ChannelsCollapsible = () => {
   const location = useLocation();
@@ -18,6 +19,7 @@ const ChannelsCollapsible = () => {
   const { channels, _id } = currentWsDetails((state) => state);
   const { isPending } = useGetWsDetails();
   const { workspaces } = useUserWorkspaces((state) => state);
+  const isSidebarOpen = useSidebarOpen((state) => state.isOpen);
 
   useEffect(() => {
     setOpen(false);
@@ -27,11 +29,11 @@ const ChannelsCollapsible = () => {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      disabled={!_id || !workspaces?.length}
+      disabled={!_id || !workspaces?.length || !isSidebarOpen}
     >
       <CollapsibleTrigger className="w-full rounded-md">
         <div
-          className={`group flex items-center justify-between w-full px-3 py-2 lg:p-2 cursor-pointer rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 transition-colors ${
+          className={`group flex items-center justify-between ${isSidebarOpen ? "w-full":"w-max"} px-3 py-2 lg:p-2 cursor-pointer rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 transition-colors ${
             isActive
               ? "bg-gradient-to-r from-primary/10 to-secondary/10"
               : "hover:bg-slate-100"
@@ -41,15 +43,19 @@ const ChannelsCollapsible = () => {
             <span className="group-hover:text-secondary">
               <Rss />
             </span>
-            <span>Channels</span>
+            <span className={`${!isSidebarOpen && "lg:hidden"}`}>Channels</span>
           </div>
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${
-              open ? "rotate-180" : ""
-            }`}
-          />
+          {isSidebarOpen && (
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${
+                open ? "rotate-180" : ""
+              }`}
+            />
+          )}
         </div>
       </CollapsibleTrigger>
+      {
+        isSidebarOpen && 
       <CollapsibleContent className="pl-4 space-y-2 mt-2">
         {isPending &&
           [1, 2, 3, 4].map((val) => (
@@ -74,6 +80,7 @@ const ChannelsCollapsible = () => {
           ))}
         <CreateChannelBtn />
       </CollapsibleContent>
+      }
     </Collapsible>
   );
 };

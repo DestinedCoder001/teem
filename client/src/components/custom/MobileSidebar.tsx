@@ -8,11 +8,18 @@ import WsSwitch from "./WsSwitch";
 import ChannelsCollapsible from "./ChannelsCollapsible";
 import useGetMe from "@/lib/hooks/useGetMe";
 import { Skeleton } from "../ui/skeleton";
+import { useEffect } from "react";
 
 const MobileSideBar = () => {
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
   const { isPending } = useGetMe();
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setOpen(false);
+    }
+  }, [setOpen]);
 
   return (
     <Drawer
@@ -61,7 +68,11 @@ const MobileSideBar = () => {
         </div>
 
         <div className="my-8">
-          {isPending ? <Skeleton className="h-12 w-full" /> : <WsSwitch />}
+          {isPending ? (
+            <Skeleton className={`${isOpen ? "h-12" : "h-9"} w-full`} />
+          ) : (
+            <WsSwitch />
+          )}
         </div>
       </div>
     </Drawer>
