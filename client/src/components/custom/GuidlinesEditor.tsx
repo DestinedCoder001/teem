@@ -113,8 +113,8 @@ const GuidelinesEditor = ({
 
   return (
     <div className={className}>
-      <div className="border border-slate-300 rounded-md">
-        <div className="flex flex-wrap bg-slate-50 justify-center no-scrollbar gap-2 p-2 rounded-t-md">
+      <div className="border border-slate-300 dark:border-neutral-700 rounded-md">
+        <div className="flex flex-wrap bg-slate-50 dark:bg-neutral-900 justify-center no-scrollbar gap-2 p-2 rounded-t-md">
           <Button
             variant="outline"
             type="button"
@@ -122,7 +122,7 @@ const GuidelinesEditor = ({
               editor?.chain().focus().toggleHeading({ level: 1 }).run()
             }
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive("heading", { level: 1 }) ? "bg-secondary/20" : ""
+              editor?.isActive("heading", { level: 1 }) ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <span>
@@ -136,7 +136,7 @@ const GuidelinesEditor = ({
               editor?.chain().focus().toggleHeading({ level: 2 }).run()
             }
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive("heading", { level: 2 }) ? "bg-secondary/20" : ""
+              editor?.isActive("heading", { level: 2 }) ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <span>
@@ -150,7 +150,7 @@ const GuidelinesEditor = ({
               editor?.chain().focus().toggleHeading({ level: 3 }).run()
             }
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive("heading", { level: 3 }) ? "bg-secondary/20" : ""
+              editor?.isActive("heading", { level: 3 }) ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <span>
@@ -162,7 +162,7 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().toggleBold().run()}
             className={`px-4 py-1 font-bold rounded ${
-              editor?.isActive("bold") ? "bg-secondary/20" : ""
+              editor?.isActive("bold") ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             B
@@ -172,7 +172,7 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().toggleItalic().run()}
             className={`px-4 py-1 italic rounded ${
-              editor?.isActive("italic") ? "bg-secondary/20" : ""
+              editor?.isActive("italic") ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             I
@@ -182,7 +182,7 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().toggleUnderline().run()}
             className={`px-4 py-1 underline rounded ${
-              editor?.isActive("underline") ? "bg-secondary/20" : ""
+              editor?.isActive("underline") ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             U
@@ -192,7 +192,7 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().toggleBulletList().run()}
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive("bulletList") ? "bg-secondary/20" : ""
+              editor?.isActive("bulletList") ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <List />
@@ -202,7 +202,7 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().toggleOrderedList().run()}
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive("orderedList") ? "bg-secondary/20" : ""
+              editor?.isActive("orderedList") ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <ListOrdered />
@@ -212,7 +212,7 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().setTextAlign("left").run()}
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive({ textAlign: "left" }) ? "bg-secondary/20" : ""
+              editor?.isActive({ textAlign: "left" }) ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <AlignLeft />
@@ -222,7 +222,7 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().setTextAlign("center").run()}
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive({ textAlign: "center" }) ? "bg-secondary/20" : ""
+              editor?.isActive({ textAlign: "center" }) ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <AlignCenter />
@@ -232,13 +232,13 @@ const GuidelinesEditor = ({
             type="button"
             onClick={() => editor?.chain().focus().setTextAlign("right").run()}
             className={`px-3 py-1 rounded text-xs ${
-              editor?.isActive({ textAlign: "right" }) ? "bg-secondary/20" : ""
+              editor?.isActive({ textAlign: "right" }) ? "bg-secondary/20 dark:bg-secondary/80 dark:text-slate-100" : "dark:text-slate-100"
             }`}
           >
             <AlignRight />
           </Button>
         </div>
-        <EditorContent editor={editor} ref={ref} />
+        <EditorContent editor={editor} className="dark:text-slate-100 dark:selection:bg-slate-100 dark:selection:text-primary-foreground" ref={ref} />
       </div>
       {error && <span className="text-xs text-red-500">{error.message}</span>}
     </div>

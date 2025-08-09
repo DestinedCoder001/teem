@@ -83,7 +83,7 @@ const Tasks = () => {
             variant="ghost"
             disabled={!wsId || !workspaces.length}
             onClick={() => setOpen(true)}
-            className="border border-[#aaa] px-4 py-2 rounded-lg text-md theme-text-gradient"
+            className="border border-[#aaa] dark:border-neutral-700 px-4 py-2 rounded-lg text-md theme-text-gradient"
           >
             Create Task
           </Button>
@@ -98,10 +98,10 @@ const Tasks = () => {
             onValueChange={(value) => setFilter(value)}
             defaultValue="all"
           >
-            <SelectTrigger className="w-[180px] text-slate-700">
+            <SelectTrigger className="w-[180px] text-slate-700 dark:text-slate-100">
               <SelectValue placeholder="Assigned by" />
             </SelectTrigger>
-            <SelectContent className="text-slate-700">
+            <SelectContent className="text-slate-700 dark:text-slate-100">
               <SelectItem value="all">All</SelectItem>
               <SelectItem value="to_me">Assigned to me</SelectItem>
               <SelectItem value="by_me">Assigned by me</SelectItem>
@@ -139,7 +139,7 @@ const Tasks = () => {
             )}
           </div>
         ) : getTasksSuccess ? (
-          <div className="text-center text-slate-600 h-[calc(100dvh-200px)] w-full flex justify-center items-center">
+          <div className="text-center text-slate-600 dark:text-slate-100 h-[calc(100dvh-200px)] w-full flex justify-center items-center">
             No tasks found
           </div>
         ) : null}

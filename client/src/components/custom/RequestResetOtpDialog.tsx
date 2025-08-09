@@ -66,7 +66,7 @@ export function RequestResetOtpDialog({ open, onOpenChange }: Props) {
               <DialogTitle className="text-lg font-semibold text-center">
                 Reset Password
               </DialogTitle>
-              <DialogDescription className="text-center text-black/70">
+              <DialogDescription className="text-center text-black/70 dark:text-white/70">
                 Enter your email address to reset your password.
               </DialogDescription>
             </DialogHeader>
@@ -96,7 +96,7 @@ export function RequestResetOtpDialog({ open, onOpenChange }: Props) {
                 onClick={handleSubmit(onSubmit)}
                 type="submit"
                 disabled={isPending}
-                className="min-w-[8rem]"
+                className="min-w-[8rem] dark:text-white"
               >
                 {isPending ? (
                   <Loader className="animate-spin" />

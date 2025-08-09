@@ -35,8 +35,8 @@ const UserRemoveAlert = () => {
             <TriangleAlert />
             Caution!
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-800 text-left">
-            <span className="font-semibold text-black">
+          <AlertDialogDescription className="text-slate-800 dark:text-slate-200 text-left">
+            <span className="font-semibold text-black dark:text-white">
               {user?.firstName} {user?.lastName}
             </span>{" "}
             will be removed from this workspace and will no longer be able to
@@ -46,7 +46,7 @@ const UserRemoveAlert = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-          <Button disabled={isPending} className="md:min-w-[6rem]" variant="destructive" onClick={handleRemove}>{isPending ?<Loader className="text-white animate-spin" /> : "Proceed"}</Button>
+          <Button disabled={isPending} className="md:min-w-[6rem] dark:bg-red-500" variant="destructive" onClick={handleRemove}>{isPending ?<Loader className="text-white animate-spin" /> : "Proceed"}</Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -90,7 +90,7 @@ const SendInviteDialog = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-600 font-normal">
+            <Label htmlFor="email" className="text-slate-600 dark:text-slate-100 font-normal">
               Email
             </Label>
             <Input
@@ -122,11 +122,11 @@ const SendInviteDialog = () => {
               <Label>Select User</Label>
               <GradientWrapper
                 className={`p-[2px] rounded-lg ${
-                  selectedEmail !== user.email ? "bg-none bg-slate-300" : ""
+                  selectedEmail !== user.email ? "bg-none bg-slate-300 dark:bg-neutral-600" : ""
                 }`}
               >
                 <div
-                  className="flex items-center space-x-2 p-3 border rounded-md cursor-pointer bg-white"
+                  className="flex items-center space-x-2 p-3 border rounded-md cursor-pointer bg-white dark:bg-neutral-900"
                   onClick={() => setSelectedEmail(user.email)}
                 >
                   <RadioGroupItem
@@ -140,11 +140,11 @@ const SendInviteDialog = () => {
                       alt={user?.firstName}
                       className="object-cover object-center w-full"
                     />
-                    <AvatarFallback className="text-slate-600">
+                    <AvatarFallback className="text-slate-600 dark:text-slate-100">
                       {user?.firstName?.[0]?.toUpperCase() || ""}
                     </AvatarFallback>
                   </Avatar>
-                  <p className="text-slate-600 font-medium">
+                  <p className="text-slate-600  dark:text-slate-200 font-medium">
                     {user?.firstName} {user?.lastName}
                   </p>
                 </div>
@@ -157,7 +157,7 @@ const SendInviteDialog = () => {
               <Button
                 type="submit"
                 disabled={emailCheckPending}
-                className="min-w-[8rem]"
+                className="min-w-[8rem] dark:text-white"
                 onClick={() => (actionRef.current = "search")}
               >
                 {emailCheckPending ? (
@@ -184,7 +184,7 @@ const SendInviteDialog = () => {
                 <Button
                   type="submit"
                   variant="default"
-                  className="min-w-[8rem]"
+                  className="min-w-[8rem] dark:text-white"
                   disabled={!selectedEmail || invitePending}
                   onClick={() => (actionRef.current = "send")}
                 >

@@ -26,47 +26,47 @@ const NotificationItem = ({ invite }: { invite: Invite }) => {
   const isReceiver = user?._id === invite.receiver._id;
 
   return (
-    <div className="rounded-lg border border-slate-300 overflow-hidden transition-all">
+    <div className="rounded-lg border border-slate-300 dark:border-neutral-600 overflow-hidden transition-all">
       <div
-        className="flex justify-between items-center p-4 cursor-pointer text-slate-600 active:bg-slate-50 rounded-b-lg"
+        className="flex justify-between items-center p-4 cursor-pointer text-slate-600 active:bg-slate-50 dark:active:bg-neutral-500 rounded-b-lg"
         onClick={() => setOpen((prev) => !prev)}
       >
         {isReceiver ? (
-          <p>
+          <p className="dark:text-slate-100">
             You have been invited to join{" "}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-slate-800 dark:text-slate-50">
               {invite.workspace.name}
             </span>
             !
           </p>
         ) : (
-          <p>
+          <p className="dark:text-slate-100">
             You sent a join invite for{" "}
-            <span className="font-semibold text-slate-800">
+            <span className="font-semibold text-slate-800 dark:text-slate-50">
               {invite.workspace.name}
             </span>
             !
           </p>
         )}
         <ChevronDown
-          className={`h-4 w-4 transition-transform shrink-0 ${
+          className={`h-4 w-4 transition-transform shrink-0 dark:text-slate-100 ${
             open && "rotate-180"
           }`}
         />
       </div>
 
       <div
-        className="transition-all duration-200 px-4 overflow-hidden bg-white"
+        className="transition-all duration-200 px-4 overflow-hidden bg-white dark:bg-transparent"
         style={{ height: `${height}px` }}
       >
-        <div ref={contentRef} className="py-4 space-y-2 text-sm text-slate-700">
+        <div ref={contentRef} className="py-4 space-y-2 text-sm text-slate-700 dark:text-slate-100">
           {isReceiver ? (
             <>
               <p>
                 <span className="font-medium">Sender:</span>{" "}
                 {invite.sender.firstName} {invite.sender.lastName}
               </p>
-              <p className="text-slate-500">
+              <p className="text-slate-500 dark:text-slate-300">
                 <span>Sent</span>{" "}
                 {formatDistanceToNow(new Date(invite.createdAt), {
                   addSuffix: true,
@@ -79,7 +79,7 @@ const NotificationItem = ({ invite }: { invite: Invite }) => {
                 <span className="font-medium">Reveiver:</span>{" "}
                 {invite.receiver.firstName} {invite.receiver.lastName}
               </p>
-              <p className="text-slate-500">
+              <p className="text-slate-500 dark:text-slate-300">
                 <span>Sent</span>{" "}
                 {formatDistanceToNow(new Date(invite.createdAt), {
                   addSuffix: true,

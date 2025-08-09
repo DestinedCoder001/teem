@@ -30,21 +30,21 @@ const AssignesDropdown = ({ user, setUser }: Props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuLabel className="-mb-3">Assign to</DropdownMenuLabel>
+      <DropdownMenuLabel className="-mb-3 dark:text-slate-100">Assign to</DropdownMenuLabel>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">{name}</Button>
+        <Button variant="outline" className="dark:text-slate-100">{name}</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[18rem]  md:w-[23rem]">
+      <DropdownMenuContent className="w-[18rem]  md:w-[23rem] bg-white dark:bg-neutral-900">
         <DropdownMenuRadioGroup value={user || ""} onValueChange={setUser}>
           {users?.map((user) => (
             <DropdownMenuRadioItem
               value={user?._id}
               key={user?._id}
-              className="font-medium text-slate-600"
+              className="font-medium text-slate-600 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              <Avatar className="h-6 w-6 rounded-full cursor-pointer border border-slate-200">
-                <AvatarImage src={user?.profilePicture} alt={user?.firstName} />
-                <AvatarFallback className="text-slate-600">
+              <Avatar className="h-6 w-6 rounded-full cursor-pointer border border-slate-200 dark:border-slate-500">
+                <AvatarImage src={user?.profilePicture} alt={user?.firstName} className="object-cover object-center w-full"/>
+                <AvatarFallback className="text-slate-600 dark:text-slate-100">
                   {user?.firstName[0].toUpperCase() || ""}
                 </AvatarFallback>
               </Avatar>

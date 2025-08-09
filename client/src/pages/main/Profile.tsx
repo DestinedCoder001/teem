@@ -126,12 +126,12 @@ const UserProfile = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-full max-w-md bg-white overflow-hidden p-6">
+      <div className="w-full max-w-md overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
           <div className={`${isEditing && "relative"}`}>
             <CircleGradientWrapper
               className={`p-0.5 relative rounded-full ${
-                !isOnline && "bg-none bg-slate-500"
+                !isOnline && "bg-none bg-slate-500 dark:bg-neutral-500"
               }`}
             >
               <Avatar className="h-24 w-24">
@@ -145,7 +145,7 @@ const UserProfile = () => {
                 {imgUpdatePending && (
                   <Loader className="animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white" />
                 )}
-                <AvatarFallback className="text-slate-600 text-3xl font-bold">
+                <AvatarFallback className="text-slate-600 dark:text-slate-100 text-3xl font-bold">
                   {user?.firstName?.[0]?.toUpperCase()}
                   {user?.lastName?.[0]?.toUpperCase()}
                 </AvatarFallback>
@@ -181,8 +181,8 @@ const UserProfile = () => {
           <div
             className={`text-xs font-semibold px-3 py-1 rounded-full mb-4 mt-2 ${
               isOnline
-                ? "text-secondary bg-gradient-to-tr from-primary/10 to-secondary/10"
-                : "text-slate-500 bg-slate-300"
+                ? "text-secondary bg-gradient-to-tr from-primary/10 to-secondary/10 dark:from-primary/30 dark:to-secondary/30"
+                : "text-slate-500 dark:text-slate-100 bg-slate-300 dark:bg-neutral-700"
             }`}
           >
             {isOnline ? "online" : "offline"}
@@ -190,7 +190,7 @@ const UserProfile = () => {
           <h1 className="text-2xl font-bold theme-text-gradient">
             {user?.firstName} {user?.lastName}
           </h1>
-          <p className="text-sm text-gray-500">{user?.email}</p>
+          <p className="text-sm text-gray-500 dark:text-slate-200">{user?.email}</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="py-6 space-y-6">
@@ -240,7 +240,7 @@ const UserProfile = () => {
                   type="button"
                   variant="outline"
                   onClick={handleCancel}
-                  className="text-gray-600 hover:bg-gray-100 hover:text-gray-700 border-gray-300"
+                  className="text-gray-600 dark:text-slate-100 hover:bg-gray-100 hover:text-gray-700 border-gray-300"
                 >
                   <X className="mr-2 h-4 w-4" /> Cancel
                 </Button>
@@ -248,7 +248,7 @@ const UserProfile = () => {
                   type="submit"
                   variant="outline"
                   className={`min-w-[5rem] ${
-                    isPending ? "text-secondary/80" : "theme-text-gradient"
+                    isPending ? "text-secondary/80 dark:text-secondary" : "theme-text-gradient"
                   }`}
                   disabled={isPending || imgUpdatePending}
                 >
@@ -260,7 +260,7 @@ const UserProfile = () => {
                 type="button"
                 variant="outline"
                 onClick={() => setIsEditing(true)}
-                className="text-gray-600 hover:text-gray-700 hover:bg-gray-100 border-gray-300"
+                className="text-gray-600 dark:text-slate-100 hover:text-gray-700 hover:bg-gray-100 border-gray-300"
               >
                 <Pencil className="mr-2 h-4 w-4" /> Edit Profile
               </Button>

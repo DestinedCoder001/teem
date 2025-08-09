@@ -32,8 +32,8 @@ const WsDeleteAlert = () => {
             <TriangleAlert />
             Caution!
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-slate-800 text-left">
-            <span className="font-semibold text-black">{name}</span> will be
+          <AlertDialogDescription className="text-slate-800 dark:text-slate-100 text-left">
+            <span className="font-semibold text-black dark:text-white">{name}</span> will be
             deleted and you will no longer be able to access channels, tasks and
             messages.
             <br />
@@ -45,7 +45,7 @@ const WsDeleteAlert = () => {
           <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <Button
             disabled={isPending || user?._id !== createdBy}
-            className="md:min-w-[6rem]"
+            className="md:min-w-[6rem] dark:bg-red-500"
             variant="destructive"
             onClick={()=>mutate()}
           >

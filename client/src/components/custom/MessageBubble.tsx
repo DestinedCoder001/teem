@@ -88,7 +88,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
             src={message.sender?.profilePicture}
             alt={message.sender?.firstName}
           />
-          <AvatarFallback className="text-slate-600 font-medium text-sm">
+          <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
             {message.sender?.firstName[0]?.toUpperCase()}
             {message.sender?.lastName[0]?.toUpperCase()}
           </AvatarFallback>
@@ -145,7 +145,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
               className={`px-4 py-2 text-[0.9rem] break-words relative ${
                 isSender
                   ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
-                  : "rounded-t-lg rounded-br-lg border border-slate-300 text-slate-700"
+                  : "rounded-t-lg rounded-br-lg border border-slate-300 dark:border-neutral-600 text-slate-700 dark:text-slate-200 dark:bg-neutral-900"
               }`}
             >
               {!isDeleted && (
@@ -163,7 +163,7 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
           )}
           {isDeleted && (
             <div
-              className={`px-4 py-2 text-[0.9rem] italic break-words  border border-slate-300 text-slate-600 ${
+              className={`px-4 py-2 text-[0.9rem] italic break-words border border-slate-300 dark:border-neutral-600 text-slate-600 dark:text-slate-200 ${
                 isSender
                   ? "rounded-t-lg rounded-bl-lg"
                   : "rounded-t-lg rounded-br-lg"
@@ -172,9 +172,9 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
               This message was deleted
             </div>
           )}
-          <span className="text-slate-500 text-[0.7rem]">{sentTime}</span>
+          <span className="text-slate-500 text-[0.7rem] dark:text-slate-300">{sentTime}</span>
           {edited && !isDeleted && (
-            <span className="text-slate-500 text-[0.7rem] -mt-1">Edited</span>
+            <span className="text-slate-500 text-[0.7rem] dark:text-slate-300 -mt-1">Edited</span>
           )}
         </div>
       </div>

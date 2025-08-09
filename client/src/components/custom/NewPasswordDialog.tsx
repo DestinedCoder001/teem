@@ -74,7 +74,7 @@ export function NewPasswordDialog({ open, onOpenChange }: Props) {
             <DialogTitle className="text-lg font-semibold text-center">
               Set New Password
             </DialogTitle>
-            <DialogDescription className="text-center text-black/70">
+            <DialogDescription className="text-center text-black/70 dark:text-white/70">
               Enter your new password to complete the reset process.
             </DialogDescription>
           </DialogHeader>
@@ -127,7 +127,7 @@ export function NewPasswordDialog({ open, onOpenChange }: Props) {
               />
               <label
                 htmlFor="showPasswordReset"
-                className="text-sm text-[#666666] leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                className="text-sm text-[#666666] dark:text-slate-200 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 Show password
               </label>
@@ -137,7 +137,7 @@ export function NewPasswordDialog({ open, onOpenChange }: Props) {
             <Button
               type="submit"
               disabled={isPending}
-              className="min-w-[6rem]"
+              className="min-w-[6rem] dark:text-white"
               onClick={handleSubmit(onSubmit)}
             >
               {isPending ? (

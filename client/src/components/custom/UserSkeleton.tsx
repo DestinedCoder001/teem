@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const UserSkeleton = () => {
   return (
     <div className="flex flex-col items-center">
-      <div className="w-full max-w-md bg-white overflow-hidden p-6">
+      <div className="w-full max-w-md overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
 
           <div>

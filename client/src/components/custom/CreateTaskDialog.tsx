@@ -93,7 +93,7 @@ const CreateTaskDialog = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] no-scrollbar overflow-y-auto bg-white text-gray-900">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] no-scrollbar overflow-y-auto bg-white dark:bg-neutral-950 text-gray-900">
         <DialogHeader>
           <DialogTitle className="text-xl theme-text-gradient w-max">
             New Task
@@ -102,7 +102,7 @@ const CreateTaskDialog = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="taskTitle" className="text-base text-gray-700">
+              <Label htmlFor="taskTitle" className="text-base text-gray-700 dark:text-slate-100">
                 Task Title
               </Label>
               <Input
@@ -137,7 +137,7 @@ const CreateTaskDialog = () => {
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="guidelines" className="text-base text-gray-700">
+              <Label htmlFor="guidelines" className="text-base text-gray-700 dark:text-slate-100">
                 Guidelines
               </Label>
               <GuidelinesEditor
@@ -153,7 +153,7 @@ const CreateTaskDialog = () => {
             <Button
               type="submit"
               disabled={isPending}
-              className="min-w-[10rem]"
+              className="min-w-[10rem] dark:text-white"
             >
               {isPending ? <Loader className="animate-spin" /> : "Create Task"}
             </Button>

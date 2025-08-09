@@ -4,7 +4,7 @@ const AuthError = ({ error }: { error: string }) => {
   return (
     <div className="h-[100dvh] flex flex-col items-center justify-center gap-4 text-center">
       <img src={badconnection} className="size-64" />
-      <p className="text-slate-600 font-medium ">
+      <p className="text-slate-600 dark:text-slate-200 font-medium ">
         {error || "Something went wrong"}
       </p>
       <Button

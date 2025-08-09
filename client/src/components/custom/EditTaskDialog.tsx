@@ -60,7 +60,7 @@ const EditTaskDialog = () => {
         dueDate: new Date(task.dueDate),
       });
     }
-  }, [task, reset])
+  }, [task, reset]);
 
   useEffect(() => {
     register("dueDate", {
@@ -83,7 +83,7 @@ const EditTaskDialog = () => {
       setAssignee(task.assignedTo._id);
     }
   }, [task]);
-  
+
   const onSubmit = (data: FormValues) => {
     if (!task) return;
     mutate(
@@ -96,7 +96,9 @@ const EditTaskDialog = () => {
       },
       {
         onSuccess: () => {
-          toast.success("Task updated successfully", { position: "top-center" });
+          toast.success("Task updated successfully", {
+            position: "top-center",
+          });
           reset();
           setOpen(false);
         },
@@ -113,7 +115,7 @@ const EditTaskDialog = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
-      <DialogContent className="sm:max-w-[425px] max-h-[90vh] no-scrollbar overflow-y-auto bg-white text-gray-900">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] no-scrollbar overflow-y-auto bg-white dark:bg-neutral-950 text-gray-900">
         <DialogHeader>
           <DialogTitle className="text-xl theme-text-gradient w-max">
             Edit Task
@@ -122,7 +124,7 @@ const EditTaskDialog = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="taskTitle" className="text-base text-gray-700">
+              <Label htmlFor="taskTitle" className="text-base text-gray-700 dark:text-slate-100">
                 Task Title
               </Label>
               <Input
@@ -151,17 +153,14 @@ const EditTaskDialog = () => {
               )}
             </div>
 
-            <AssignesDropdown
-              user={assignee}
-              setUser={setAssignee}
-            />
+            <AssignesDropdown user={assignee} setUser={setAssignee} />
 
             {!task?.assignedTo._id && (
               <span className="text-xs text-red-500">Assignee is required</span>
             )}
 
-                        <div className="grid gap-2">
-              <Label htmlFor="guidelines" className="text-base text-gray-700">
+            <div className="grid gap-2">
+              <Label htmlFor="guidelines" className="text-base text-gray-700 dark:text-slate-100">
                 Guidelines
               </Label>
               <GuidelinesEditor
@@ -177,13 +176,9 @@ const EditTaskDialog = () => {
             <Button
               type="submit"
               disabled={isPending}
-              className="min-w-[10rem]"
+              className="min-w-[10rem] dark:text-white"
             >
-              {isPending ? (
-                <Loader className="animate-spin" />
-              ) : (
-                "Edit Task"
-              )}
+              {isPending ? <Loader className="animate-spin" /> : "Edit Task"}
             </Button>
           </div>
         </form>

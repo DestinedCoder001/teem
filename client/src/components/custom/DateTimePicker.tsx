@@ -66,12 +66,12 @@ const DateTimePicker = ({ date, setDate }: Props) => {
   return (
     <div className="flex gap-4">
       <div className="flex flex-col gap-2">
-        <Label>Due Date</Label>
+        <Label className="dark:text-slate-100">Due Date</Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="w-32 justify-between font-normal"
+              className="w-32 justify-between font-normal dark:text-slate-100"
             >
               {date ? formatDMY(date) : "Select date"}
               <ChevronDownIcon />
@@ -88,7 +88,7 @@ const DateTimePicker = ({ date, setDate }: Props) => {
         </Popover>
       </div>
       <div className="flex flex-col gap-2">
-        <Label>Due Time</Label>
+        <Label className="dark:text-slate-100">Due Time</Label>
         <Input
           type="time"
           value={timeStr}

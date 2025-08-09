@@ -41,12 +41,12 @@ const User = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-full max-w-md bg-white overflow-hidden p-6">
+      <div className="w-full max-w-md overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
           <div className="relative">
             <CircleGradientWrapper
               className={`p-0.5 relative rounded-full ${
-                !isOnline && "bg-none bg-slate-500"
+                !isOnline && "bg-none bg-slate-500 dark:bg-neutral-500"
               }`}
             >
               <Avatar className="h-24 w-24">
@@ -55,7 +55,7 @@ const User = () => {
                   src={user?.profilePicture}
                   alt={user?.firstName}
                 />
-                <AvatarFallback className="text-slate-600 text-3xl font-bold">
+                <AvatarFallback className="text-slate-600 dark:text-slate-100 text-3xl font-bold">
                   {user?.firstName?.[0]?.toUpperCase()}
                   {user?.lastName?.[0]?.toUpperCase()}
                 </AvatarFallback>
@@ -69,8 +69,8 @@ const User = () => {
           <div
             className={`text-xs font-semibold px-3 py-1 rounded-full mb-4 mt-2 ${
               isOnline
-                ? "text-secondary bg-gradient-to-tr from-primary/10 to-secondary/10"
-                : "text-slate-500 bg-slate-300"
+                ? "text-secondary bg-gradient-to-tr from-primary/10 to-secondary/10 dark:from-primary/30 dark:to-secondary/30"
+                : "text-slate-500 dark:text-slate-100 bg-slate-300 dark:bg-neutral-700"
             }`}
           >
             {isOnline ? "online" : "offline"}
@@ -79,10 +79,10 @@ const User = () => {
           <h1 className="text-2xl font-bold theme-text-gradient">
             {user?.firstName} {user?.lastName}
           </h1>
-          <p className="text-sm text-gray-500">{user?.email}</p>
+          <p className="text-sm text-gray-500 dark:text-slate-200">{user?.email}</p>
         </div>
         {user.createdAt && (
-          <p className="text-center font-bold text-slate-700">
+          <p className="text-center font-bold text-slate-700 dark:text-slate-100">
             Account created {formatDates(user?.createdAt)}
           </p>
         )}

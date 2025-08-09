@@ -90,11 +90,11 @@ const WorkspaceSettings = () => {
   return (
     <>
       <h2 className="text-xl font-medium">Workspace</h2>
-      <p className="text-slate-600 my-1 text-sm">
+      <p className="text-slate-600 dark:text-slate-200 my-1 text-sm">
         Manage your workspace settings and members.
       </p>
       <div className="flex flex-col gap-y-4 md:grid md:grid-cols-2 xl:grid-cols-8 md:gap-x-4 my-4 lg:h-[18rem]">
-        <div className="space-y-10 md:col-span-1 xl:col-span-5 border border-slate-300 p-4 rounded-lg relative">
+        <div className="space-y-10 md:col-span-1 xl:col-span-5 border border-slate-300 dark:border-neutral-700 p-4 rounded-lg relative">
           <Button
             onClick={() => setWsDeleteAlertOpen(true)}
             variant="outline"
@@ -156,7 +156,7 @@ const WorkspaceSettings = () => {
               <Button
                 variant="default"
                 onClick={handleNameChange}
-                className="min-w-[5rem]"
+                className="min-w-[5rem] dark:text-white"
                 disabled={nameUpdatePending || isPending || !isOwner}
               >
                 {nameUpdatePending ? (
@@ -169,9 +169,9 @@ const WorkspaceSettings = () => {
           </div>
         </div>
 
-        <div className="md:col-span-1 xl:col-span-3 border border-slate-300 rounded-lg overflow-hidden h-[20rem] lg:h-auto">
-          <div className="border-b border-slate-300 p-4 flex justify-between items-center">
-            <h2 className="font-medium text-gray-700">Members</h2>
+        <div className="md:col-span-1 xl:col-span-3 border border-slate-300 dark:border-neutral-700 rounded-lg overflow-hidden h-[20rem] lg:h-auto">
+          <div className="border-b border-slate-300 dark:border-neutral-500 p-4 flex justify-between items-center">
+            <h2 className="font-medium text-gray-700 dark:text-slate-100">Members</h2>
             <Button
               disabled={!isOwner}
               variant="outline"
@@ -182,7 +182,7 @@ const WorkspaceSettings = () => {
               Send an invite
             </Button>
           </div>
-          <div className="overflow-auto no-scrollbar px-4 pt-4 pb-20 bg-gray-50/50 flex flex-col gap-y-2 h-full">
+          <div className="overflow-auto no-scrollbar px-4 pt-4 pb-20 bg-gray-50/50 dark:bg-neutral-900 flex flex-col gap-y-2 h-full">
             {users?.map((user) => {
               let name = user.firstName + " " + user.lastName;
               if (name.length > 25) {
@@ -193,7 +193,7 @@ const WorkspaceSettings = () => {
                 <div
                   onClick={() => navigate(`/users/${user._id}`)}
                   key={user._id}
-                  className="bg-white p-4 rounded-md border border-slate-300 cursor-pointer"
+                  className="bg-white dark:bg-neutral-950 p-4 rounded-md border border-slate-300 dark:border-neutral-600 cursor-pointer"
                   title={user.firstName + " " + user.lastName}
                 >
                   <div className="flex justify-between items-center">
@@ -208,11 +208,11 @@ const WorkspaceSettings = () => {
                           alt={user?.firstName}
                           className="object-cover object-center w-full"
                         />
-                        <AvatarFallback className="text-slate-600">
+                        <AvatarFallback className="text-slate-600 dark:text-slate-100">
                           {user?.firstName[0].toUpperCase() || ""}
                         </AvatarFallback>
                       </Avatar>
-                      <p>{name}</p>
+                      <p className="dark:text-slate-200">{name}</p>
                     </div>
 
                     <DropdownMenu>
@@ -227,13 +227,12 @@ const WorkspaceSettings = () => {
                             disabled={!isOwner}
                           >
                             <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4 text-slate-700" />
+                            <MoreHorizontal className="h-4 w-4 text-slate-700 dark:text-slate-200" />
                           </Button>
                         </DropdownMenuTrigger>
                       </>
                       <DropdownMenuContent
-                        className="-translate-x-8
-                      "
+                        className="-translate-x-8"
                       >
                         <DropdownMenuItem
                           onClick={(e) => {

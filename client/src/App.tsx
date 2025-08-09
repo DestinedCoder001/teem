@@ -14,30 +14,34 @@ import NotFound from "./components/custom/NotFound";
 import Settings from "./pages/main/Settings";
 import User from "./pages/main/User";
 import Notifications from "./pages/main/Notifications";
+import { ThemeProvider } from "./components/custom/ThemeProvider";
 
 function App() {
+  const theme = localStorage.getItem("teem-ui-theme") || "light"
   return (
     <>
-      <Toaster />
-      <Routes>
-        <Route element={<AuthLayout />}>
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/login" element={<Login />} />
-        </Route>
-        <Route element={<ProtectRoutes />}>
-          <Route element={<AppLayout />}>
-            <Route index element={<DefaultHome />} />
-            <Route path="profile" element={<UserProfile />} />
-            <Route path="channels" element={<ChannelSkeleton />} />
-            <Route path="channels/:channelId" element={<Channel />} />
-            <Route path="tasks" element={<Tasks />} />
-            <Route path="users/:userId" element={<User />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="settings" element={<Settings />} />
+      <Toaster theme={theme as "light" | "dark" | "system"} />
+      <ThemeProvider defaultTheme="system" storageKey="teem-ui-theme">
+        <Routes>
+          <Route element={<AuthLayout />}>
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<Login />} />
           </Route>
-        </Route>
-        <Route path="*" element={<NotFound text="Page not found" />} />
-      </Routes>
+          <Route element={<ProtectRoutes />}>
+            <Route element={<AppLayout />}>
+              <Route index element={<DefaultHome />} />
+              <Route path="profile" element={<UserProfile />} />
+              <Route path="channels" element={<ChannelSkeleton />} />
+              <Route path="channels/:channelId" element={<Channel />} />
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="users/:userId" element={<User />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+          </Route>
+          <Route path="*" element={<NotFound text="Page not found" />} />
+        </Routes>
+      </ThemeProvider>
     </>
   );
 }

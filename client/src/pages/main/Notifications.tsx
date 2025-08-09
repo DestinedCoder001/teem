@@ -26,7 +26,7 @@ const Notifications = () => {
 
       {isSuccess && !isPending && data?.length === 0 && (
         <div className="flex mt-6 h-[calc(100vh-200px)] justify-center items-center">
-          <p className="text-slate-600">No notifications</p>
+          <p className="text-slate-600 dark:text-slate-100">No notifications</p>
         </div>
       )}
 

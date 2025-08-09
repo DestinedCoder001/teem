@@ -10,7 +10,7 @@ const CreateChannelBtn = () => {
   return (
     <Button
       variant="ghost"
-      className="w-full border border-[#aaa] p-2 rounded-md text-slate-600"
+      className="w-full border border-[#aaa] dark:border-slate-600 p-2 rounded-md text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-neutral-800 transition-colors"
       onClick={() => {
         if (!wsId || !workspaces.length) return;
         setOpen(true);

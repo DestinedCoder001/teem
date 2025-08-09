@@ -98,7 +98,7 @@ const getTasks = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Workspace not found" });
     }
     const tasks = await Task.find({
-      $or: [{ assignedBy: req.user._id }, { assignedTo: req.user._id }],
+      // $or: [{ assignedBy: req.user._id }, { assignedTo: req.user._id }],
       workspace: workspaceId,
     }).populate({
       path: "assignedTo assignedBy",

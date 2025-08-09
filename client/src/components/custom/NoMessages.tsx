@@ -5,7 +5,7 @@ const NoMessages = () => {
       <div className="w-72 h-auto">
         <img src={noMessages} alt="No messages" />
       </div>
-      <p>No messages yet</p>
+      <p className="dark:text-slate-200">No messages yet</p>
     </div>
   );
 };

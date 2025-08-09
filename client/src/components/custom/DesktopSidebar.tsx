@@ -14,12 +14,12 @@ const DesktopSidebar = () => {
 
   return (
     <aside
-      className={`hidden lg:block border-r border-slate-300 bg-slate-50/50 relative transition-[width] duration-300 ${
+      className={`hidden lg:block border-r border-slate-300 dark:border-neutral-700 bg-slate-50/50 dark:bg-neutral-900 relative transition-all duration-300 ${
         isOpen ? " w-[220px]" : "w-[4.5rem]"
       }`}
     >
       <div
-        className={`absolute group text-slate-500 rounded-md p-2 hover:bg-slate-100 cursor-pointer ${
+        className={`absolute group text-slate-500 dark:text-slate-100 rounded-md p-2 hover:bg-slate-100 dark:hover:bg-neutral-800 cursor-pointer ${
           isOpen ? " top-4 right-4" : "top-4 left-1/2 -translate-x-1/2"
         }`}
         onClick={() => setOpen(!isOpen)}
@@ -35,10 +35,10 @@ const DesktopSidebar = () => {
               className={({ isActive }) =>
                 `group flex items-center gap-x-6 ${
                   isOpen ? "w-full" : "w-max"
-                } p-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 transition-colors ${
+                } p-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 dark:text-slate-100 dark:hover:text-slate-50 transition-colors ${
                   isActive
-                    ? "bg-gradient-to-r from-primary/10 to-secondary/10"
-                    : "hover:bg-slate-100"
+                    ? "bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/50 dark:to-secondary/50"
+                    : "hover:bg-slate-100 dark:hover:bg-neutral-800"
                 }`
               }
               key={id}

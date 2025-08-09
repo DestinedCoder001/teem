@@ -33,14 +33,14 @@ const ChannelsCollapsible = () => {
     >
       <CollapsibleTrigger className="w-full rounded-md">
         <div
-          className={`group flex items-center justify-between ${isSidebarOpen ? "w-full":"w-max"} px-3 py-2 lg:p-2 cursor-pointer rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 transition-colors ${
+          className={`group flex items-center justify-between ${isSidebarOpen ? "w-full":"w-max"} px-3 py-2 lg:p-2 cursor-pointer rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 dark:text-slate-100 dark:hover:text-slate-50 transition-colors ${
             isActive
-              ? "bg-gradient-to-r from-primary/10 to-secondary/10"
-              : "hover:bg-slate-100"
+              ? "bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/50 dark:to-secondary/50"
+              : "hover:bg-slate-100 dark:hover:bg-neutral-800"
           }`}
         >
           <div className="flex items-center gap-x-3 lg:gap-x-6">
-            <span className="group-hover:text-secondary">
+            <span className={`group-hover:text-secondary ${isActive && "text-secondary"}`}>
               <Rss />
             </span>
             <span className={`${!isSidebarOpen && "lg:hidden"}`}>Channels</span>
@@ -69,8 +69,8 @@ const ChannelsCollapsible = () => {
               title={channel?.name}
               className={({ isActive }) => {
                 return isActive
-                  ? "block text-sm text-slate-500 bg-slate-100 font-medium p-2 rounded-md"
-                  : "block text-sm text-slate-500 hover:bg-slate-100 font-medium p-2 rounded-md";
+                  ? "block text-sm text-slate-500 bg-slate-100 dark:bg-neutral-700 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-slate-800 font-medium p-2 rounded-md"
+                  : "block text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-neutral-800 font-medium p-2 rounded-md";
               }}
             >
               {channel?.name.length > 15

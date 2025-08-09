@@ -24,6 +24,7 @@ import { useDeleteTask } from "@/lib/hooks/useDeleteTask";
 import { useEditTaskDialogOpen, useTaskSheetOpen } from "@/lib/store/uiStore";
 import { currentEditingTask, useUserStore } from "@/lib/store/userStore";
 import { formatTaskDueDate } from "@/utils/formatDueDate";
+import { useTheme } from "next-themes";
 
 interface TaskCardProps {
   id: string;
@@ -53,6 +54,7 @@ const TaskCard = ({
   const { setTask } = currentEditingTask((state) => state);
   const { setOpen: setTaskDrawerOpen } = useTaskSheetOpen((state) => state);
   const user = useUserStore((state) => state.user);
+  const theme = useTheme().theme;
 
   const handleTaskUpdate = (taskStatus: "pending" | "completed") => {
     setTimeout(() => {
@@ -85,7 +87,7 @@ const TaskCard = ({
   return (
     <>
       <div
-        className="flex flex-col justify-between bg-white rounded-xl border border-slate-300 p-4 w-full mx-auto cursor-pointer h-[16rem] lg:h-[19rem] xl:h-[17rem]"
+        className="flex flex-col justify-between bg-white dark:bg-neutral-900 rounded-xl border border-slate-300 dark:border-neutral-700 p-4 w-full mx-auto cursor-pointer h-[16rem] lg:h-[19rem] xl:h-[17rem]"
         title={title}
         onClick={() => {
           setTask(taskDetails);
@@ -97,65 +99,68 @@ const TaskCard = ({
             <h2 className="text-lg font-semibold theme-text-gradient">
               {title?.length > 15 ? title.slice(0, 15) + "..." : title}
             </h2>
-            <DropdownMenu>
-              {isPending || deletePending ? (
-                <Loader className="h-5 w-5 mr-2 mb-1 text-slate-500 animate-spin" />
-              ) : (
-                <>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4 text-slate-500" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                </>
+            {user &&
+              (user._id === assignedBy._id || user._id === assignedTo._id) && (
+                <DropdownMenu>
+                  {isPending || deletePending ? (
+                    <Loader className="h-5 w-5 mr-2 mb-1 text-slate-500 dark:text-slate-200 animate-spin" />
+                  ) : (
+                    <>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4 text-slate-500 dark:text-slate-200" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                    </>
+                  )}
+                  <DropdownMenuContent
+                    className="text-slate-700 dark:text-slate-200 -translate-x-6 lg:-translate-x-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {user && user._id === assignedBy._id && (
+                      <DropdownMenuItem
+                        onSelect={() => {
+                          setOpen(true);
+                          setTask(taskDetails);
+                        }}
+                        className="cursor-pointer group"
+                      >
+                        <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
+                        Edit
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      onSelect={() => handleTaskUpdate("completed")}
+                      className="cursor-pointer group"
+                    >
+                      <CircleCheck className="mr-2 h-4 w-4 group-hover:text-green-500 group-focus:text-green-500" />
+                      Mark Complete
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={() => handleTaskUpdate("pending")}
+                      className="cursor-pointer group"
+                    >
+                      <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500 group-focus:text-orange-500" />
+                      Mark In Progress
+                    </DropdownMenuItem>
+                    {user && user._id === assignedBy._id && (
+                      <DropdownMenuItem
+                        onSelect={handleDelete}
+                        className="cursor-pointer group"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
+                        Delete Task
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
-              <DropdownMenuContent
-                className="text-slate-700 -translate-x-6 lg:-translate-x-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {user && user._id === assignedBy._id && (
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      setOpen(true);
-                      setTask(taskDetails);
-                    }}
-                    className="cursor-pointer group"
-                  >
-                    <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
-                    Edit
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem
-                  onSelect={() => handleTaskUpdate("completed")}
-                  className="cursor-pointer group"
-                >
-                  <CircleCheck className="mr-2 h-4 w-4 group-hover:text-green-500 group-focus:text-green-500" />
-                  Mark Complete
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={() => handleTaskUpdate("pending")}
-                  className="cursor-pointer group"
-                >
-                  <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500 group-focus:text-orange-500" />
-                  Mark In Progress
-                </DropdownMenuItem>
-                {user && user._id === assignedBy._id && (
-                  <DropdownMenuItem
-                    onSelect={handleDelete}
-                    className="cursor-pointer group"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
-                    Delete Task
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
           <div className="mb-2 space-y-2">
             {dueDate && (
-              <div className="flex items-center text-sm text-slate-500 font-[500]">
+              <div className="flex items-center text-sm text-slate-500 dark:text-slate-50 font-[500]">
                 <ClipboardCheck className="h-4 w-4 mr-1" />
                 <span>Due {formatTaskDueDate(dueDate.toString())}</span>
               </div>
@@ -163,50 +168,59 @@ const TaskCard = ({
 
             <div
               dangerouslySetInnerHTML={{ __html: guidelines }}
-              className="text-sm text-slate-800 custom-ellipsis"
+              className="text-sm text-slate-800 dark:text-white/80 custom-ellipsis"
             />
           </div>
         </div>
 
         <div className="space-y-2 lg:space-y-4 mt-4">
           <div className="flex items-center gap-x-3">
-            <Avatar className="h-8 w-8 rounded-full border border-slate-200 ">
+            <Avatar className="h-8 w-8 rounded-full border border-slate-200 dark:border-neutral-600">
               <AvatarImage
                 className="object-cover object-center w-full"
                 src={assignedBy?.profilePicture}
                 alt={assignedBy?.firstName}
               />
-              <AvatarFallback className="text-slate-600 font-medium text-sm">
+              <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
                 {assignedBy?.firstName[0]?.toUpperCase()}
                 {assignedBy?.lastName[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <MoveRight className="text-slate-500" />
-            <Avatar className="h-8 w-8 rounded-full border border-slate-200 ">
+            <MoveRight className="text-slate-500 dark:text-slate-100" />
+            <Avatar className="h-8 w-8 rounded-full border border-slate-200 dark:border-neutral-600">
               <AvatarImage
                 className="object-cover object-center w-full"
                 src={assignedTo?.profilePicture}
                 alt={assignedTo?.firstName}
               />
-              <AvatarFallback className="text-slate-600 font-medium text-sm">
+              <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
                 {assignedTo?.firstName[0]?.toUpperCase()}
                 {assignedTo?.lastName[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
           {status === "completed" ? (
-            <div className="flex gap-x-1 items-center w-max text-xs bg-green-100 rounded-full px-4 py-1 text-green-600 font-[500]">
-              <CircleCheck className="w-4 h-4 shrink-0" fill="#7bf1a8" />
+            <div className="flex gap-x-1 items-center w-max text-xs bg-green-100 dark:bg-green-500 rounded-full px-4 py-1 text-green-600 dark:text-green-50 font-[500]">
+              <CircleCheck
+                className="w-4 h-4 shrink-0"
+                fill={theme === "dark" ? "#14532d" : "#7bf1a8"}
+              />
               Completed
             </div>
           ) : isDue ? (
-            <div className="flex gap-x-1 items-center w-max text-xs bg-red-100 rounded-full px-4 py-1 text-red-600 font-[500]">
-              <TimerOff className="w-4 h-4 shrink-0" fill="#fca5a5" />
+            <div className="flex gap-x-1 items-center w-max text-xs bg-red-100 dark:bg-red-500 rounded-full px-4 py-1 text-red-600 dark:text-red-50 font-[500]">
+              <TimerOff
+                className="w-4 h-4 shrink-0"
+                fill={theme === "dark" ? "#7f1d1d" : "#fca5a5"}
+              />
               Due
             </div>
           ) : status === "pending" ? (
-            <div className="flex gap-x-1 items-center w-max text-xs bg-orange-100 rounded-full px-4 py-1 text-orange-600 font-[500]">
-              <CirclePlay className="w-4 h-4 shrink-0" fill="#fdba74" />
+            <div className="flex gap-x-1 items-center w-max text-xs bg-orange-100 dark:bg-orange-500 rounded-full px-4 py-1 text-orange-600 dark:text-orange-50 font-[500]">
+              <CirclePlay
+                className="w-4 h-4 shrink-0"
+                fill={theme === "dark" ? "#7c2d12" : "#fdba74"}
+              />
               In progress
             </div>
           ) : null}

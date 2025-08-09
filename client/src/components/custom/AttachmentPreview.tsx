@@ -12,15 +12,15 @@ const AttachmentPreview = ({ handleRemoveAttachment, attachment }: Props) => {
     .some(Boolean);
   return (
     <div
-      className={`absolute bottom-full bg-white left-4 rounded-md ${
+      className={`absolute bottom-full bg-white dark:bg-neutral-900 left-4 rounded-md ${
         isImage && "size-28"
       }`}
     >
       <div
-        className="absolute -top-2 -right-2 cursor-pointer bg-white rounded-full border p-1"
+        className="absolute -top-2 -right-2 cursor-pointer bg-white dark:bg-neutral-600 rounded-full border p-1"
         onClick={handleRemoveAttachment}
       >
-        <X size={12} className="text-slate-800" />
+        <X size={12} className="text-slate-800 dark:text-slate-300" />
       </div>
       {attachment &&
         (isImage ? (
@@ -32,11 +32,11 @@ const AttachmentPreview = ({ handleRemoveAttachment, attachment }: Props) => {
           <div className="p-2 border flex flex-col items-center gap-y-2 rounded-md">
             <div className="flex items-center gap-x-2">
               <File size={20} className="text-primary" />
-              <div className="text-slate-700 font-medium text-sm">
+              <div className="text-slate-700 dark:text-slate-100 font-medium text-sm">
                 {attachment.type?.toUpperCase()}
               </div>
             </div>
-            <p className="text-slate-600 text-xs">
+            <p className="text-slate-600 dark:text-slate-300 text-xs">
               {attachment.fileName?.length > 15
                 ? attachment.fileName.slice(0, 15) + "..."
                 : attachment.fileName}

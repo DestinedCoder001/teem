@@ -33,14 +33,14 @@ const MsgOptionsDropdown = ({
     <DropdownMenu open={editOpen} onOpenChange={setEditOpen}>
       <DropdownMenuTrigger asChild disabled={isDeleting}>
         <MoreVertical
-          className={`absolute text-slate-500 hover:bg-slate-50 hover:border rounded-full p-1 size-6 cursor-pointer top-1/2 -translate-y-1/2 ${
+          className={`absolute text-slate-500 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-neutral-600 dark:hover:text-slate-300 hover:border rounded-full p-1 size-6 cursor-pointer top-1/2 -translate-y-1/2 ${
             isSender ? "-left-7" : "-right-7"
           }`}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         onClick={(e) => e.stopPropagation()}
-        className="z-50 bg-white/90 backdrop-blur-sm"
+        className="z-50 bg-white/90 dark:bg-neutral-950 backdrop-blur-sm dark:backdrop-blur-none"
       >
         {message.content && (
           <>

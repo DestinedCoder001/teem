@@ -62,7 +62,7 @@ const CreateChannelDialog = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
-      <DialogContent className="sm:max-w-[425px] bg-white text-gray-900">
+      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-neutral-950 text-gray-900 dark:text-slate-100">
         <DialogHeader>
           <DialogTitle className="text-xl theme-text-gradient w-max">
             New channel
@@ -71,7 +71,7 @@ const CreateChannelDialog = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="channelName" className="text-base text-gray-700">
+              <Label htmlFor="channelName" className="text-base text-gray-700 dark:text-slate-100">
                 Channel Name
               </Label>
               <Input
@@ -88,7 +88,7 @@ const CreateChannelDialog = () => {
               )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="description" className="text-base text-gray-700">
+              <Label htmlFor="description" className="text-base text-gray-700 dark:text-slate-100">
                 Description
               </Label>
               <Textarea
@@ -109,7 +109,7 @@ const CreateChannelDialog = () => {
               onClick={handleSubmit(onSubmit)}
               type="submit"
               disabled={isPending}
-              className="min-w-[10rem]"
+              className="min-w-[10rem] dark:text-white"
             >
               {isPending ? (
                 <Loader className="animate-spin" />

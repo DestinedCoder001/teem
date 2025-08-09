@@ -89,7 +89,7 @@ const WsSwitch = () => {
           variant="ghost"
           className={`flex justify-between items-center ${
             isSidebarOpen ? "px-4 py-6 w-full" : "w-max p-0 mx-auto"
-          }  text-slate-600 hover:bg-slate-100 rounded-md`}
+          }  text-slate-600 hover:bg-slate-100 dark:hover:bg-neutral-800 dark:text-slate-100 rounded-md`}
         >
           <div className={`flex items-center ${isSidebarOpen && "space-x-2"}`}>
             {wsId && (
@@ -113,24 +113,24 @@ const WsSwitch = () => {
             </span>
           </div>
           <ChevronsUpDown
-            className={`h-4 w-4 text-slate-400 ${
+            className={`h-4 w-4 text-slate-400 dark:text-slate-100 ${
               !isSidebarOpen && "lg:hidden"
             }`}
           />
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-56 bg-white/80 backdrop-blur-sm text-slate-600 ml-4 z-[120]">
+      <DropdownMenuContent className="w-56 bg-white/80 dark:bg-neutral-900 backdrop-blur-sm dark:backdrop-blur-none text-slate-600 ml-4 z-[120]">
         {workspaces.length > 0 &&
           workspaces?.map((ws) => (
             <div key={ws._id}>
               <DropdownMenuItem
                 onClick={() => handleToggle(ws._id, ws.name)}
-                className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2"
+                className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 dark:hover:bg-neutral-950"
               >
                 <Avatar
                   className={`h-8 w-8 rounded-md border ${
-                    ws._id === _id ? "border-primary" : "border-slate-200"
+                    ws._id === _id ? "border-primary" : "border-slate-200 dark:border-slate-500"
                   }`}
                 >
                   <AvatarImage
@@ -138,13 +138,13 @@ const WsSwitch = () => {
                     alt={ws.name}
                     className="object-cover object-center w-full"
                   />
-                  <AvatarFallback className="rounded-none">
+                  <AvatarFallback className="rounded-none dark:text-slate-100">
                     {ws.name[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <span
-                  className={`text-sm ${
-                    ws._id === wsId ? "font-bold text-slate-600" : "font-normal"
+                  className={`text-sm text-slate-600 dark:text-slate-100 ${
+                    ws._id === wsId ? "font-bold" : "font-normal"
                   }`}
                 >
                   {ws.name.length > 20 ? ws.name.slice(0, 20) + "..." : ws.name}
@@ -156,7 +156,7 @@ const WsSwitch = () => {
         {workspaces.length < 3 && (
           <DropdownMenuItem
             onClick={() => setOpen(true)}
-            className="focus:bg-slate-100 cursor-pointer flex items-center justify-center space-x-2"
+            className="focus:bg-slate-100 dark:hover:bg-neutral-950 dark:text-slate-100 cursor-pointer flex items-center justify-center space-x-2"
           >
             <Plus strokeWidth={3} />
             <span>New workspace</span>
@@ -165,10 +165,10 @@ const WsSwitch = () => {
 
         {_id && (
           <>
-            <DropdownMenuSeparator className="bg-slate-200" />
+            <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700" />
             <DropdownMenuItem
               id="sign-out"
-              className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 group"
+              className="focus:bg-slate-100 dark:text-slate-100 dark:hover:bg-neutral-950 cursor-pointer flex items-center space-x-2 group"
               onClick={() => handleSignOut()}
             >
               <LogOut className="h-4 w-4 text-red-400 group-hover:translate-x-1 transition-transform duration-200" />

@@ -92,9 +92,9 @@ const Login = () => {
                   Log in to your account
                 </h1>
 
-                <span className="text-[0.8rem] block text-center text-[#333333]">
+                <span className="text-[0.8rem] block text-center text-[#333333] dark:text-slate-200">
                   Don't have an account?{" "}
-                  <Link to="/signup" className="text-sm underline text-black">
+                  <Link to="/signup" className="text-sm underline text-black dark:text-white">
                     sign up
                   </Link>
                 </span>
@@ -105,7 +105,7 @@ const Login = () => {
                 className="flex flex-col gap-4"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-[#666666] font-normal">
+                  <Label htmlFor="email" className="text-[#666666] dark:text-slate-200 font-normal">
                     Email
                   </Label>
                   <Input
@@ -130,7 +130,7 @@ const Login = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pwd" className="text-[#666666] font-normal">
+                  <Label htmlFor="pwd" className="text-[#666666] dark:text-slate-200 font-normal">
                     Password
                   </Label>
                   <Input
@@ -159,12 +159,12 @@ const Login = () => {
                       id="showPassword"
                       onCheckedChange={() => setShowPassword(!showPassword)}
                     />
-                    <label
+                    <Label
                       htmlFor="showPassword"
-                      className="text-sm text-[#666666] leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm text-[#666666] dark:text-slate-200 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       Show password
-                    </label>
+                    </Label>
                   </div>
                   <div className="flex justify-end">
                     <Button
@@ -180,7 +180,7 @@ const Login = () => {
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="rounded-full py-6 font-normal text-md"
+                  className="rounded-full py-6 font-normal text-md dark:text-white"
                 >
                   {isPending ? (
                     <Loader className="animate-spin" />
@@ -190,9 +190,9 @@ const Login = () => {
                 </Button>
 
                 <div className="flex items-center gap-4">
-                  <div className="w-full h-[1px] bg-[#D9D9D9]" />
-                  <span className="text-[#666666]">OR</span>
-                  <div className="w-full h-[1px] bg-[#D9D9D9]" />
+                  <div className="w-full h-[1px] bg-[#D9D9D9] dark:bg-slate-700" />
+                  <span className="text-[#666666] dark:text-slate-300">OR</span>
+                  <div className="w-full h-[1px] bg-[#D9D9D9] dark:bg-slate-700" />
                 </div>
 
                 <GoogleLoginBtn />

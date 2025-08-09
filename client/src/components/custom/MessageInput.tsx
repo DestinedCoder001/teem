@@ -151,26 +151,26 @@ const MessageInput = ({
         />
       )}
       {isEditing && (
-        <div className="absolute bottom-full left-[3.3rem] w-max px-4 py-1 bg-white border border-slate-300 rounded-t-lg rounded-bl-lg text-sm">
+        <div className="absolute bottom-full left-[3.3rem] w-max px-4 py-1 bg-white dark:bg-neutral-800 border border-slate-300 dark:border-slate-700 rounded-t-lg rounded-bl-lg text-sm">
           <div
-            className="absolute bottom-0 left-[110%] cursor-pointer bg-white rounded-full border p-1"
+            className="absolute bottom-0 left-[110%] cursor-pointer bg-white dark:bg-neutral-700 rounded-full border p-1"
             onClick={cancelEditing}
           >
-            <XIcon size={14} className="text-slate-800" />
+            <XIcon size={14} className="text-slate-800 dark:text-slate-300" />
           </div>
           <p className="theme-text-gradient w-max">Editing </p>
-          <p className="font-medium text-slate-600">
+          <p className="font-medium text-slate-600 dark:text-slate-100">
             {msg.content.length > 20 ? msg.content.slice(0, 20)+"..." : msg.content}
           </p>
         </div>
       )}
 
       {attachPending ? (
-        <Loader className="animate-spin text-slate-500" />
+        <Loader className="animate-spin text-slate-500 dark:text-slate-50" />
       ) : (
         <Paperclip
           size={20}
-          className="text-slate-500 shrink-0 cursor-pointer"
+          className="text-slate-500 dark:text-slate-50 shrink-0 cursor-pointer"
           onClick={handleAttachClick}
         />
       )}
@@ -185,7 +185,7 @@ const MessageInput = ({
       />
       <Button
         type="button"
-        className="rounded-full size-10"
+        className="rounded-full size-10 dark:text-white"
         onClick={handleMsgSend}
         disabled={sendingDisableConditions}
       >

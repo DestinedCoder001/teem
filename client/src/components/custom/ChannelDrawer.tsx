@@ -52,18 +52,18 @@ const ChannelDrawer = ({
       <DrawerOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
       <DrawerContent className="h-[calc(100dvh-100px)] outline-none">
         <DrawerHeader>
-          <div className="bg-slate-100 border-2 border-slate-500 rounded-full size-14 flex items-center justify-center mx-auto text-slate-600 font-bold text-xl">
+          <div className="bg-slate-100 border-2 border-slate-500 dark:bg-slate-800 dark:text-white rounded-full size-14 flex items-center justify-center mx-auto text-slate-600 font-bold text-xl">
             {channel?.name[0]?.toUpperCase()}
           </div>
           <DrawerTitle className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
             {channel?.name}
           </DrawerTitle>
-          <DrawerDescription className="text-slate-800">
+          <DrawerDescription className="text-slate-800 dark:text-slate-100">
             {channel?.description}
           </DrawerDescription>
         </DrawerHeader>
         <div className="px-4 py-8 flex flex-col gap-y-4 h-full overflow-auto no-scrollbar">
-          <h3 className="text-lg text-slate-600 font-semibold">Members</h3>
+          <h3 className="text-lg text-slate-600 dark:text-slate-100 font-semibold">Members</h3>
           {channel?.members?.map((user) => {
             let name = user.firstName + " " + user.lastName;
             if (name.length > 25) {
@@ -75,7 +75,7 @@ const ChannelDrawer = ({
             return (
               <div
                 key={user._id}
-                className="bg-white p-4 rounded-md cursor-pointer border"
+                className="bg-white dark:bg-neutral-900 p-4 rounded-md cursor-pointer border dark:border-slate-700"
                 title={user.firstName + " " + user.lastName}
               >
                 <div className="flex justify-between items-center">
@@ -91,11 +91,11 @@ const ChannelDrawer = ({
                         alt={user?.firstName}
                         className="object-cover object-center w-full"
                       />
-                      <AvatarFallback className="text-slate-600">
+                      <AvatarFallback className="text-slate-600 dark:text-slate-100">
                         {user?.firstName[0].toUpperCase() || ""}
                       </AvatarFallback>
                     </Avatar>
-                    <p className="text-sm">{name}</p>
+                    <p className="text-sm dark:text-slate-200">{name}</p>
                   </div>
                   {me?._id === channel?.createdBy._id &&
                     user._id !== me?._id && (
@@ -104,11 +104,11 @@ const ChannelDrawer = ({
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
                               <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4 text-slate-700" />
+                              <MoreHorizontal className="h-4 w-4 text-slate-700 dark:text-slate-100" />
                             </Button>
                           </DropdownMenuTrigger>
                         </>
-                        <DropdownMenuContent className="-translate-x-8">
+                        <DropdownMenuContent className="-translate-x-8 dark:bg-neutral-950">
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
@@ -131,8 +131,8 @@ const ChannelDrawer = ({
             );
           })}
           <div className="mt-12 space-y-4">
-            <h3 className="text-lg text-slate-600 font-semibold">Actions</h3>
-            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 border">
+            <h3 className="text-lg text-slate-600 dark:text-slate-100 font-semibold">Actions</h3>
+            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 border dark:border-slate-700 dark:bg-neutral-950">
               <div className="space-y-1">
                 <p className="text-lg text-primary font-medium">
                   Edit channel details
@@ -149,12 +149,12 @@ const ChannelDrawer = ({
             </div>
 
             {me?._id === channel?.createdBy._id && (
-              <div className="rounded-md flex flex-col md:flex-row gap-y-4 justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
+              <div className="rounded-md flex flex-col md:flex-row gap-y-4 justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
                 <div className="space-y-1">
                   <p className="text-lg text-red-500 font-medium">
                     Clear messages
                   </p>
-                  <p className="text-slate-700 text-sm md:text-left">
+                  <p className="text-slate-700 dark:text-black text-sm md:text-left">
                     Delete all conversations in{" "}
                     <span className="font-semibold">{channel?.name}</span>.
                   </p>
@@ -162,7 +162,7 @@ const ChannelDrawer = ({
                 <Button
                   variant="destructive"
                   disabled={isClearPending}
-                  className="w-full sm:w-max"
+                  className="w-full sm:w-max dark:bg-red-500"
                   onClick={() =>
                     clear(undefined, { onSuccess: () => setOpen(false) })
                   }
@@ -176,10 +176,10 @@ const ChannelDrawer = ({
               </div>
             )}
 
-            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
+            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
               <div className="space-y-1">
                 <p className="text-lg text-red-500 font-medium">Exit channel</p>
-                <p className="text-slate-700 text-sm text-center md:text-left">
+                <p className="text-slate-700 dark:text-black text-sm text-center md:text-left">
                   Exit <span className="font-semibold">{channel?.name}</span>{" "}
                   and stop participating in discussions. You can rejoin at any
                   time.
@@ -188,19 +188,19 @@ const ChannelDrawer = ({
               <Button
                 variant="destructive"
                 disabled={isExitPending}
-                className="w-full sm:w-max"
+                className="w-full sm:w-max dark:bg-red-500"
                 onClick={() => exit({ channelId: channel?._id })}
               >
                 {isExitPending ? <Loader className="animate-spin" /> : "Exit"}
               </Button>
             </div>
             {me?._id === channel?.createdBy._id && (
-              <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 bg-gradient-to-br from-red-50 to-red-50/50 border">
+              <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
                 <div className="space-y-1">
                   <p className="text-lg text-red-500 font-medium">
                     Delete channel
                   </p>
-                  <p className="text-slate-700 text-sm text-center md:text-left">
+                  <p className="text-slate-700 dark:text-black text-sm text-center md:text-left">
                     Delete{" "}
                     <span className="font-semibold">{channel?.name}</span> and
                     remove all discussions. This action cannot be undone.
@@ -209,7 +209,7 @@ const ChannelDrawer = ({
                 <Button
                   variant="destructive"
                   disabled={isDeletePending}
-                  className="w-full sm:w-max"
+                  className="w-full sm:w-max dark:bg-red-500"
                   onClick={() => deleteChannel({ channelId: channel?._id })}
                 >
                   {isDeletePending ? (

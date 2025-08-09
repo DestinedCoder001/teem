@@ -251,11 +251,11 @@ const Channel = () => {
     <div className="h-[calc(100dvh-50px)] overflow-hidden">
       <div className="flex flex-col relative h-full">
         <div
-          className={`p-4 border-b fixed top-[49px] w-full ${
+          className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full ${
             isSidebarOpen
               ? "lg:w-[calc(100%-220px)]"
               : "lg:w-[calc(100%-4.5rem)]"
-          } bg-white/80 backdrop-blur-sm z-40 cursor-pointer`}
+          } bg-white/80 dark:bg-neutral-950 backdrop-blur-sm dark:backdrop-blur-none z-40 cursor-pointer`}
           onClick={handleOpenDrawer}
         >
           <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
@@ -263,20 +263,20 @@ const Channel = () => {
           </h1>
           {activeChannelUsers.length > 0 && (
             <div className="flex items-center gap-x-1 justify-center">
-              <p className="text-slate-600 text-xs flex items-center gap-x-0.5">
+              <p className="text-slate-600 dark:text-slate-100 text-xs flex items-center gap-x-0.5">
                 <span className="text-sm font-medium text-secondary">
                   {activeChannelUsers.length}
                 </span>{" "}
                 active
               </p>
-              <div className="size-1 bg-slate-600 rounded-full" />
-              <p className="text-xs text-slate-600 text-nowrap text-ellipsis">
+              <div className="size-1 bg-slate-600 dark:bg-slate-100 rounded-full" />
+              <p className="text-xs text-slate-600 dark:text-slate-100 text-nowrap text-ellipsis">
                 {membersList}
               </p>
             </div>
           )}
           {isMember && (
-            <p className="text-slate-600 text-xs text-center">
+            <p className="text-slate-600 dark:text-slate-200 text-xs text-center">
               Click to view details &raquo;
             </p>
           )}
@@ -311,14 +311,14 @@ const Channel = () => {
         {!isNearBottom && (
           <div
             onClick={handleAutoScroll}
-            className={`bg-white/80 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"} -translate-x-1/2 rounded-full p-1 cursor-pointer`}
+            className={`bg-white/80 dark:bg-neutral-700 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"} -translate-x-1/2 rounded-full p-1 cursor-pointer`}
           >
-            <ChevronDown className="text-slate-600 translate-y-[0.08rem]" />
+            <ChevronDown className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
           </div>
         )}
 
         <div
-          className={`bg-white/80 backdrop-blur-sm fixed bottom-0 w-full ${
+          className={`bg-white/80 dark:bg-neutral-950 backdrop-blur-sm dark:backdrop-blur-none dark:border-t fixed bottom-0 w-full ${
             isSidebarOpen
               ? "lg:w-[calc(100%-220px)]"
               : "lg:w-[calc(100%-4.5rem)]"

@@ -30,7 +30,7 @@ const TaskStatusFilter = ({ filters, setFilters }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="text-slate-600 font-normal flex">
+        <Button variant="outline" className="text-slate-600 dark:text-slate-100 font-normal flex">
           <span>Filter by status</span> <ChevronsUpDown />
         </Button>
       </DropdownMenuTrigger>

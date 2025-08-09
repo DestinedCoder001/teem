@@ -100,7 +100,7 @@ export default function OTPDialog({
             <DialogTitle className="text-lg font-semibold text-center">
               Enter OTP
             </DialogTitle>
-            <DialogDescription className="text-center text-black/70">
+            <DialogDescription className="text-center text-black/70 dark:text-white/70">
               Enter the 6-digit code sent to{" "}
               <span className="font-semibold">{email}</span>
             </DialogDescription>
@@ -127,7 +127,7 @@ export default function OTPDialog({
               </InputOTP>
             </div>
             <Button
-              className="w-full rounded-full"
+              className="w-full rounded-full dark:text-white"
               onClick={handleSubmit}
               disabled={otp.length !== 6 || isPending || resetPending}
             >
