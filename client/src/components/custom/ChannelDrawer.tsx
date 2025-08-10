@@ -97,7 +97,7 @@ const ChannelDrawer = ({
                     </Avatar>
                     <p className="text-sm dark:text-slate-200">{name}</p>
                   </div>
-                  {me?._id === channel?.createdBy._id &&
+                  {me?._id === channel?.createdBy?._id &&
                     user._id !== me?._id && (
                       <DropdownMenu>
                         <>
@@ -148,7 +148,7 @@ const ChannelDrawer = ({
               </Button>
             </div>
 
-            {me?._id === channel?.createdBy._id && (
+            {me?._id === channel?.createdBy?._id && (
               <div className="rounded-md flex flex-col md:flex-row gap-y-4 justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
                 <div className="space-y-1">
                   <p className="text-lg text-red-500 font-medium">
@@ -194,7 +194,7 @@ const ChannelDrawer = ({
                 {isExitPending ? <Loader className="animate-spin" /> : "Exit"}
               </Button>
             </div>
-            {me?._id === channel?.createdBy._id && (
+            {me?._id === channel?.createdBy?._id && (
               <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
                 <div className="space-y-1">
                   <p className="text-lg text-red-500 font-medium">

@@ -1,9 +1,10 @@
 import {
-  Sheet, SheetContent,
+  Sheet,
+  SheetContent,
   SheetDescription,
   SheetFooter,
   SheetHeader,
-  SheetTitle
+  SheetTitle,
 } from "@/components/ui/sheet";
 import { useTaskSheetOpen } from "@/lib/store/uiStore";
 import { Button } from "../ui/button";
@@ -61,20 +62,35 @@ const TaskSheet = () => {
             <p className="bg-slate-100 dark:bg-neutral-700 rounded-md text-center p-2">
               Assigned by{" "}
               <span className="font-semibold text-slate-700 dark:text-slate-100">
-                {task?.assignedBy.firstName} {task?.assignedBy.lastName}
+                {task.assignedBy ? (
+                  <>
+                    {task?.assignedBy?.firstName} {task?.assignedBy?.lastName}
+                  </>
+                ) : (
+                  "Deleted User"
+                )}
               </span>{" "}
               to{" "}
               <span className="font-semibold text-slate-700 dark:text-slate-100">
-                {" "}
-                {task?.assignedTo.firstName} {task?.assignedTo.lastName}
-              </span>{" "}
+                {task.assignedTo ? (
+                  <>
+                    {task?.assignedTo?.firstName} {task?.assignedBy?.lastName}
+                  </>
+                ) : (
+                  "Deleted User"
+                )}
+              </span>
+              {" "}
               {formatTaskDueDate(task?.createdAt?.toString() as string)}
             </p>
           </div>
         )}
 
         <div className="break-words text-left p-4">
-          <div dangerouslySetInnerHTML={{ __html: task?.guidelines as string }} className="space-y-3 text-slate-700 dark:text-slate-100" />
+          <div
+            dangerouslySetInnerHTML={{ __html: task?.guidelines as string }}
+            className="space-y-3 text-slate-700 dark:text-slate-100"
+          />
         </div>
         <SheetFooter>
           <Button

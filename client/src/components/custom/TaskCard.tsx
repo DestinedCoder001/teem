@@ -81,8 +81,13 @@ const TaskCard = ({
     isDue,
   };
 
-  // const modGuidlines =
-  //   guidelines?.length > 100 ? guidelines.slice(0, 100) + "..." : guidelines;
+  const isAssigneeAvailable = assignedTo !== null;
+  const isAssigedByAvailable = assignedBy !== null;
+  const deletedAccAvatar = (
+    <div className="size-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-500 font-semibold">
+      !
+    </div>
+  );
 
   return (
     <>
@@ -175,29 +180,37 @@ const TaskCard = ({
 
         <div className="space-y-2 lg:space-y-4 mt-4">
           <div className="flex items-center gap-x-3">
-            <Avatar className="h-8 w-8 rounded-full border border-slate-200 dark:border-neutral-600">
-              <AvatarImage
-                className="object-cover object-center w-full"
-                src={assignedBy?.profilePicture}
-                alt={assignedBy?.firstName}
-              />
-              <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
-                {assignedBy?.firstName[0]?.toUpperCase()}
-                {assignedBy?.lastName[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            {isAssigedByAvailable ? (
+              <Avatar className="h-8 w-8 rounded-full border border-slate-200 dark:border-neutral-600">
+                <AvatarImage
+                  className="object-cover object-center w-full"
+                  src={assignedBy?.profilePicture}
+                  alt={assignedBy?.firstName}
+                />
+                <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
+                  {assignedBy?.firstName[0]?.toUpperCase()}
+                  {assignedBy?.lastName[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              deletedAccAvatar
+            )}
             <MoveRight className="text-slate-500 dark:text-slate-100" />
-            <Avatar className="h-8 w-8 rounded-full border border-slate-200 dark:border-neutral-600">
-              <AvatarImage
-                className="object-cover object-center w-full"
-                src={assignedTo?.profilePicture}
-                alt={assignedTo?.firstName}
-              />
-              <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
-                {assignedTo?.firstName[0]?.toUpperCase()}
-                {assignedTo?.lastName[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            {isAssigneeAvailable ? (
+              <Avatar className="h-8 w-8 rounded-full border border-slate-200 dark:border-neutral-600">
+                <AvatarImage
+                  className="object-cover object-center w-full"
+                  src={assignedTo?.profilePicture}
+                  alt={assignedTo?.firstName}
+                />
+                <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
+                  {assignedTo?.firstName[0]?.toUpperCase()}
+                  {assignedTo?.lastName[0]?.toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              deletedAccAvatar
+            )}
           </div>
           {status === "completed" ? (
             <div className="flex gap-x-1 items-center w-max text-xs bg-green-100 dark:bg-green-500 rounded-full px-4 py-1 text-green-600 dark:text-green-50 font-[500]">

@@ -18,7 +18,8 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
   const { mutate: deleteMessage, isPending: isDeleting } = useDeleteMessage();
   const { setEditing, setMessage } = useEditingMessage((state) => state);
   const [editOpen, setEditOpen] = useState(false);
-  const isSender = userId === message.sender._id;
+  const senderNotAvailable = message.sender === null;
+  const isSender = userId === message.sender?._id;
   const sentTime = formatMessageTime(message.createdAt);
   const extensions = ["pdf", "txt", "docx"];
   const isDoc = extensions
@@ -70,6 +71,80 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
       authSocket.off("message_deleted");
     };
   }, [authSocket, message._id]);
+
+  if (senderNotAvailable) {
+    return (
+      <div className="flex justify-start">
+        <div className="flex items-end gap-x-1 max-w-5/6 md:max-w-2/3 lg:max-w-1/2">
+          <div
+            className={`h-7 w-7 lg:h-6 lg:w-6 rounded-full font-bold sticky bottom-2 flex justify-center items-center bg-gray-200 text-gray-500 ${
+              edited && !isDeleted ? "mb-9" : "mb-5"
+            }`}
+          >
+            !
+          </div>
+          <div className="flex flex-col gap-y-1 items-start ">
+            {message.attachment?.url &&
+              !isDeleted &&
+              (isDoc ? (
+                <div className="relative">
+                  {!message.content && (
+                    <MsgOptionsDropdown
+                      message={message}
+                      editOpen={editOpen}
+                      setEditOpen={setEditOpen}
+                      isDeleting={isDeleting}
+                      handleDelete={handleDelete}
+                      handleEdit={handleEdit}
+                    />
+                  )}
+
+                  <Attachment
+                    fileName={message.attachment.fileName}
+                    type={message.attachment.type}
+                    url={message.attachment.url}
+                  />
+                </div>
+              ) : (
+                <div
+                  className="size-52 cursor-pointer relative"
+                  onClick={() => setOpen(true, message.attachment.url)}
+                >
+                  <img
+                    src={message.attachment.url}
+                    className="w-full h-full object-cover object-center rounded-lg"
+                  />
+                </div>
+              ))}
+            {message.content && !isDeleted && (
+              <div className="px-4 py-2 text-[0.9rem] break-words relative rounded-t-lg rounded-br-lg border border-slate-300 dark:border-neutral-600 text-slate-700 dark:text-slate-200 dark:bg-neutral-900">
+                {msgContent}
+              </div>
+            )}
+            {isDeleted && (
+              <div
+                className={`px-4 py-2 text-[0.9rem] italic break-words border border-slate-300 dark:border-neutral-600 text-slate-600 dark:text-slate-200 ${
+                  isSender
+                    ? "rounded-t-lg rounded-bl-lg"
+                    : "rounded-t-lg rounded-br-lg"
+                }`}
+              >
+                This message was deleted
+              </div>
+            )}
+            <span className="text-slate-500 text-[0.7rem] dark:text-slate-300">
+              {sentTime}
+            </span>
+            {edited && !isDeleted && (
+              <span className="text-slate-500 text-[0.7rem] dark:text-slate-300 -mt-1">
+                Edited
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
@@ -172,9 +247,13 @@ const MessageBubble = ({ message }: { message: MessageProps }) => {
               This message was deleted
             </div>
           )}
-          <span className="text-slate-500 text-[0.7rem] dark:text-slate-300">{sentTime}</span>
+          <span className="text-slate-500 text-[0.7rem] dark:text-slate-300">
+            {sentTime}
+          </span>
           {edited && !isDeleted && (
-            <span className="text-slate-500 text-[0.7rem] dark:text-slate-300 -mt-1">Edited</span>
+            <span className="text-slate-500 text-[0.7rem] dark:text-slate-300 -mt-1">
+              Edited
+            </span>
           )}
         </div>
       </div>

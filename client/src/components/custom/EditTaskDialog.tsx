@@ -80,7 +80,7 @@ const EditTaskDialog = () => {
 
   useEffect(() => {
     if (task) {
-      setAssignee(task.assignedTo._id);
+      setAssignee(task.assignedTo?._id);
     }
   }, [task]);
 
@@ -155,7 +155,7 @@ const EditTaskDialog = () => {
 
             <AssignesDropdown user={assignee} setUser={setAssignee} />
 
-            {!task?.assignedTo._id && (
+            {!task?.assignedTo?._id && !assignee && (
               <span className="text-xs text-red-500">Assignee is required</span>
             )}
 

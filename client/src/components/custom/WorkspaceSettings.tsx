@@ -85,7 +85,7 @@ const WorkspaceSettings = () => {
     }
   };
 
-  const isOwner = createdBy === user?._id;
+  const isOwner = createdBy && createdBy === user?._id;
 
   return (
     <>

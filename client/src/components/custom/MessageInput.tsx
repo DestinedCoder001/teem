@@ -166,7 +166,7 @@ const MessageInput = ({
       )}
 
       {attachPending ? (
-        <Loader className="animate-spin text-slate-500 dark:text-slate-50" />
+        <Loader className="animate-spin text-slate-500 dark:text-slate-50 size-5" />
       ) : (
         <Paperclip
           size={20}

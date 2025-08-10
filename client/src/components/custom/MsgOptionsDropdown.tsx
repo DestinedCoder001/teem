@@ -27,7 +27,7 @@ const MsgOptionsDropdown = ({
   handleEdit,
 }: Props) => {
   const user = useUserStore((state) => state.user);
-  const isSender = user?._id === message.sender._id;
+  const isSender = user?._id === message.sender?._id;
   if (!isSender) return null;
   return (
     <DropdownMenu open={editOpen} onOpenChange={setEditOpen}>

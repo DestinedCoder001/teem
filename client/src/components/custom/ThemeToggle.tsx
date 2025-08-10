@@ -27,7 +27,7 @@ const ThemeToggle = () => {
         </p>
       </div>
 
-      <div className="p-6 flex justify-between items-center gap-2 border dark:border-neutral-700 rounded-lg shadow-sm">
+      <div className="p-4 flex justify-between items-center gap-2 border border-slate-300 dark:border-neutral-700 rounded-lg">
         <div className="flex items-center gap-x-4">
           {theme === "light" && <Sun className="size-8 text-yellow-500" />}
           {theme === "dark" && <Moon className="size-8 text-indigo-400" />}

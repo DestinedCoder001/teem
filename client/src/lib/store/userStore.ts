@@ -63,7 +63,7 @@ const currentChannelDetails = create<
 >((set) => ({
   name: "",
   members: [],
-  createdBy: { _id: "", firstName: "", lastName: "" },
+  createdBy: { _id: "", firstName: "", lastName: "", profilePicture: "" },
   _id: "",
   description: "",
   setChannelDetails: (details: ChannelPayload) => set(details),
