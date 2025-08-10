@@ -111,7 +111,7 @@ const AppLayout = () => {
   };
 
   return (
-    <a>
+    <>
       <nav className="h-[50px] w-full flex px-4 md:px-8 lg:px-16 items-center justify-between sticky top-0 z-50 border-b border-slate-300 dark:border-neutral-700">
         <PanelLeft
           onClick={toggleSidebar}
@@ -135,7 +135,7 @@ const AppLayout = () => {
           <PhotoViewer />
         </main>
       </div>
-    </a>
+    </>
   );
 };
 
