@@ -10,6 +10,7 @@ import useGetMe from "@/lib/hooks/useGetMe";
 import { Skeleton } from "../ui/skeleton";
 import { useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
+import ChatsCollapsible from "./ChatsCollapsible";
 
 const MobileSideBar = () => {
   const { isOpen, setOpen } = useSidebarOpen((state) => state);
@@ -45,6 +46,7 @@ const MobileSideBar = () => {
       <div className="flex flex-col h-full justify-between w-full overflow-y-auto px-4 no-scrollbar">
         <div className="flex flex-col gap-y-4 mt-24">
           <ChannelsCollapsible />
+          <ChatsCollapsible />
           {navlinks.map((link, id) => (
             <NavLink
               to={link.link}

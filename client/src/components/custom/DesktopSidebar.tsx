@@ -6,6 +6,7 @@ import useGetMe from "@/lib/hooks/useGetMe";
 import { Skeleton } from "../ui/skeleton";
 import { useSidebarOpen } from "@/lib/store/uiStore";
 import { PanelLeft } from "lucide-react";
+import ChatsCollapsible from "./ChatsCollapsible";
 
 const DesktopSidebar = () => {
   const { isPending } = useGetMe();
@@ -29,6 +30,7 @@ const DesktopSidebar = () => {
       <div className="flex flex-col h-full justify-between w-full overflow-y-auto px-4 pb-4 no-scrollbar">
         <div className="flex flex-col gap-y-6 mt-24 mb-8">
           <ChannelsCollapsible />
+          <ChatsCollapsible />
           {navlinks.map((link, id) => (
             <NavLink
               to={link.link}
@@ -55,7 +57,11 @@ const DesktopSidebar = () => {
           ))}
         </div>
         <div className="my-4">
-          {isPending ? <Skeleton className={`${isOpen ? "h-12" : "h-9"} w-full`} /> : <WsSwitch />}
+          {isPending ? (
+            <Skeleton className={`${isOpen ? "h-12" : "h-9"} w-full`} />
+          ) : (
+            <WsSwitch />
+          )}
         </div>
       </div>
     </aside>
