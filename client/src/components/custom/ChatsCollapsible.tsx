@@ -13,7 +13,9 @@ import {
 } from "@/lib/store/userStore";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import { Skeleton } from "../ui/skeleton";
-import { useSidebarOpen } from "@/lib/store/uiStore";
+import { useActiveUsers, useSidebarOpen } from "@/lib/store/uiStore";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { clsx } from "clsx";
 
 const ChatsCollapsible = () => {
   const location = useLocation();
@@ -23,6 +25,7 @@ const ChatsCollapsible = () => {
   const { isPending } = useGetWsDetails();
   const { workspaces } = useUserWorkspaces((state) => state);
   const isSidebarOpen = useSidebarOpen((state) => state.isOpen);
+  const activeWsUsers = useActiveUsers((state) => state.activeUsers);
   const me = useUserStore((state) => state.user);
 
   useEffect(() => {
@@ -73,18 +76,39 @@ const ChatsCollapsible = () => {
             ))}
           {!isPending &&
             filteredUsers?.map((user) => {
+              const isOnline = activeWsUsers.includes(user._id);
               const name = user.firstName + " " + user.lastName;
               return (
                 <NavLink
                   to={`/chat/${user?._id}`}
                   key={user._id}
                   title={name}
-                  className={({ isActive }) => {
-                    return isActive
-                      ? "block text-sm text-slate-500 bg-slate-100 dark:bg-neutral-700 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-slate-800 font-medium p-2 rounded-md"
-                      : "block text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-neutral-800 font-medium p-2 rounded-md";
-                  }}
+                  className={({ isActive }) =>
+                    clsx(
+                      "flex items-center gap-x-2 text-sm font-medium p-2 rounded-md",
+                      "text-slate-500 dark:text-slate-200",
+                      "hover:text-slate-600 dark:hover:text-slate-50",
+                      isActive
+                        ? "bg-slate-100 dark:bg-neutral-700 dark:hover:bg-slate-800"
+                        : "hover:bg-slate-100 dark:hover:bg-neutral-800"
+                    )
+                  }
                 >
+                  <Avatar
+                    className={`h-6 w-6 rounded-full border border-slate-200 dark:border-neutral-600 ${
+                      isOnline ? "ring ring-secondary" : ""
+                    }`}
+                  >
+                    <AvatarImage
+                      className="object-cover object-center w-full"
+                      src={user?.profilePicture}
+                      alt={user?.firstName}
+                    />
+                    <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
+                      {user?.firstName[0]?.toUpperCase()}
+                      {user?.lastName[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                   {name.length > 15 ? name.slice(0, 15) + "..." : name}
                 </NavLink>
               );

@@ -6,6 +6,8 @@ const messageSchema = new Schema(
     content: { type: String },
     workspace: { type: Schema.Types.ObjectId, ref: "Workspace" },
     channel: { type: Schema.Types.ObjectId, ref: "Channel" },
+    receiver: { type: Schema.Types.ObjectId, ref: "User" },
+    chatId: { type: String },
     edited: { type: Boolean, default: false },
     deleted: { type: Boolean, default: false },
     attachment: {
