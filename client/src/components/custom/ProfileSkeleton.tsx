@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const ProfileSkeleton = () => {
   return (
     <div className="flex flex-col items-center">
-      <div className="w-full max-w-md bg-white overflow-hidden p-6">
+      <div className="w-full max-w-md overflow-hidden p-6">
         <div className="flex flex-col items-center py-6">
 
           <div>
@@ -29,7 +29,7 @@ const ProfileSkeleton = () => {
 
           <div className="space-y-1.5">
             <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-10 w-full rounded-md bg-gray-200" />
+            <Skeleton className="h-10 w-full rounded-md" />
           </div>
 
           <div className="flex justify-end gap-2">

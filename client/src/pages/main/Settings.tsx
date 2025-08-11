@@ -5,11 +5,50 @@ import UserRemoveAlert from "@/components/custom/UserRemoveAlert";
 import WorkspaceSettings from "@/components/custom/WorkspaceSettings";
 import WsDeleteAlert from "@/components/custom/WsDeleteAlert";
 import { Button } from "@/components/ui/button";
+import useDeleteAccount from "@/lib/hooks/useDeleteAccount";
+import { useAuthStore } from "@/lib/store/authStore";
 import { useDeleteAccountOpen } from "@/lib/store/uiStore";
+import { useUserStore } from "@/lib/store/userStore";
+import { useGoogleLogin } from "@react-oauth/google";
+import type { AxiosError } from "axios";
 import { Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Settings = () => {
   const { setOpen } = useDeleteAccountOpen((state) => state);
+  const user = useUserStore((state) => state.user);
+  const { setAccessToken } = useAuthStore((state) => state);
+  const { mutate } = useDeleteAccount();
+  const navigate = useNavigate();
+
+  const googleAuth = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (response: { code: string }) => {
+      if (!response?.code) return toast.error("Missing Google auth code");
+
+      try {
+        mutate({ code: response.code });
+        setAccessToken(null);
+        navigate("/signup", { replace: true });
+      } catch (err) {
+        const error = err as AxiosError<{ message?: string }>;
+        toast.error(error.response?.data?.message || "Google auth failed", {
+          position: "top-center",
+        });
+      }
+    },
+    onError: () =>
+      toast.error("Google auth failed", { position: "top-center" }),
+  });
+
+  const handleDelete = () => {
+    if (user?.authProvider === "google") {
+      googleAuth();
+    } else if (user?.authProvider === "local") {
+      setOpen(true);
+    } else return;
+  };
   return (
     <div className="p-4 h-auto">
       <WorkspaceSettings />
@@ -30,7 +69,7 @@ const Settings = () => {
           <Button
             variant="destructive"
             className="min-w-[4rem] dark:bg-red-500"
-            onClick={() => setOpen(true)}
+            onClick={handleDelete}
           >
             Delete
           </Button>

@@ -9,6 +9,7 @@ import Channel from "../models/channel.model";
 import { Task } from "../models/task.model";
 import bcrypt from "bcrypt";
 import { matchedData, validationResult } from "express-validator";
+import { verifyGoogleToken } from "../lib/googleAuthHelper";
 
 const me = async (req: Request, res: Response) => {
   if (!req.user) {
@@ -104,6 +105,7 @@ const editUserDetails = async (req: Request, res: Response) => {
 
 const deleteAccount = async (req: Request, res: Response) => {
   const password = req.body?.password;
+  const code = req.body?.code;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -119,8 +121,6 @@ const deleteAccount = async (req: Request, res: Response) => {
     await connectDb();
     const user = await User.findOne({ _id: userId });
 
-    console.log(user._id.toString(), userId);
-
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -131,6 +131,21 @@ const deleteAccount = async (req: Request, res: Response) => {
       }
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
       if (!isPasswordCorrect) {
+        return res.status(403).json({ message: "Invalid credentials" });
+      }
+    }
+
+    if (user.authProvider === "google") {
+      if (!code) {
+        return res.status(400).json({ message: "Code is required" });
+      }
+      const payload = await verifyGoogleToken(code);
+
+      if (!payload?.email) {
+        return res.status(400).json({ message: "Invalid Google token" });
+      }
+
+      if (payload.email !== user.email) {
         return res.status(403).json({ message: "Invalid credentials" });
       }
     }

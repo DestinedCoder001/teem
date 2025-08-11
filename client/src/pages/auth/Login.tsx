@@ -112,7 +112,7 @@ const Login = () => {
                     type="email"
                     id="email"
                     className={`border ${
-                      errors.email ? "border-red-500" : "border-[#bbb]"
+                      errors.email ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("email", {
                       required: "Email is required",
@@ -138,7 +138,7 @@ const Login = () => {
                     id="pwd"
                     autoComplete="off"
                     className={`border ${
-                      errors.password ? "border-red-500" : "border-[#bbb]"
+                      errors.password ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("password", {
                       required: "Password is required",

@@ -10,6 +10,7 @@ declare global {
         firstName: string;
         lastName: string;
         profilePicture: string;
+        authProvider: string;
       };
     }
   }
@@ -33,6 +34,7 @@ interface JwtPayload {
     firstName: string;
     lastName: string;
     profilePicture: string;
+    authProvider: string;
   };
 }
 
@@ -42,6 +44,7 @@ interface User {
   firstName: string;
   lastName: string;
   profilePicture: string;
+  authProvider: string;
 }
 
 interface ChannelUser {

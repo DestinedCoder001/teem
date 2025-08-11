@@ -9,6 +9,7 @@ export const saveUserAuthDetails = (res: Response, user: User) => {
     lastName: user.lastName,
     email: user.email,
     profilePicture: user.profilePicture,
+    authProvider: user.authProvider,
   };
 
   const accessToken = jwt.sign(

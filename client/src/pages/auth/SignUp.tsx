@@ -90,7 +90,7 @@ const SignUp = () => {
                     type="text"
                     id="firstName"
                     className={`border ${
-                      errors.firstName ? "border-red-500" : "border-[#bbb]"
+                      errors.firstName ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("firstName", {
                       required: "First name is required",
@@ -114,7 +114,7 @@ const SignUp = () => {
                     type="text"
                     id="lastName"
                     className={`border ${
-                      errors.lastName ? "border-red-500" : "border-[#bbb]"
+                      errors.lastName ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("lastName", {
                       required: "Last name is required",
@@ -135,7 +135,7 @@ const SignUp = () => {
                     type="email"
                     id="email"
                     className={`border ${
-                      errors.email ? "border-red-500" : "border-[#bbb]"
+                      errors.email ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("email", {
                       required: "Email is required",
@@ -161,7 +161,7 @@ const SignUp = () => {
                     autoComplete="off"
                     id="pwd"
                     className={`border ${
-                      errors.password ? "border-red-500" : "border-[#bbb]"
+                      errors.password ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("password", {
                       required: "Password is required",

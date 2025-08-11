@@ -9,9 +9,9 @@ const useDeleteAccount = () => {
   const { setAccessToken } = useAuthStore((state) => state);
   const { user } = useUserStore((state) => state);
   return useMutation({
-    mutationFn: async (payload: { password: string }) => {
+    mutationFn: async (payload: { password?: string, code?: string }) => {
       const { data } = await api.delete(`/users/${user?._id}/delete`, {
-        data: { password: payload.password },
+        data: { password: payload.password, code: payload.code },
       });
       return data;
     },
