@@ -93,7 +93,8 @@ export type MessageProps = {
   attachment: { type: string; url: string; fileName: string };
   content: string;
   createdAt: Date;
-  channel: string;
+  channel?: string;
+  chatId?: string;
 };
 
 export type EditingMessageProps = Omit<

@@ -13,7 +13,7 @@ import {
 } from "@/lib/store/userStore";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import { Skeleton } from "../ui/skeleton";
-import { useActiveUsers, useSidebarOpen } from "@/lib/store/uiStore";
+import { useActiveUsers, useCurrentChat, useSidebarOpen } from "@/lib/store/uiStore";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { clsx } from "clsx";
 
@@ -31,6 +31,7 @@ const ChatsCollapsible = () => {
   useEffect(() => {
     setOpen(false);
   }, [_id]);
+
   const filteredUsers = users.filter((u) => u._id !== me?._id);
 
   return (
@@ -68,7 +69,7 @@ const ChatsCollapsible = () => {
           )}
         </div>
       </CollapsibleTrigger>
-      {isSidebarOpen && (
+     
         <CollapsibleContent className="pl-4 space-y-2 mt-2">
           {isPending &&
             [1, 2, 3, 4].map((val) => (
@@ -78,9 +79,12 @@ const ChatsCollapsible = () => {
             filteredUsers?.map((user) => {
               const isOnline = activeWsUsers.includes(user._id);
               const name = user.firstName + " " + user.lastName;
+              const arr = [me?._id, user._id].sort();
+              const chatId = `${arr[0]}-${arr[1]}`;
+
               return (
                 <NavLink
-                  to={`/chat/${user?._id}`}
+                  to={`/chat/${chatId}`}
                   key={user._id}
                   title={name}
                   className={({ isActive }) =>
@@ -88,6 +92,7 @@ const ChatsCollapsible = () => {
                       "flex items-center gap-x-2 text-sm font-medium p-2 rounded-md",
                       "text-slate-500 dark:text-slate-200",
                       "hover:text-slate-600 dark:hover:text-slate-50",
+                      !isSidebarOpen ? "lg:hidden" : "",
                       isActive
                         ? "bg-slate-100 dark:bg-neutral-700 dark:hover:bg-slate-800"
                         : "hover:bg-slate-100 dark:hover:bg-neutral-800"
@@ -114,7 +119,7 @@ const ChatsCollapsible = () => {
               );
             })}
         </CollapsibleContent>
-      )}
+      
     </Collapsible>
   );
 };

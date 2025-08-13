@@ -7,6 +7,7 @@ import channelsRoute from "./routes/channel.route";
 import messagesRoute from "./routes/message.route";
 import tasksRoute from "./routes/tasks.route";
 import uploadsRoute from "./routes/uploads.route";
+import chatRoute from "./routes/chat.route";
 import dotenv from "dotenv";
 import { verifyToken } from "./middleware/auth.middleware";
 import cors from "cors";
@@ -31,6 +32,7 @@ app.use("/api/:workspaceId/channels", verifyToken, channelsRoute);
 app.use("/api/:workspaceId/:channelId", verifyToken, messagesRoute);
 app.use("/api/:workspaceId/tasks", verifyToken, tasksRoute);
 app.use("/api/uploads", verifyToken, uploadsRoute);
+app.use("/api/:workspaceId/chat", verifyToken, chatRoute);
 
 server.listen(3001, "0.0.0.0", () => {
   console.log("Server is running on port 3001");

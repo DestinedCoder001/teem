@@ -16,6 +16,7 @@ import { useEditingMessage } from "@/lib/store/uiStore";
 import useEditMessage from "@/lib/hooks/useEditMessage";
 
 type Props = {
+  isChat?: boolean;
   message: {
     message: string;
     attachment: { type: string; url: string; fileName: string };

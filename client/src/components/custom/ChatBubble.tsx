@@ -8,22 +8,14 @@ import { useEffect, useState } from "react";
 import useDeleteMessage from "@/lib/hooks/useDeleteMessage";
 import { getSocket } from "@/lib/socket";
 import MsgOptionsDropdown from "./MsgOptionsDropdown";
-import useDeleteChatmsg from "@/lib/hooks/useDeleteChatMsg";
 
-type MessageBubbleProps = {
-  message: MessageProps;
-  isChat?: boolean;
-};
-
-const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
+const ChatBubble = ({ message }: { message: MessageProps }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [edited, setEdited] = useState(message.edited);
   const [msgContent, setMsgContent] = useState(message.content);
   const userId = useUserStore((state) => state.user?._id);
   const { setOpen } = photoViewer((state) => state);
   const { mutate: deleteMessage, isPending: isDeleting } = useDeleteMessage();
-  const { mutate: deleteChatMsg, isPending: isChatDeleting } =
-    useDeleteChatmsg();
   const { setEditing, setMessage } = useEditingMessage((state) => state);
   const [editOpen, setEditOpen] = useState(false);
   const senderNotAvailable = message.sender === null;
@@ -34,7 +26,6 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
     .map((ext) => message.attachment.type === ext)
     .some(Boolean);
   const authSocket = getSocket()!;
-  const disableDropdown = isDeleting || isChatDeleting;
 
   useEffect(() => {
     if (message.deleted) {
@@ -44,42 +35,23 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
 
   const handleEdit = () => {
     setEditing(true);
-    if (isChat) {
-      setMessage({
-        _id: message._id,
-        content: message.content,
-        chatId: message.chatId,
-      });
-    } else {
-      setMessage({
-        _id: message._id,
-        content: msgContent,
-        channel: message.channel,
-      });
-    }
+    setMessage({
+      _id: message._id,
+      content: msgContent,
+      channel: message.channel,
+    });
   };
 
   const handleDelete = () => {
-    if (isChat) {
-      deleteChatMsg(
-        { messageId: message._id },
-        {
-          onSuccess: () => {
-            setIsDeleted(true);
-          },
-        }
-      );
-    } else {
-      deleteMessage(
-        { messageId: message._id, channelId: message.channel! },
-        {
-          onSuccess: () => {
-            setIsDeleted(true);
-            authSocket.emit("delete_message", message._id);
-          },
-        }
-      );
-    }
+    deleteMessage(
+      { messageId: message._id, channelId: message.channel },
+      {
+        onSuccess: () => {
+          setIsDeleted(true);
+          authSocket.emit("delete_message", message._id);
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -121,7 +93,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                       message={message}
                       editOpen={editOpen}
                       setEditOpen={setEditOpen}
-                      isDeleting={disableDropdown}
+                      isDeleting={isDeleting}
                       handleDelete={handleDelete}
                       handleEdit={handleEdit}
                     />
@@ -210,7 +182,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                     message={message}
                     editOpen={editOpen}
                     setEditOpen={setEditOpen}
-                    isDeleting={disableDropdown}
+                    isDeleting={isDeleting}
                     handleDelete={handleDelete}
                     handleEdit={handleEdit}
                   />
@@ -232,7 +204,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                     message={message}
                     editOpen={editOpen}
                     setEditOpen={setEditOpen}
-                    isDeleting={disableDropdown}
+                    isDeleting={isDeleting}
                     handleDelete={handleDelete}
                     handleEdit={handleEdit}
                   />
@@ -256,7 +228,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                   message={message}
                   editOpen={editOpen}
                   setEditOpen={setEditOpen}
-                  isDeleting={disableDropdown}
+                  isDeleting={isDeleting}
                   handleDelete={handleDelete}
                   handleEdit={handleEdit}
                 />
@@ -289,4 +261,4 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
   );
 };
 
-export default MessageBubble;
+export default ChatBubble;

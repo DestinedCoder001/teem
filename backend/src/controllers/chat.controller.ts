@@ -1,13 +1,38 @@
-import { Types } from "mongoose";
-import { connectDb } from "../lib/connectDb";
-import Channel from "../models/channel.model";
-import Message from "../models/message.model";
 import { Request, Response } from "express";
+import Message from "../models/message.model";
+import { connectDb } from "../lib/connectDb";
+import { Types } from "mongoose";
+import Workspace from "../models/workspace.model";
+import User from "../models/user.model";
 
-// FOR CHANNELS
-const sendMessage = async (req: Request, res: Response) => {
-  const { channelId, workspaceId } = req.params;
-  const { message, attachment } = req.body;
+const getChats = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const { chatId, workspaceId } = req.params;
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  try {
+    await connectDb();
+    const chat = await Message.find({ chatId, workspace: workspaceId }).populate({
+      path: "sender",
+      select: "firstName lastName profilePicture",
+    });;
+    if (!chat) {
+      return res.status(404).json({ message: "Chat not found" });
+    }
+    return res.status(200).json({ message: "Request successful", chat });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const sendChatMessage = async (req: Request, res: Response) => {
+  const { workspaceId } = req.params;
+  const { message, attachment, receiverId } = req.body;
 
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
@@ -17,29 +42,40 @@ const sendMessage = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "Invalid workspace id" });
   }
 
-  if (!Types.ObjectId.isValid(channelId)) {
-    return res.status(400).json({ message: "Invalid channel id" });
+  if (!Types.ObjectId.isValid(receiverId)) {
+    return res.status(400).json({ message: "Invalid receiver id" });
   }
 
   try {
     await connectDb();
-    const channel = await Channel.findOne({
-      _id: channelId,
-      workspace: workspaceId,
+    const user = await User.findOne({
+      _id: receiverId,
     });
-    if (!channel) {
-      return res.status(404).json({ message: "Channel not found" });
+    const workspace = await Workspace.findOne({
+      _id: workspaceId,
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
     }
 
-    if (!channel.members.includes(req.user._id)) {
+    if (!workspace.users.includes(req.user._id)) {
       return res.status(403).json({ message: "Action not permitted." });
     }
+    if (!workspace.users.includes(receiverId)) {
+      return res.status(403).json({ message: "User not in workspace" });
+    }
+
+    // sort ids so that they're always same
+    const sortedIds = [req.user._id, receiverId].sort();
+    const chatId = `${sortedIds[0]}-${sortedIds[1]}`;
 
     const newMessage = await Message.create({
       sender: req.user._id,
-      channel: channelId,
+      receiver: receiverId,
       content: message,
       workspace: workspaceId,
+      chatId,
       attachment,
     });
 
@@ -56,7 +92,7 @@ const sendMessage = async (req: Request, res: Response) => {
   }
 };
 
-const editMessage = async (req: Request, res: Response) => {
+const editChatMessage = async (req: Request, res: Response) => {
   const { messageId, message } = req.body;
 
   if (!req.user) {
@@ -95,7 +131,7 @@ const editMessage = async (req: Request, res: Response) => {
   }
 };
 
-const deleteMessage = async (req: Request, res: Response) => {
+const deleteChatMessage = async (req: Request, res: Response) => {
   const { messageId } = req.body;
 
   if (!req.user) {
@@ -138,4 +174,4 @@ const deleteMessage = async (req: Request, res: Response) => {
   }
 };
 
-export { sendMessage, editMessage, deleteMessage };
+export { getChats, sendChatMessage, editChatMessage, deleteChatMessage };

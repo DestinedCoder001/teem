@@ -133,6 +133,53 @@ io.on("connection", (socket) => {
     }
   });
 
+  // For dms
+  socket.on("chat_typing", (payload) => {
+    const wsId = socket.data.wsId;
+    const { chatId, wsid } = payload;
+    if (wsId !== wsid) return;
+    socket.to(wsId).emit("receiver_typing", {
+      isTyping: true,
+      wsId: socket.data.wsId,
+      chatId,
+    });
+  });
+
+  socket.on("chat_stopped_typing", (payload) => {
+    const wsId = socket.data.wsId;
+    const { chatId, wsid } = payload;
+    if (wsId !== wsid) return;
+    socket.to(wsId).emit("receiver_typing", {
+      isTyping: false,
+      wsId: socket.data.wsId,
+      chatId,
+    });
+  });
+
+  socket.on("send_chat_message", (payload) => {
+    const { wsId, chatId, msg } = payload;
+    if (socket.data.wsId !== wsId) return;
+    socket.to(wsId).emit("new_chat_message", {
+      wsId: socket.data.wsId,
+      chatId,
+      message: msg,
+    });
+  });
+
+  socket.on("delete_chat_message", (messageId) => {
+    const channelId = socket.data.channelId;
+    if (channelId) {
+      socket.broadcast.to(channelId).emit("chat_message_deleted", messageId);
+    }
+  });
+
+  socket.on("edit_chat_message", (payload) => {
+    const { wsId, id, message } = payload;
+    const channelId = `${wsId}-${id}`;
+    if (channelId !== socket.data.channelId) return;
+    io.to(channelId).emit("edited_chat_message", message);
+  });
+
   // socket.onAny((event, ...args) => {
   //   console.log(event, ...args);
   // });

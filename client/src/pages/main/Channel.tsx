@@ -138,7 +138,7 @@ const Channel = () => {
         authSocket.emit("disconnect_channel", { wsId, id: channelID });
       };
 
-      const handleMessageSend = (data: MessageProps) => {
+      const handleNewMessage = (data: MessageProps) => {
         if (data.channel !== channelId) return;
         if (audio) {
           audio.play();
@@ -157,14 +157,14 @@ const Channel = () => {
 
       authSocket.on("active_channel_users", handleActiveUsers);
       authSocket.on("typing_users", handleTypingUsers);
-      authSocket.on("new_message", handleMessageSend);
+      authSocket.on("new_message", handleNewMessage);
 
       authSocket.on("disconnect", handleSocketDisconnect);
       window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
         authSocket.emit("disconnect_channel", { wsId, id: channelID });
-        authSocket.off("new_message", handleMessageSend);
+        authSocket.off("new_message", handleNewMessage);
         authSocket.off("active_channel_users", handleActiveUsers);
         audio?.pause();
         authSocket.off("disconnect", handleSocketDisconnect);
@@ -255,7 +255,7 @@ const Channel = () => {
             isSidebarOpen
               ? "lg:w-[calc(100%-220px)]"
               : "lg:w-[calc(100%-4.5rem)]"
-          } bg-white/80 dark:bg-neutral-950 backdrop-blur-sm dark:backdrop-blur-none z-40 cursor-pointer`}
+          } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 cursor-pointer`}
           onClick={handleOpenDrawer}
         >
           <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
@@ -318,7 +318,7 @@ const Channel = () => {
         )}
 
         <div
-          className={`bg-white/80 dark:bg-neutral-950 backdrop-blur-sm dark:backdrop-blur-none dark:border-t fixed bottom-0 w-full ${
+          className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed bottom-0 w-full ${
             isSidebarOpen
               ? "lg:w-[calc(100%-220px)]"
               : "lg:w-[calc(100%-4.5rem)]"

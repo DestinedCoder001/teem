@@ -8,16 +8,16 @@ import AppLayout from "./components/custom/layouts/AppLayout";
 import Tasks from "./pages/main/Tasks";
 import UserProfile from "./pages/main/Profile";
 import DefaultHome from "./pages/main/DefaultHome";
-import ChannelSkeleton from "./components/custom/ChannelSkeleton";
 import Channel from "./pages/main/Channel";
 import NotFound from "./components/custom/NotFound";
 import Settings from "./pages/main/Settings";
 import User from "./pages/main/User";
 import Notifications from "./pages/main/Notifications";
 import { ThemeProvider } from "./components/custom/ThemeProvider";
+import Chat from "./pages/main/Chat";
 
 function App() {
-  const theme = localStorage.getItem("teem-ui-theme") || "light"
+  const theme = localStorage.getItem("teem-ui-theme") || "light";
   return (
     <>
       <Toaster theme={theme as "light" | "dark" | "system"} />
@@ -31,8 +31,8 @@ function App() {
             <Route element={<AppLayout />}>
               <Route index element={<DefaultHome />} />
               <Route path="profile" element={<UserProfile />} />
-              <Route path="channels" element={<ChannelSkeleton />} />
               <Route path="channels/:channelId" element={<Channel />} />
+              <Route path="chat/:chatId" element={<Chat />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path="users/:userId" element={<User />} />
               <Route path="notifications" element={<Notifications />} />
