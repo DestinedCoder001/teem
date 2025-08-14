@@ -56,6 +56,12 @@ const Chat = () => {
     inputRef.current.onblur = () => setIsTyping(false);
   }
 
+  const wsIdRef = useRef(wsId);
+  useEffect(() => {
+    // make ws id available before unload
+    wsIdRef.current = wsId;
+  }, [wsId]);
+
   const handleAutoScroll = () => {
     if (divRef.current) {
       divRef.current.scrollTo({
@@ -114,7 +120,11 @@ const Chat = () => {
       };
 
       const handleSocketDisconnect = () => {
-        authSocket.emit("chat_stopped_typing", { chatId });
+        authSocket.emit("chat_stopped_typing", { chatId, wsid: wsIdRef.current });
+      };
+
+      const handleBeforeUnload = () => {
+        authSocket.emit("chat_stopped_typing", { chatId, wsid: wsIdRef.current });
       };
 
       const handleNewMessage = (data: {
@@ -131,11 +141,16 @@ const Chat = () => {
 
       authSocket.on("receiver_typing", handleReceiverTyping);
       authSocket.on("new_chat_message", handleNewMessage);
+      authSocket.on("disconnect", handleSocketDisconnect);
+      window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
+        authSocket.emit("chat_stopped_typing", { chatId, wsid: wsIdRef.current });
         authSocket.off("new_chat_message", handleNewMessage);
-        audio?.pause();
+        authSocket.off("receiver_typing", handleReceiverTyping);
         authSocket.off("disconnect", handleSocketDisconnect);
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+
         setNewMessage({
           message: "",
           attachment: { type: "", url: "", fileName: "" },
@@ -233,7 +248,9 @@ const Chat = () => {
         >
           <audio ref={audioRef} src={messageTone} controls className="hidden" />
 
-          {!isPending && !messagesList.length && !isRecieverTyping && <NoMessages />}
+          {!isPending && !messagesList.length && !isRecieverTyping && (
+            <NoMessages />
+          )}
           {!isPending && (
             <div className="flex flex-col gap-y-4">
               {messagesList.length > 0 &&
