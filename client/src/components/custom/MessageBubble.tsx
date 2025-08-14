@@ -69,6 +69,11 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
         {
           onSuccess: () => {
             setIsDeleted(true);
+            authSocket.emit("delete_chat_message", {
+              wsId,
+              chatId,
+              messageId: message._id,
+            });
           },
         }
       );
@@ -107,9 +112,23 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
         }
       }
     );
+    authSocket.on(
+      "chat_message_deleted",
+      (data: { wsId: string; chatId: string; messageId: string }) => {
+        if (
+          data.messageId === message._id &&
+          data.chatId === chatId &&
+          wsId === data.wsId
+        ) {
+          setIsDeleted(true);
+        }
+      }
+    );
     return () => {
       authSocket.off("edited_message");
       authSocket.off("message_deleted");
+      authSocket.off("edited_chat_message");
+      authSocket.off("chat_message_deleted");
     };
   }, [authSocket, message._id, wsId, chatId]);
 

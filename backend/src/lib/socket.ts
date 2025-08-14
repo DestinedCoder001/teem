@@ -166,11 +166,14 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("delete_chat_message", (messageId) => {
-    const channelId = socket.data.channelId;
-    if (channelId) {
-      socket.broadcast.to(channelId).emit("chat_message_deleted", messageId);
-    }
+  socket.on("delete_chat_message", (payload) => {
+    const { wsId, chatId, messageId } = payload;
+    if (socket.data.wsId !== wsId) return;
+    socket.to(wsId).emit("chat_message_deleted", {
+      wsId: socket.data.wsId,
+      chatId,
+      messageId,
+    });
   });
 
   socket.on("edit_chat_message", (payload) => {
