@@ -174,10 +174,13 @@ io.on("connection", (socket) => {
   });
 
   socket.on("edit_chat_message", (payload) => {
-    const { wsId, id, message } = payload;
-    const channelId = `${wsId}-${id}`;
-    if (channelId !== socket.data.channelId) return;
-    io.to(channelId).emit("edited_chat_message", message);
+    const { wsId, chatId, message } = payload;
+    if (socket.data.wsId !== wsId) return;
+    io.to(wsId).emit("edited_chat_message", {
+      wsId: socket.data.wsId,
+      chatId,
+      message,
+    });
   });
 
   // socket.onAny((event, ...args) => {

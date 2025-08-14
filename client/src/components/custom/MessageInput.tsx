@@ -14,6 +14,7 @@ import { currentChannelDetails } from "@/lib/store/userStore";
 import AttachmentPreview from "./AttachmentPreview";
 import { useEditingMessage } from "@/lib/store/uiStore";
 import useEditMessage from "@/lib/hooks/useEditMessage";
+import useEditChatMsg from "@/lib/hooks/useEditChatMsg";
 
 type Props = {
   isChat?: boolean;
@@ -42,6 +43,7 @@ const MessageInput = ({
   handleInputChange,
   handleSendMessage,
   authSocket,
+  isChat,
 }: Props) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const channelName = currentChannelDetails((state) => state.name);
@@ -54,6 +56,8 @@ const MessageInput = ({
   const [newEditingMessage, setNewEditingMessage] = useState({ value: "" });
   const { mutate, isPending: attachPending } = useAttachFile();
   const { mutate: edit, isPending: editPending } = useEditMessage();
+  const { mutate: editChatMsg, isPending: editChatMsgPending } =
+    useEditChatMsg();
 
   const handleMsgChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
@@ -108,7 +112,11 @@ const MessageInput = ({
 
   const handleMsgSend = () => {
     if (isEditing) {
-      edit({ messageId: msg._id, message: newEditingMessage.value });
+      if (isChat) {
+        editChatMsg({ messageId: msg._id, message: newEditingMessage.value });
+      } else {
+        edit({ messageId: msg._id, message: newEditingMessage.value });
+      }
       setMsg({ _id: "", content: "", channel: "" });
       setNewEditingMessage({ value: "" });
       setEditing(false);
@@ -161,7 +169,9 @@ const MessageInput = ({
           </div>
           <p className="theme-text-gradient w-max">Editing </p>
           <p className="font-medium text-slate-600 dark:text-slate-100">
-            {msg.content.length > 20 ? msg.content.slice(0, 20)+"..." : msg.content}
+            {msg.content.length > 20
+              ? msg.content.slice(0, 20) + "..."
+              : msg.content}
           </p>
         </div>
       )}
@@ -190,7 +200,7 @@ const MessageInput = ({
         onClick={handleMsgSend}
         disabled={sendingDisableConditions}
       >
-        {isSending || editPending ? (
+        {isSending || editPending || editChatMsgPending ? (
           <Loader className="animate-spin" />
         ) : (
           <SendHorizonal />

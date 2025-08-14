@@ -1,4 +1,4 @@
-import { useUserStore } from "@/lib/store/userStore";
+import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
 import type { MessageProps } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatMessageTime } from "@/utils/formatMsgTime";
@@ -9,6 +9,7 @@ import useDeleteMessage from "@/lib/hooks/useDeleteMessage";
 import { getSocket } from "@/lib/socket";
 import MsgOptionsDropdown from "./MsgOptionsDropdown";
 import useDeleteChatmsg from "@/lib/hooks/useDeleteChatMsg";
+import { useParams } from "react-router-dom";
 
 type MessageBubbleProps = {
   message: MessageProps;
@@ -35,6 +36,8 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
     .some(Boolean);
   const authSocket = getSocket()!;
   const disableDropdown = isDeleting || isChatDeleting;
+  const { chatId } = useParams();
+  const wsId = currentWsDetails.getState()._id;
 
   useEffect(() => {
     if (message.deleted) {
@@ -94,11 +97,21 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
         setEdited(msg.edited);
       }
     });
+    authSocket.on(
+      "edited_chat_message",
+      (data: { wsId: string; chatId: string; message: MessageProps }) => {
+        if (data.wsId !== wsId || data.chatId !== chatId) return;
+        if (data.message._id === message._id) {
+          setMsgContent(data.message.content);
+          setEdited(data.message.edited);
+        }
+      }
+    );
     return () => {
       authSocket.off("edited_message");
       authSocket.off("message_deleted");
     };
-  }, [authSocket, message._id]);
+  }, [authSocket, message._id, wsId, chatId]);
 
   if (senderNotAvailable) {
     return (
