@@ -277,7 +277,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
               handleEdit={handleEdit}
             >
               <div
-                className={`px-4 py-2 text-[0.9rem] break-words relative ${
+                className={`px-4 py-2 text-[0.9rem] break-all whitespace-pre-wrap ${
                   isSender
                     ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
                     : "rounded-t-lg rounded-br-lg border border-slate-300 dark:border-neutral-600 text-slate-700 dark:text-slate-200 dark:bg-neutral-900"
@@ -290,7 +290,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
 
           {isDeleted && (
             <div
-              className={`px-4 py-2 text-[0.9rem] italic break-words border border-slate-300 dark:border-neutral-600 text-slate-600 dark:text-slate-200 ${
+              className={`px-4 py-2 text-[0.9rem] italic break- border border-slate-300 dark:border-neutral-600 text-slate-600 dark:text-slate-200 ${
                 isSender
                   ? "rounded-t-lg rounded-bl-lg"
                   : "rounded-t-lg rounded-br-lg"

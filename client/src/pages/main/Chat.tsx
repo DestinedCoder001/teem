@@ -286,7 +286,7 @@ const Chat = () => {
         )}
 
         <div
-          className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed bottom-0 w-full ${
+          className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed -bottom-1 w-full ${
             isSidebarOpen
               ? "lg:w-[calc(100%-220px)]"
               : "lg:w-[calc(100%-4.5rem)]"
