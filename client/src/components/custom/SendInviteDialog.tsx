@@ -81,7 +81,7 @@ const SendInviteDialog = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="theme-text-gradient w-max">
             Send Invite
@@ -90,7 +90,10 @@ const SendInviteDialog = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-600 dark:text-slate-100 font-normal">
+            <Label
+              htmlFor="email"
+              className="text-slate-600 dark:text-slate-100 font-normal"
+            >
               Email
             </Label>
             <Input
@@ -122,7 +125,9 @@ const SendInviteDialog = () => {
               <Label>Select User</Label>
               <GradientWrapper
                 className={`p-[2px] rounded-lg ${
-                  selectedEmail !== user.email ? "bg-none bg-slate-300 dark:bg-neutral-600" : ""
+                  selectedEmail !== user.email
+                    ? "bg-none bg-slate-300 dark:bg-neutral-600"
+                    : ""
                 }`}
               >
                 <div
@@ -134,16 +139,18 @@ const SendInviteDialog = () => {
                     id={user.email}
                     checked={selectedEmail === user.email}
                   />
+                  
                   <Avatar className="h-8 w-8 rounded-full cursor-pointer border border-slate-200">
                     <AvatarImage
                       src={user?.profilePicture}
                       alt={user?.firstName}
-                      className="object-cover object-center w-full"
+                      className="object-cover object-center w-full h-full"
                     />
-                    <AvatarFallback className="text-slate-600 dark:text-slate-100">
+                    <AvatarFallback className="flex items-center justify-center h-full w-full text-slate-600 dark:text-slate-100">
                       {user?.firstName?.[0]?.toUpperCase() || ""}
                     </AvatarFallback>
                   </Avatar>
+
                   <p className="text-slate-600  dark:text-slate-200 font-medium">
                     {user?.firstName} {user?.lastName}
                   </p>
@@ -189,10 +196,10 @@ const SendInviteDialog = () => {
                   onClick={() => (actionRef.current = "send")}
                 >
                   {invitePending ? (
-                  <Loader className="animate-spin" />
-                ) : (
-                  "Send Invite"
-                )}
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Send Invite"
+                  )}
                 </Button>
               </div>
             )}

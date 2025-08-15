@@ -214,7 +214,7 @@ const Chat = () => {
     return <AppError />;
   }
 
-  // console.log(typingUsers);
+  console.log(currentChat);
 
   return (
     <>
@@ -228,7 +228,7 @@ const Chat = () => {
                 : "lg:w-[calc(100%-4.5rem)]"
             } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40`}
           >
-            {currentChat && (
+            {currentChat ? (
               <div className="flex items-center gap-x-4 w-max mx-auto">
                 <Avatar
                   className={`size-8 rounded-full border border-slate-200 dark:border-neutral-600 ${
@@ -250,6 +250,13 @@ const Chat = () => {
                 <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
                   {currentChat?.firstName + " " + currentChat?.lastName}
                 </h1>
+              </div>
+            ) : (
+              <div className="flex items-center gap-x-4 w-max mx-auto">
+                <div className="size-8 lg:h-6 lg:w-6 rounded-full font-bold sticky bottom-2 flex justify-center items-center bg-gray-200 text-gray-500">
+                  !
+                </div>
+                <h1>User unavailable</h1>
               </div>
             )}
           </div>

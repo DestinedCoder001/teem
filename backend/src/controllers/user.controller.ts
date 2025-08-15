@@ -153,6 +153,8 @@ const deleteAccount = async (req: Request, res: Response) => {
     await User.findOneAndDelete({ _id: userId });
     await Otp.deleteMany({ email: req.user.email });
     await WorkspaceInvite.deleteMany({ receiver: userId });
+    await Workspace.deleteMany({createdBy: userId});
+    await Channel.deleteMany({createdBy: userId});
     await Workspace.updateMany({ users: userId }, { $pull: { users: userId } });
     await Channel.updateMany(
       { members: userId },
