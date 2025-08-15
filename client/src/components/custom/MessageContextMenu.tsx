@@ -1,69 +1,68 @@
 import React from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "../ui/context-menu";
 import type { MessageProps } from "@/lib/types";
-import { MoreVertical, PenLine, Trash2 } from "lucide-react";
+import { PenLine, Trash2 } from "lucide-react";
 import { useUserStore } from "@/lib/store/userStore";
 
 type Props = {
   message: MessageProps;
   isDeleting: boolean;
-  setEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  editOpen: boolean;
+  children: React.ReactNode;
   handleDelete: () => void;
   handleEdit: () => void;
 };
-const MsgOptionsDropdown = ({
+
+const MessageContextMenu = ({
   message,
   isDeleting,
-  setEditOpen,
-  editOpen,
+  children,
   handleDelete,
   handleEdit,
 }: Props) => {
   const user = useUserStore((state) => state.user);
   const isSender = user?._id === message.sender?._id;
-  if (!isSender) return null;
+
+  if (!isSender) return <>{children}</>;
+
   return (
-    <DropdownMenu open={editOpen} onOpenChange={setEditOpen}>
-      <DropdownMenuTrigger asChild disabled={isDeleting}>
-        <MoreVertical
-          className={`absolute text-slate-500 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-neutral-600 dark:hover:text-slate-300 hover:border rounded-full p-1 size-6 cursor-pointer top-1/2 -translate-y-1/2 ${
-            isSender ? "-left-7" : "-right-7"
-          }`}
-        />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div className="w-full h-full">{children}</div>
+      </ContextMenuTrigger>
+      <ContextMenuContent
         onClick={(e) => e.stopPropagation()}
         className="z-50 bg-white/90 dark:bg-neutral-950 backdrop-blur-sm dark:backdrop-blur-none"
       >
         {message.content && (
           <>
-            <DropdownMenuItem
+            <ContextMenuItem
               className="cursor-pointer group py-1"
+              disabled={isDeleting}
               onClick={handleEdit}
             >
               <PenLine className="mr-2 h-4 w-4 group-hover:text-primary group-focus:text-primary" />
               Edit
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
+            </ContextMenuItem>
+            <ContextMenuSeparator />
           </>
         )}
-        <DropdownMenuItem
+        <ContextMenuItem
           className="cursor-pointer group py-1"
+          disabled={isDeleting}
           onClick={handleDelete}
         >
           <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
           Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   );
 };
 
-export default MsgOptionsDropdown;
+export default MessageContextMenu;

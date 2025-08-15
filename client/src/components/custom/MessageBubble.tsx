@@ -7,9 +7,9 @@ import { photoViewer, useEditingMessage } from "@/lib/store/uiStore";
 import { useEffect, useState } from "react";
 import useDeleteMessage from "@/lib/hooks/useDeleteMessage";
 import { getSocket } from "@/lib/socket";
-import MsgOptionsDropdown from "./MsgOptionsDropdown";
 import useDeleteChatmsg from "@/lib/hooks/useDeleteChatMsg";
 import { useParams } from "react-router-dom";
+import MessageContextMenu from "./MessageContextMenu";
 
 type MessageBubbleProps = {
   message: MessageProps;
@@ -26,7 +26,6 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
   const { mutate: deleteChatMsg, isPending: isChatDeleting } =
     useDeleteChatmsg();
   const { setEditing, setMessage } = useEditingMessage((state) => state);
-  const [editOpen, setEditOpen] = useState(false);
   const senderNotAvailable = message.sender === null;
   const isSender = userId === message.sender?._id;
   const sentTime = formatMessageTime(message.createdAt);
@@ -147,34 +146,37 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
             {message.attachment?.url &&
               !isDeleted &&
               (isDoc ? (
-                <div className="relative">
-                  {!message.content && (
-                    <MsgOptionsDropdown
-                      message={message}
-                      editOpen={editOpen}
-                      setEditOpen={setEditOpen}
-                      isDeleting={disableDropdown}
-                      handleDelete={handleDelete}
-                      handleEdit={handleEdit}
+                !message.content && (
+                  <MessageContextMenu
+                    message={message}
+                    isDeleting={disableDropdown}
+                    handleDelete={handleDelete}
+                    handleEdit={handleEdit}
+                  >
+                    <Attachment
+                      fileName={message.attachment.fileName}
+                      type={message.attachment.type}
+                      url={message.attachment.url}
                     />
-                  )}
-
-                  <Attachment
-                    fileName={message.attachment.fileName}
-                    type={message.attachment.type}
-                    url={message.attachment.url}
-                  />
-                </div>
+                  </MessageContextMenu>
+                )
               ) : (
-                <div
-                  className="size-52 cursor-pointer relative"
-                  onClick={() => setOpen(true, message.attachment.url)}
+                <MessageContextMenu
+                  message={message}
+                  isDeleting={disableDropdown}
+                  handleDelete={handleDelete}
+                  handleEdit={handleEdit}
                 >
-                  <img
-                    src={message.attachment.url}
-                    className="w-full h-full object-cover object-center rounded-lg"
-                  />
-                </div>
+                  <div
+                    className="size-52 cursor-pointer"
+                    onClick={() => setOpen(true, message.attachment.url)}
+                  >
+                    <img
+                      src={message.attachment.url}
+                      className="w-full h-full object-cover object-center rounded-lg"
+                    />
+                  </div>
+                </MessageContextMenu>
               ))}
             {message.content && !isDeleted && (
               <div className="px-4 py-2 text-[0.9rem] break-words relative rounded-t-lg rounded-br-lg border border-slate-300 dark:border-neutral-600 text-slate-700 dark:text-slate-200 dark:bg-neutral-900">
@@ -236,66 +238,56 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
           {message.attachment?.url &&
             !isDeleted &&
             (isDoc ? (
-              <div className="relative">
-                {!message.content && (
-                  <MsgOptionsDropdown
-                    message={message}
-                    editOpen={editOpen}
-                    setEditOpen={setEditOpen}
-                    isDeleting={disableDropdown}
-                    handleDelete={handleDelete}
-                    handleEdit={handleEdit}
-                  />
-                )}
-
+              <MessageContextMenu
+                message={message}
+                isDeleting={disableDropdown}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+              >
                 <Attachment
                   fileName={message.attachment.fileName}
                   type={message.attachment.type}
                   url={message.attachment.url}
                 />
-              </div>
+              </MessageContextMenu>
             ) : (
-              <div
-                className="size-52 cursor-pointer relative"
-                onClick={() => setOpen(true, message.attachment.url)}
+              <MessageContextMenu
+                message={message}
+                isDeleting={disableDropdown}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
               >
-                {!message.content && (
-                  <MsgOptionsDropdown
-                    message={message}
-                    editOpen={editOpen}
-                    setEditOpen={setEditOpen}
-                    isDeleting={disableDropdown}
-                    handleDelete={handleDelete}
-                    handleEdit={handleEdit}
+                <div
+                  className="size-52 cursor-pointer"
+                  onClick={() => setOpen(true, message.attachment.url)}
+                >
+                  <img
+                    src={message.attachment.url}
+                    className="w-full h-full object-cover object-center rounded-lg"
                   />
-                )}
-                <img
-                  src={message.attachment.url}
-                  className="w-full h-full object-cover object-center rounded-lg"
-                />
-              </div>
+                </div>
+              </MessageContextMenu>
             ))}
+
           {message.content && !isDeleted && (
-            <div
-              className={`px-4 py-2 text-[0.9rem] break-words relative ${
-                isSender
-                  ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
-                  : "rounded-t-lg rounded-br-lg border border-slate-300 dark:border-neutral-600 text-slate-700 dark:text-slate-200 dark:bg-neutral-900"
-              }`}
+            <MessageContextMenu
+              message={message}
+              isDeleting={disableDropdown}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
             >
-              {!isDeleted && (
-                <MsgOptionsDropdown
-                  message={message}
-                  editOpen={editOpen}
-                  setEditOpen={setEditOpen}
-                  isDeleting={disableDropdown}
-                  handleDelete={handleDelete}
-                  handleEdit={handleEdit}
-                />
-              )}
-              {msgContent}
-            </div>
+              <div
+                className={`px-4 py-2 text-[0.9rem] break-words relative ${
+                  isSender
+                    ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
+                    : "rounded-t-lg rounded-br-lg border border-slate-300 dark:border-neutral-600 text-slate-700 dark:text-slate-200 dark:bg-neutral-900"
+                }`}
+              >
+                {msgContent}
+              </div>
+            </MessageContextMenu>
           )}
+
           {isDeleted && (
             <div
               className={`px-4 py-2 text-[0.9rem] italic break-words border border-slate-300 dark:border-neutral-600 text-slate-600 dark:text-slate-200 ${

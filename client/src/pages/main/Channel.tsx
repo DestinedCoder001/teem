@@ -311,7 +311,7 @@ const Channel = () => {
         {!isNearBottom && (
           <div
             onClick={handleAutoScroll}
-            className={`bg-white/80 dark:bg-neutral-700 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"} -translate-x-1/2 rounded-full p-1 cursor-pointer`}
+            className={`bg-white/80 dark:bg-black/60 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"} -translate-x-1/2 rounded-full p-1 cursor-pointer`}
           >
             <ChevronDown className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
           </div>
