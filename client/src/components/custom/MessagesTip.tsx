@@ -16,12 +16,12 @@ const MessagesTip = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const dismissed = JSON.parse(localStorage.getItem("teem-show-tip") || "false");
-    if (!dismissed) setOpen(true);
+    const showTip = JSON.parse(localStorage.getItem("teem-show-tip") || "true");
+    if (showTip) setOpen(true);
   }, []);
 
   const handleClose = () => {
-    localStorage.setItem("teem-show-tip", "true");
+    localStorage.setItem("teem-show-tip", "false");
     setOpen(false);
   };
 
