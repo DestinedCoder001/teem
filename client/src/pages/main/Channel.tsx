@@ -251,7 +251,7 @@ const Channel = () => {
     <div className="h-[calc(100dvh-50px)] overflow-hidden">
       <div className="flex flex-col relative h-full">
         <div
-          className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full ${
+          className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
             isSidebarOpen
               ? "lg:w-[calc(100%-220px)]"
               : "lg:w-[calc(100%-4.5rem)]"
@@ -318,7 +318,7 @@ const Channel = () => {
         )}
 
         <div
-          className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed bottom-0 w-full ${
+          className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed bottom-0 w-full lg:transition-[width] duration-300 ${
             isSidebarOpen
               ? "lg:w-[calc(100%-220px)]"
               : "lg:w-[calc(100%-4.5rem)]"
