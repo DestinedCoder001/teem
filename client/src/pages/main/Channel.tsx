@@ -25,6 +25,7 @@ import ChannelDrawer from "@/components/custom/ChannelDrawer";
 import MessageInput from "@/components/custom/MessageInput";
 import { ChevronDown } from "lucide-react";
 import { useEditingMessage, useSidebarOpen } from "@/lib/store/uiStore";
+import MessagesTip from "@/components/custom/MessagesTip";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -248,6 +249,8 @@ const Channel = () => {
   }
 
   return (
+    <>
+    <MessagesTip />
     <div className="h-[calc(100dvh-50px)] overflow-hidden">
       <div className="flex flex-col relative h-full">
         <div
@@ -340,6 +343,7 @@ const Channel = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -18,6 +18,7 @@ import type { AxiosError } from "axios";
 import NotFound from "@/components/custom/NotFound";
 import AppError from "@/components/custom/AppError";
 import TypingIndicator from "@/components/custom/TypingIndicator";
+import MessagesTip from "@/components/custom/MessagesTip";
 
 const Chat = () => {
   const { chatId } = useParams();
@@ -120,11 +121,17 @@ const Chat = () => {
       };
 
       const handleSocketDisconnect = () => {
-        authSocket.emit("chat_stopped_typing", { chatId, wsid: wsIdRef.current });
+        authSocket.emit("chat_stopped_typing", {
+          chatId,
+          wsid: wsIdRef.current,
+        });
       };
 
       const handleBeforeUnload = () => {
-        authSocket.emit("chat_stopped_typing", { chatId, wsid: wsIdRef.current });
+        authSocket.emit("chat_stopped_typing", {
+          chatId,
+          wsid: wsIdRef.current,
+        });
       };
 
       const handleNewMessage = (data: {
@@ -145,7 +152,10 @@ const Chat = () => {
       window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
-        authSocket.emit("chat_stopped_typing", { chatId, wsid: wsIdRef.current });
+        authSocket.emit("chat_stopped_typing", {
+          chatId,
+          wsid: wsIdRef.current,
+        });
         authSocket.off("new_chat_message", handleNewMessage);
         authSocket.off("receiver_typing", handleReceiverTyping);
         authSocket.off("disconnect", handleSocketDisconnect);
@@ -207,104 +217,112 @@ const Chat = () => {
   // console.log(typingUsers);
 
   return (
-    <div className="h-[calc(100dvh-50px)] overflow-hidden">
-      <div className="flex flex-col relative h-full">
-        <div
-          className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
-            isSidebarOpen
-              ? "lg:w-[calc(100%-220px)]"
-              : "lg:w-[calc(100%-4.5rem)]"
-          } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40`}
-        >
-          {currentChat && (
-            <div className="flex items-center gap-x-4 w-max mx-auto">
-              <Avatar
-                className={`size-8 rounded-full border border-slate-200 dark:border-neutral-600 ${
-                  activeUsers.includes(currentChat._id)
-                    ? "ring ring-secondary"
-                    : ""
-                }`}
-              >
-                <AvatarImage
-                  className="object-cover object-center w-full"
-                  src={currentChat?.profilePicture}
-                  alt={currentChat?.firstName}
-                />
-                <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
-                  {currentChat?.firstName[0]?.toUpperCase()}
-                  {currentChat?.lastName[0]?.toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
-                {currentChat?.firstName + " " + currentChat?.lastName}
-              </h1>
-            </div>
-          )}
-        </div>
-
-        <div
-          ref={divRef}
-          className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[90px] px-4"
-        >
-          <audio ref={audioRef} src={messageTone} controls className="hidden" />
-
-          {!isPending && !messagesList.length && !isRecieverTyping && (
-            <NoMessages />
-          )}
-          {!isPending && (
-            <div className="flex flex-col gap-y-4">
-              {messagesList.length > 0 &&
-                messagesList.map((message: MessageProps) => (
-                  <MessageBubble message={message} key={message._id} isChat />
-                ))}
-              {isRecieverTyping && currentChat && (
-                <TypingIndicator
-                  users={[
-                    {
-                      _id: currentChat._id,
-                      firstName: currentChat.firstName,
-                      lastName: currentChat.lastName,
-                      profilePicture: currentChat.profilePicture,
-                    },
-                  ]}
-                />
-              )}
-              <div ref={inViewRef} className="h-0" />
-            </div>
-          )}
-        </div>
-
-        {!isNearBottom && (
+    <>
+      <MessagesTip />
+      <div className="h-[calc(100dvh-50px)] overflow-hidden">
+        <div className="flex flex-col relative h-full">
           <div
-            onClick={handleAutoScroll}
-            className={`bg-white/80 dark:bg-black/60 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${
-              isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"
-            } -translate-x-1/2 rounded-full p-1 cursor-pointer`}
+            className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
+              isSidebarOpen
+                ? "lg:w-[calc(100%-220px)]"
+                : "lg:w-[calc(100%-4.5rem)]"
+            } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40`}
           >
-            <ChevronDown className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
+            {currentChat && (
+              <div className="flex items-center gap-x-4 w-max mx-auto">
+                <Avatar
+                  className={`size-8 rounded-full border border-slate-200 dark:border-neutral-600 ${
+                    activeUsers.includes(currentChat._id)
+                      ? "ring ring-secondary"
+                      : ""
+                  }`}
+                >
+                  <AvatarImage
+                    className="object-cover object-center w-full"
+                    src={currentChat?.profilePicture}
+                    alt={currentChat?.firstName}
+                  />
+                  <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
+                    {currentChat?.firstName[0]?.toUpperCase()}
+                    {currentChat?.lastName[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
+                  {currentChat?.firstName + " " + currentChat?.lastName}
+                </h1>
+              </div>
+            )}
           </div>
-        )}
 
-        <div
-          className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed -bottom-1 w-full lg:transition-[width] duration-300 ${
-            isSidebarOpen
-              ? "lg:w-[calc(100%-220px)]"
-              : "lg:w-[calc(100%-4.5rem)]"
-          } z-40`}
-        >
-          <MessageInput
-            message={newMessage}
-            setMessage={setNewMessage}
-            inputRef={inputRef}
-            isSending={isSending}
-            handleInputChange={handleInputChange}
-            handleSendMessage={handleSendMessage}
-            authSocket={authSocket}
-            isChat
-          />
+          <div
+            ref={divRef}
+            className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[90px] px-4"
+          >
+            <audio
+              ref={audioRef}
+              src={messageTone}
+              controls
+              className="hidden"
+            />
+
+            {!isPending && !messagesList.length && !isRecieverTyping && (
+              <NoMessages />
+            )}
+            {!isPending && (
+              <div className="flex flex-col gap-y-4">
+                {messagesList.length > 0 &&
+                  messagesList.map((message: MessageProps) => (
+                    <MessageBubble message={message} key={message._id} isChat />
+                  ))}
+                {isRecieverTyping && currentChat && (
+                  <TypingIndicator
+                    users={[
+                      {
+                        _id: currentChat._id,
+                        firstName: currentChat.firstName,
+                        lastName: currentChat.lastName,
+                        profilePicture: currentChat.profilePicture,
+                      },
+                    ]}
+                  />
+                )}
+                <div ref={inViewRef} className="h-0" />
+              </div>
+            )}
+          </div>
+
+          {!isNearBottom && (
+            <div
+              onClick={handleAutoScroll}
+              className={`bg-white/80 dark:bg-black/60 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${
+                isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"
+              } -translate-x-1/2 rounded-full p-1 cursor-pointer`}
+            >
+              <ChevronDown className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
+            </div>
+          )}
+
+          <div
+            className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed -bottom-1 w-full lg:transition-[width] duration-300 ${
+              isSidebarOpen
+                ? "lg:w-[calc(100%-220px)]"
+                : "lg:w-[calc(100%-4.5rem)]"
+            } z-40`}
+          >
+            <MessageInput
+              message={newMessage}
+              setMessage={setNewMessage}
+              inputRef={inputRef}
+              isSending={isSending}
+              handleInputChange={handleInputChange}
+              handleSendMessage={handleSendMessage}
+              authSocket={authSocket}
+              isChat
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
