@@ -132,7 +132,7 @@ const ChannelDrawer = ({
           })}
           <div className="mt-12 space-y-4">
             <h3 className="text-lg text-slate-600 dark:text-slate-100 font-semibold">Actions</h3>
-            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 border dark:border-slate-700 dark:bg-neutral-950">
+            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 border border-slate-300 dark:border-neutral-700">
               <div className="space-y-1">
                 <p className="text-lg text-primary font-medium">
                   Edit channel details
@@ -149,12 +149,12 @@ const ChannelDrawer = ({
             </div>
 
             {me?._id === channel?.createdBy?._id && (
-              <div className="rounded-md flex flex-col md:flex-row gap-y-4 justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
+              <div className="rounded-md flex flex-col md:flex-row gap-y-4 justify-between p-4 border border-slate-300 dark:border-neutral-700">
                 <div className="space-y-1">
                   <p className="text-lg text-red-500 font-medium">
                     Clear messages
                   </p>
-                  <p className="text-slate-700 dark:text-black text-sm md:text-left">
+                  <p className="text-slate-700 dark:text-slate-200 text-sm md:text-left">
                     Delete all conversations in{" "}
                     <span className="font-semibold">{channel?.name}</span>.
                   </p>
@@ -176,10 +176,10 @@ const ChannelDrawer = ({
               </div>
             )}
 
-            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
+            <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 border border-slate-300 dark:border-neutral-700">
               <div className="space-y-1">
                 <p className="text-lg text-red-500 font-medium">Exit channel</p>
-                <p className="text-slate-700 dark:text-black text-sm text-center md:text-left">
+                <p className="text-slate-700 dark:text-slate-200 text-sm text-center md:text-left">
                   Exit <span className="font-semibold">{channel?.name}</span>{" "}
                   and stop participating in discussions. You can rejoin at any
                   time.
@@ -195,12 +195,12 @@ const ChannelDrawer = ({
               </Button>
             </div>
             {me?._id === channel?.createdBy?._id && (
-              <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 light:bg-gradient-to-br from-red-50 to-red-50/50 border dark:border-slate-700 dark:bg-red-200">
+              <div className="rounded-md flex flex-col md:flex-row gap-y-4 items-center justify-between p-4 border border-slate-300 dark:border-neutral-700">
                 <div className="space-y-1">
                   <p className="text-lg text-red-500 font-medium">
                     Delete channel
                   </p>
-                  <p className="text-slate-700 dark:text-black text-sm text-center md:text-left">
+                  <p className="text-slate-700 dark:text-slate-200 text-sm text-center md:text-left">
                     Delete{" "}
                     <span className="font-semibold">{channel?.name}</span> and
                     remove all discussions. This action cannot be undone.
