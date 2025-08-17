@@ -26,13 +26,17 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // ROUTES
 app.use("/api/auth", authRoute);
 
-app.use("/api/users", verifyToken, usersRoute);
-app.use("/api/workspaces", verifyToken, workspacesRoute);
-app.use("/api/:workspaceId/channels", verifyToken, channelsRoute);
-app.use("/api/:workspaceId/:channelId", verifyToken, messagesRoute);
-app.use("/api/:workspaceId/tasks", verifyToken, tasksRoute);
-app.use("/api/uploads", verifyToken, uploadsRoute);
-app.use("/api/:workspaceId/chat", verifyToken, chatRoute);
+app.use((req,res, next)=>{
+  verifyToken(req, res, next);
+})
+
+app.use("/api/users", usersRoute);
+app.use("/api/workspaces", workspacesRoute);
+app.use("/api/:workspaceId/channels", channelsRoute);
+app.use("/api/:workspaceId/:channelId", messagesRoute);
+app.use("/api/:workspaceId/tasks", tasksRoute);
+app.use("/api/uploads", uploadsRoute);
+app.use("/api/:workspaceId/chat", chatRoute);
 
 server.listen(3001, "0.0.0.0", () => {
   console.log("Server is running on port 3001");
