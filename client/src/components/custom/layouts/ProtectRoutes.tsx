@@ -11,20 +11,20 @@ const ProtectRoutes = () => {
   const [checked, setChecked] = useState(false);
   const { data, isPending, isError, error } = useRefresh();
 
-  useEffect(() => {
-    if (!accessToken && data?.accessToken) {
-      setAccessToken(data.accessToken);
-      setChecked(true);
-    } else if (!accessToken && isError) {
-      setChecked(true);
-    } else if (accessToken) {
-      setChecked(true);
-    }
-  }, [accessToken, data?.accessToken, isError, setAccessToken]);
+  // useEffect(() => {
+  //   if (!accessToken && data?.accessToken) {
+  //     setAccessToken(data.accessToken);
+  //     setChecked(true);
+  //   } else if (!accessToken && isError) {
+  //     setChecked(true);
+  //   } else if (accessToken) {
+  //     setChecked(true);
+  //   }
+  // }, [accessToken, data?.accessToken, isError, setAccessToken]);
 
-  if (!checked || isPending) {
-    return <AuthLoading />;
-  }
+  // if (!checked || isPending) {
+  //   return <AuthLoading />;
+  // }
 
   const axiosErr = error as AxiosError<{ message?: string }>;
   const message = axiosErr?.response?.data?.message || "";
@@ -34,21 +34,21 @@ const ProtectRoutes = () => {
         message.toLowerCase().includes("invalid"))) ||
     message.toLowerCase().includes("no user found");
 
-  if (isError && error) {
-    let err;
-    if (error.message === "Network Error") {
-      err = "Network error";
-    } else {
-      err = "Something went wrong while restoring your session."
-    }
-    if (!useAuthStore.getState().accessToken && !isTokenError) {
-      return <AuthError error={err} />;
-    }
-  }
+  // if (isError && error) {
+  //   let err;
+  //   if (error.message === "Network Error") {
+  //     err = "Network error";
+  //   } else {
+  //     err = "Something went wrong while restoring your session."
+  //   }
+  //   if (!useAuthStore.getState().accessToken && !isTokenError) {
+  //     return <AuthError error={err} />;
+  //   }
+  // }
 
-  if (isTokenError) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
-  }
+  // if (isTokenError) {
+  //   return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  // }
 
   return <Outlet />;
 };

@@ -15,6 +15,7 @@ import User from "./pages/main/User";
 import Notifications from "./pages/main/Notifications";
 import { ThemeProvider } from "./components/custom/ThemeProvider";
 import Chat from "./pages/main/Chat";
+import Meeting from "./pages/main/Meeting";
 
 function App() {
   const theme = localStorage.getItem("teem-ui-theme") || "light";
@@ -38,6 +39,7 @@ function App() {
               <Route path="notifications" element={<Notifications />} />
               <Route path="settings" element={<Settings />} />
             </Route>
+            <Route path="meeting" element={<Meeting />} />
           </Route>
           <Route path="*" element={<NotFound text="Page not found" />} />
         </Routes>
