@@ -126,6 +126,14 @@ const useDeleteAccountOpen = create<{
   setOpen: (open) => set({ isOpen: open }),
 }));
 
+const useCreateMeetingOpen = create<{
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
+}>((set) => ({
+  isOpen: false,
+  setOpen: (open) => set({ isOpen: open }),
+}));
+
 export {
   useSidebarOpen,
   useCreateWsDialogOpen,
@@ -141,4 +149,5 @@ export {
   photoViewer,
   useEditingMessage,
   useDeleteAccountOpen,
+  useCreateMeetingOpen,
 };

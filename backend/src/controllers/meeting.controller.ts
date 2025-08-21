@@ -10,9 +10,14 @@ const createMeeting = async (req: Request, res: Response) => {
   }
 
   const { title, allowedUsers } = req.body;
+  const { workspaceId } = req.params;
 
   if (!title || !allowedUsers) {
     return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
   }
 
   allowedUsers.map((id: string) => {
@@ -28,8 +33,29 @@ const createMeeting = async (req: Request, res: Response) => {
       allowedUsers,
       host: req.user._id,
       ongoing: true,
+      workspace: workspaceId,
     });
     return res.status(200).json({ message: "Meeting created successfully" });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getMeetings = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { workspaceId } = req.params;
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  try {
+    await connectDb();
+    const meetings = await Meeting.find({ workspace: workspaceId });
+    return res.status(200).json({ meetings });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
@@ -57,7 +83,10 @@ const joinMeeting = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Meeting has ended" });
     }
 
-    if (!meeting.allowedUsers.includes(req.user._id) || meeting.host !== req.user._id) {
+    if (
+      !meeting.allowedUsers.includes(req.user._id) ||
+      meeting.host !== req.user._id
+    ) {
       return res
         .status(403)
         .json({ message: "You are not allowed to join this meeting" });
@@ -85,4 +114,4 @@ const joinMeeting = async (req: Request, res: Response) => {
   }
 };
 
-export { createMeeting, joinMeeting };
+export { createMeeting, getMeetings, joinMeeting };

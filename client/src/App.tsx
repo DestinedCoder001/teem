@@ -15,6 +15,7 @@ import User from "./pages/main/User";
 import Notifications from "./pages/main/Notifications";
 import { ThemeProvider } from "./components/custom/ThemeProvider";
 import Chat from "./pages/main/Chat";
+import OngoingMeeting from "./pages/main/OngoingMeeting";
 import Meeting from "./pages/main/Meeting";
 
 function App() {
@@ -38,8 +39,9 @@ function App() {
               <Route path="users/:userId" element={<User />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="meeting" element={<Meeting />} />
             </Route>
-            <Route path="meeting" element={<Meeting />} />
+            <Route path="meeting/:meetingId" element={<OngoingMeeting />} />
           </Route>
           <Route path="*" element={<NotFound text="Page not found" />} />
         </Routes>
