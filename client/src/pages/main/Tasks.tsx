@@ -71,8 +71,8 @@ const Tasks = () => {
     return <TasksLoading />;
   }
 
-    if (error) {
-      return <AppError />;
+  if (error) {
+    return <AppError />;
   }
 
   return (

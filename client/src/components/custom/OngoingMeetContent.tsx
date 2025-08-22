@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {
-    useJoin,
-    useLocalCameraTrack,
-    useLocalMicrophoneTrack,
-    usePublish,
-    useRemoteUsers,
-    useRemoteAudioTracks
+  useJoin,
+  useLocalCameraTrack,
+  useLocalMicrophoneTrack,
+  usePublish,
+  useRemoteUsers,
+  useRemoteAudioTracks,
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { LogOut, Mic, MicOff, MonitorUp, Video, VideoOff } from "lucide-react";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 const CHANNEL_NAME = "test-meeting";
-const TOKEN = null;
+const TOKEN = import.meta.env.VITE_AGORA_TOKEN || null;
 
 const MeetingContent = () => {
   const [micOn, setMicOn] = useState(true);
@@ -42,7 +42,7 @@ const MeetingContent = () => {
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#303438] p-4 md:p-6">
       <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
-        <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden">
+        <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
           {localCameraTrack && cameraOn ? (
             <div
               ref={(ref) => localCameraTrack.play(ref!)}
@@ -54,7 +54,7 @@ const MeetingContent = () => {
 
           {remoteUsers.map((user) => (
             <div key={user.uid} className="absolute top-2 left-2 w-1/3 h-1/3">
-              {user.videoTrack && user.videoTrack.play && (
+              {user.videoTrack && (
                 <div ref={(ref) => user.videoTrack!.play(ref!)} />
               )}
             </div>
@@ -62,21 +62,20 @@ const MeetingContent = () => {
         </div>
 
         <div className="flex lg:flex-col gap-4 overflow-auto no-scrollbar">
-          <UserCard
-            name="Display Name"
-            src="https://randomuser.me/api/portraits/women/44.jpg"
-          />
-          <UserCard
-            name="Display Name"
-            src="https://randomuser.me/api/portraits/women/65.jpg"
-          />
+          {remoteUsers.map((user) => (
+            <UserCard
+              key={user.uid}
+              name={`User ${user.uid}`}
+              src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.uid}`}
+            />
+          ))}
         </div>
       </div>
 
       <div className="flex justify-center gap-4 py-4 text-white">
         <div className="flex flex-col items-center gap-1">
           <Button
-            className="p-3 rounded-md bg-[#181A1C] hover:bg-[#080808]"
+            className="p-3 rounded-md bg-[#181A1C] hover:bg-[#080808] text-white"
             onClick={() => setCameraOn((c) => !c)}
           >
             {cameraOn ? (
@@ -90,22 +89,20 @@ const MeetingContent = () => {
 
         <div className="flex flex-col items-center gap-1">
           <Button
-            className="p-3 rounded-md bg-[#181A1C] hover:bg-[#080808]"
+            className="p-3 rounded-md bg-[#181A1C] hover:bg-[#080808] text-white"
             onClick={() => setMicOn((m) => !m)}
           >
-            {
-              micOn ? (
-                <Mic size={28} strokeWidth={2.5} />
-              ) : (
-                <MicOff size={28} strokeWidth={2.5} />
-              )
-            }
+            {micOn ? (
+              <Mic size={28} strokeWidth={2.5} />
+            ) : (
+              <MicOff size={28} strokeWidth={2.5} />
+            )}
           </Button>
           <p className="text-xs font-medium">Mic</p>
         </div>
 
         <div className="flex flex-col items-center gap-1">
-          <Button className="p-3 rounded-md bg-[#181A1C] hover:bg-[#080808]">
+          <Button className="p-3 rounded-md bg-[#181A1C] hover:bg-[#080808] text-white">
             <MonitorUp size={28} strokeWidth={2.5} />
           </Button>
           <p className="text-xs font-medium">Share</p>

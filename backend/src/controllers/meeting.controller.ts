@@ -54,7 +54,10 @@ const getMeetings = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const meetings = await Meeting.find({ workspace: workspaceId });
+    const meetings = await Meeting.find({ workspace: workspaceId }).populate({
+      path: "allowedUsers host",
+      select: "firstName lastName email profilePicture",
+    });
     return res.status(200).json({ meetings });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
@@ -84,7 +87,7 @@ const joinMeeting = async (req: Request, res: Response) => {
     }
 
     if (
-      !meeting.allowedUsers.includes(req.user._id) ||
+      !meeting.allowedUsers.includes(req.user._id) &&
       meeting.host !== req.user._id
     ) {
       return res

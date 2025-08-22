@@ -109,4 +109,12 @@ export type ChannelUser = {
   profilePicture: string;
 };
 
+
+export type MeetingCardProps = {
+  _id: string;
+  title: string;
+  ongoing: boolean;
+  host: ChannelUser;
+};
+
 export type CustomAxiosError = AxiosError<{ message: string }>;
