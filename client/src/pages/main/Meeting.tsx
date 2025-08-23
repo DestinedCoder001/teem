@@ -16,6 +16,7 @@ const Meeting = () => {
   const [meetings, setMeetings] = useState<MeetingCardProps[]>([]);
 
   const { data, isSuccess, isPending, error } = useGetMeetings();
+
   useEffect(() => {
     if (isSuccess) {
       setMeetings(data);
@@ -29,18 +30,21 @@ const Meeting = () => {
   if (error) {
     return <AppError />;
   }
+
   return (
     <div className="h-full p-4">
-      <div className="flex gap-x-4 justify-end">
-        <Button
-          onClick={() => setOpen(true)}
-          variant="ghost"
-          disabled={!wsId || !workspaces.length}
-          className="border border-[#aaa] dark:border-neutral-700 px-4 py-2 rounded-lg text-md theme-text-gradient"
-        >
-          New Meeting
-        </Button>
-      </div>
+      {!isPending && isSuccess && (
+        <div className="flex gap-x-4 justify-end">
+          <Button
+            onClick={() => setOpen(true)}
+            variant="ghost"
+            disabled={!wsId || !workspaces.length}
+            className="border border-[#aaa] dark:border-neutral-700 px-4 py-2 rounded-lg text-md theme-text-gradient"
+          >
+            New Meeting
+          </Button>
+        </div>
+      )}
 
       {meetings?.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-4">

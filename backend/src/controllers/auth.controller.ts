@@ -12,7 +12,6 @@ import { canRequestOtp, generateOtp } from "../utils/otpHelpers";
 import { Otp } from "../models/otp.model";
 import generatePassword from "password-generator";
 import { verifyGoogleToken } from "../lib/googleAuthHelper";
-import { profile } from "console";
 
 const signUp = async (req: Request<{}, {}, SignUpBody>, res: Response) => {
   const result = validationResult(req);
@@ -51,7 +50,7 @@ const login = async (req: Request, res: Response) => {
 
   if (!result.isEmpty()) {
     return res.status(400).send({
-      message: result.array()[0].msg
+      message: result.array()[0].msg,
     });
   }
 
@@ -93,7 +92,7 @@ const login = async (req: Request, res: Response) => {
 
 const googleSignup = async (req: Request, res: Response) => {
   try {
-      const { code } = req.body;
+    const { code } = req.body;
 
     if (!code) {
       return res.status(400).json({ message: "Missing Google code" });
@@ -135,7 +134,7 @@ const googleSignup = async (req: Request, res: Response) => {
 const googleLogin = async (req: Request, res: Response) => {
   try {
     const { code } = req.body;
-    
+
     const payload = await verifyGoogleToken(code);
 
     if (!payload?.email) {
@@ -190,7 +189,7 @@ const handleRefresh = async (req: Request, res: Response) => {
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
-          profilePicture: user.profilePicture
+          profilePicture: user.profilePicture,
         };
         if (err) {
           res.sendStatus(403);
@@ -205,7 +204,7 @@ const handleRefresh = async (req: Request, res: Response) => {
       }
     );
   } catch (error: any) {
-    res.status(500).json({message: error.message});
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -311,7 +310,7 @@ const changePassword = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Cannot change password" });
     }
   } catch (error: any) {
-      return res.status(500).json({ message: error?.message });
+    return res.status(500).json({ message: error?.message });
   }
 };
 

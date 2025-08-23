@@ -39,7 +39,7 @@ function App() {
               <Route path="users/:userId" element={<User />} />
               <Route path="notifications" element={<Notifications />} />
               <Route path="settings" element={<Settings />} />
-              <Route path="meeting" element={<Meeting />} />
+              <Route path="meetings" element={<Meeting />} />
             </Route>
             <Route path="meeting/:meetingId" element={<OngoingMeeting />} />
           </Route>

@@ -70,6 +70,7 @@ const joinMeeting = async (req: Request, res: Response) => {
   }
 
   const { meetingId } = req.params;
+  const userId = req.user._id;
 
   if (!Types.ObjectId.isValid(meetingId)) {
     return res.status(400).json({ message: "Invalid meeting id" });
@@ -77,7 +78,11 @@ const joinMeeting = async (req: Request, res: Response) => {
 
   try {
     await connectDb();
-    const meeting = await Meeting.findById(meetingId);
+    const meeting = await Meeting.findById(meetingId).populate({
+      path: "allowedUsers host",
+      select: "firstName lastName email profilePicture",
+    });
+
     if (!meeting) {
       return res.status(404).json({ message: "Meeting not found" });
     }
@@ -86,9 +91,10 @@ const joinMeeting = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Meeting has ended" });
     }
 
+    const isAllowed = meeting.allowedUsers.find((user: { _id: string })=> user._id.toString() === userId);
     if (
-      !meeting.allowedUsers.includes(req.user._id) &&
-      meeting.host !== req.user._id
+      !isAllowed &&
+      meeting.host._id.toString() !== userId
     ) {
       return res
         .status(403)
@@ -105,14 +111,15 @@ const joinMeeting = async (req: Request, res: Response) => {
       appId,
       appCertificate,
       meeting.title,
-      req.user._id.toString(),
+      userId,
       role,
       tokenExpire,
       privilegeExpire
     );
 
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, channel: meeting.title });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

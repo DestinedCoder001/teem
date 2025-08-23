@@ -14,4 +14,10 @@ export default defineConfig({
   optimizeDeps: {
     include: ["react-modern-drawer"],
   },
+  server: {
+    proxy: {
+      "/api": "http://localhost:3001",
+    },
+    allowedHosts: ["9ac258b31c18.ngrok-free.app"],
+  },
 });

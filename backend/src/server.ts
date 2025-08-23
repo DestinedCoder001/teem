@@ -27,9 +27,9 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // ROUTES
 app.use("/api/auth", authRoute);
 
-app.use((req,res, next)=>{
+app.use((req, res, next) => {
   verifyToken(req, res, next);
-})
+});
 
 app.use("/api/users", usersRoute);
 app.use("/api/workspaces", workspacesRoute);
