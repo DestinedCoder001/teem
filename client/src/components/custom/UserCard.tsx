@@ -1,4 +1,5 @@
 import type { IRemoteVideoTrack } from "agora-rtc-react";
+import { MicOff } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 type UserCardProps = {
@@ -6,9 +7,16 @@ type UserCardProps = {
   src: string;
   videoTrack?: IRemoteVideoTrack;
   videoOn?: boolean;
+  audioOn?: boolean;
 };
 
-const UserCard = ({ name, src, videoTrack, videoOn = true }: UserCardProps) => {
+const UserCard = ({
+  name,
+  src,
+  videoTrack,
+  videoOn = true,
+  audioOn = true,
+}: UserCardProps) => {
   const videoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,6 +38,11 @@ const UserCard = ({ name, src, videoTrack, videoOn = true }: UserCardProps) => {
 
   return (
     <div className="rounded-sm overflow-hidden shrink-0 w-48 relative bg-black">
+      {!audioOn && (
+        <div className="bg-black/60 absolute top-2 right-2 rounded-sm z-10 p-1">
+          <MicOff size={16} />
+        </div>
+      )}
       {videoTrack && videoOn ? (
         <div ref={videoRef} className="w-full h-28" />
       ) : (

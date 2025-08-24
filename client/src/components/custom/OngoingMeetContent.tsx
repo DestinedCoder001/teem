@@ -61,9 +61,16 @@ const MeetingContent = () => {
   usePublish([localMicrophoneTrack, localCameraTrack], canJoin);
 
   const remoteUsers = useRemoteUsers();
+
   const { videoTracks } = useRemoteVideoTracks(remoteUsers);
-  const remoteUidsMap = Object.fromEntries(
+  const remoteVideosMap = Object.fromEntries(
     videoTracks.map((vt) => [vt.getUserId(), vt])
+  );
+
+  const { audioTracks } = useRemoteAudioTracks(remoteUsers);
+  audioTracks.forEach((t) => t.play());
+  const remoteAudioMap = Object.fromEntries(
+    audioTracks.map((at) => [at.getUserId(), at])
   );
 
   const inCallUsers = ((currentWsData?.users as ChannelUser[]) || [])
@@ -74,12 +81,18 @@ const MeetingContent = () => {
       ): ChannelUser & {
         videoTrack?: IRemoteVideoTrack;
         hasVideo?: boolean;
-      } => ({
-        ...user,
-        videoTrack: remoteUidsMap[user._id],
-        hasVideo: !!remoteUidsMap[user._id],
-      })
-    )
+        hasAudio?: boolean;
+      } => {
+        const videoTrack = remoteVideosMap[user._id];
+        const audioTrack = remoteAudioMap[user._id];
+        return {
+          ...user,
+          videoTrack,
+          hasVideo: !!videoTrack,
+          hasAudio: !!audioTrack,
+        };
+      }
+    );
 
   const toggleMic = async () => {
     if (!localMicrophoneTrack) return;
@@ -94,9 +107,6 @@ const MeetingContent = () => {
     await localCameraTrack.setEnabled(enabled);
     setCameraOn(enabled);
   };
-
-  const { audioTracks } = useRemoteAudioTracks(remoteUsers);
-  audioTracks.forEach((t) => t.play());
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-[#262728] p-4 md:p-6">
@@ -120,6 +130,7 @@ const MeetingContent = () => {
               src={user.profilePicture}
               videoTrack={user.videoTrack}
               videoOn={user.hasVideo}
+              audioOn={user.hasAudio}
             />
           ))}
         </div>
