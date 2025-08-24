@@ -50,6 +50,7 @@ const Meeting = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
           {meetings?.map((meeting) => (
             <MeetingCard
+              allowedUsers={meeting.allowedUsers}
               _id={meeting._id}
               key={meeting._id}
               title={meeting.title}

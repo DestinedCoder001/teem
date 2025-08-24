@@ -115,6 +115,7 @@ export type MeetingCardProps = {
   title: string;
   ongoing: boolean;
   host: ChannelUser;
+  allowedUsers: ChannelUser[];
 };
 
 export type CustomAxiosError = AxiosError<{ message: string }>;

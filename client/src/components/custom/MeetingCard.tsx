@@ -4,7 +4,13 @@ import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
 import useDeleteMeeting from "@/lib/hooks/useDeleteMeeting";
 import { Loader } from "lucide-react";
 
-const MeetingCard = ({ title, ongoing, host, _id }: MeetingCardProps) => {
+const MeetingCard = ({
+  title,
+  ongoing,
+  host,
+  _id,
+  allowedUsers,
+}: MeetingCardProps) => {
   const me = useUserStore((state) => state.user);
   const { createdBy, _id: wsId } = currentWsDetails((state) => state);
   const { mutate, isPending } = useDeleteMeeting();
@@ -14,6 +20,7 @@ const MeetingCard = ({ title, ongoing, host, _id }: MeetingCardProps) => {
   };
   const isHost = host._id === me?._id;
   const isWsOwner = me?._id === createdBy;
+  const isAllowed = allowedUsers.map((m) => m._id).includes(me?._id as string) || isHost;
 
   const handleDelete = () => {
     if (isWsOwner || isHost) {
@@ -43,7 +50,7 @@ const MeetingCard = ({ title, ongoing, host, _id }: MeetingCardProps) => {
 
       <div className="flex gap-4">
         <Button
-          disabled={!ongoing || isPending}
+          disabled={!ongoing || isPending || !isAllowed}
           onClick={handleWindowOpen}
           className="rounded-md px-4 w-[4rem] bg-green-600 hover:bg-green-700 text-white"
         >
