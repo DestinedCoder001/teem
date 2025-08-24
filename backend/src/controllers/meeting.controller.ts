@@ -3,6 +3,7 @@ import { RtcTokenBuilder, RtcRole } from "agora-token";
 import { connectDb } from "../lib/connectDb";
 import { Meeting } from "../models/meeting.model";
 import { Types } from "mongoose";
+import Workspace from "../models/workspace.model";
 
 const createMeeting = async (req: Request, res: Response) => {
   if (!req.user) {
@@ -36,6 +37,43 @@ const createMeeting = async (req: Request, res: Response) => {
       workspace: workspaceId,
     });
     return res.status(200).json({ message: "Meeting created successfully" });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteMeeting = async (req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { meetingId, workspaceId } = req.params;
+
+  if (!Types.ObjectId.isValid(meetingId)) {
+    return res.status(400).json({ message: "Invalid meeting id" });
+  }
+
+  if (!Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).json({ message: "Invalid workspace id" });
+  }
+
+  try {
+    await connectDb();
+    const meeting = await Meeting.findOne({ _id: meetingId });
+    const workspace = await Workspace.findOne({ _id: workspaceId });
+    const isAllowed =
+      meeting.host.toString() === req.user._id ||
+      workspace.createdBy.toString() === req.user._id;
+
+    if (!isAllowed) {
+      return res.status(403).json({ message: "Action not permitted." });
+    }
+
+    await Meeting.findOneAndDelete({
+      _id: meeting.id,
+    });
+
+    return res.status(200).json({ message: "Meeting deleted successfully" });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
@@ -91,11 +129,10 @@ const joinMeeting = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Meeting has ended" });
     }
 
-    const isAllowed = meeting.allowedUsers.find((user: { _id: string })=> user._id.toString() === userId);
-    if (
-      !isAllowed &&
-      meeting.host._id.toString() !== userId
-    ) {
+    const isAllowed = meeting.allowedUsers.find(
+      (user: { _id: string }) => user._id.toString() === userId
+    );
+    if (!isAllowed && meeting.host._id.toString() !== userId) {
       return res
         .status(403)
         .json({ message: "You are not allowed to join this meeting" });
@@ -124,4 +161,4 @@ const joinMeeting = async (req: Request, res: Response) => {
   }
 };
 
-export { createMeeting, getMeetings, joinMeeting };
+export { createMeeting, deleteMeeting, getMeetings, joinMeeting };

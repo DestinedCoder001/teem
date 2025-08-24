@@ -1,10 +1,14 @@
 import { Router } from "express";
-import { createMeeting, getMeetings, joinMeeting } from "../controllers/meeting.controller";
+import { createMeeting, deleteMeeting, getMeetings, joinMeeting } from "../controllers/meeting.controller";
 
 const router = Router({ mergeParams: true });
 
 router.post("/create-meeting", (req, res) => {
   createMeeting(req, res);
+});
+
+router.delete("/delete-meeting/:meetingId", (req, res) => {
+  deleteMeeting(req, res);
 });
 
 router.get("/get-meetings", (req, res) => {

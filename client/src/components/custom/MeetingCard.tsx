@@ -1,14 +1,26 @@
 import type { MeetingCardProps } from "@/lib/types";
 import { Button } from "../ui/button";
-import { useUserStore } from "@/lib/store/userStore";
+import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
+import useDeleteMeeting from "@/lib/hooks/useDeleteMeeting";
+import { Loader } from "lucide-react";
 
 const MeetingCard = ({ title, ongoing, host, _id }: MeetingCardProps) => {
   const me = useUserStore((state) => state.user);
+  const { createdBy, _id: wsId } = currentWsDetails((state) => state);
+  const { mutate, isPending } = useDeleteMeeting();
   const handleWindowOpen = () => {
     const meetingUrl = "meeting/" + _id;
     window.open(meetingUrl);
   };
   const isHost = host._id === me?._id;
+  const isWsOwner = me?._id === createdBy;
+
+  const handleDelete = () => {
+    if (isWsOwner || isHost) {
+      mutate({ wsId, meetingId: _id });
+    }
+  };
+
   return (
     <div
       className="flex flex-col gap-y-4 justify-between bg-white dark:bg-neutral-900 rounded-xl border border-slate-300 dark:border-neutral-700 p-4 w-full mx-auto overflow-hidden"
@@ -31,15 +43,19 @@ const MeetingCard = ({ title, ongoing, host, _id }: MeetingCardProps) => {
 
       <div className="flex gap-4">
         <Button
-          disabled={!ongoing}
+          disabled={!ongoing || isPending}
           onClick={handleWindowOpen}
           className="rounded-md px-4 w-[4rem] bg-green-600 hover:bg-green-700 text-white"
         >
           {isHost ? "Start" : "Join"}
         </Button>
-        {isHost && (
-          <Button className="rounded-md px-4 w-[4rem] bg-red-600 hover:bg-red-700 text-white">
-            Delete
+        {(isHost || isWsOwner) && (
+          <Button
+            disabled={isPending}
+            onClick={handleDelete}
+            className="rounded-md px-4 w-[4rem] bg-red-600 hover:bg-red-700 text-white"
+          >
+            {isPending ? <Loader className="animate-spin" /> : "Delete"}
           </Button>
         )}
       </div>
