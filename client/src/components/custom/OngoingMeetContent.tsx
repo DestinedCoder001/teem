@@ -8,6 +8,7 @@ import {
   useRemoteAudioTracks,
   useRemoteVideoTracks,
   type IRemoteVideoTrack,
+  useNetworkQuality,
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import { currentWsDetails } from "@/lib/store/userStore";
 import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import useGetMe from "@/lib/hooks/useGetMe";
 import type { ChannelUser } from "@/lib/types";
+import { toast } from "sonner";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -25,9 +27,9 @@ const MeetingContent = () => {
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
   const [connected, setConnected] = useState(true);
-
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
   const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+  const {uplinkNetworkQuality, downlinkNetworkQuality} = useNetworkQuality();
   const { mutate, data } = useJoinMeeting();
   const { currentWsData } = useGetWsDetails();
   const { meetingId } = useParams();
@@ -97,21 +99,41 @@ const MeetingContent = () => {
   const toggleMic = async () => {
     if (!localMicrophoneTrack) return;
     const enabled = !micOn;
-    await localMicrophoneTrack.setEnabled(enabled);
-    setMicOn(enabled);
+    try {
+      await localMicrophoneTrack.setEnabled(enabled);
+      setMicOn(enabled);
+    } catch (error) {
+      if (error) toast.error("Couldn't toggle mic", { position: "top-center" });
+    }
   };
 
   const toggleCamera = async () => {
     if (!localCameraTrack) return;
     const enabled = !cameraOn;
-    await localCameraTrack.setEnabled(enabled);
-    setCameraOn(enabled);
+    try {
+      await localCameraTrack.setEnabled(enabled);
+      setCameraOn(enabled);
+    } catch (error) {
+      if (error)
+        toast.error("Couldn't toggle camera", { position: "top-center" });
+    }
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] p-4 md:p-6">
+    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:p-6">
+      {data?.channel && (
+        <h2
+          title={data.channel}
+          className="text-xl mx-auto font-medium dark:text-white w-max max-w-[300px] my-2 truncate"
+        >
+          {data.channel}
+        </h2>
+      )}
       <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
+          <div className="absolute bg-black/60 text-white bottom-4 px-2 py-1 left-4 rounded-xs z-10 text-sm">
+            You
+          </div>
           {localCameraTrack && cameraOn ? (
             <div
               ref={(ref) => localCameraTrack.play(ref!)}
@@ -153,7 +175,9 @@ const MeetingContent = () => {
               <VideoOff size={28} strokeWidth={2.5} />
             )}
           </Button>
-          <p className="text-xs font-medium text-black dark:text-white">Video</p>
+          <p className="text-xs font-medium text-black dark:text-white">
+            Video
+          </p>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -182,7 +206,9 @@ const MeetingContent = () => {
           >
             <MonitorUp size={28} strokeWidth={2.5} />
           </Button>
-          <p className="text-xs font-medium text-black dark:text-white">Share</p>
+          <p className="text-xs font-medium text-black dark:text-white">
+            Share
+          </p>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -193,7 +219,9 @@ const MeetingContent = () => {
           >
             <LogOut size={28} strokeWidth={2.5} />
           </Button>
-          <p className="text-xs font-medium text-black dark:text-white">Leave</p>
+          <p className="text-xs font-medium text-black dark:text-white">
+            Leave
+          </p>
         </div>
       </div>
     </div>
