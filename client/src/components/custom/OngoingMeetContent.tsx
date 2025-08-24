@@ -12,7 +12,15 @@ import {
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
 import { Button } from "@/components/ui/button";
-import { LogOut, Mic, MicOff, MonitorUp, Video, VideoOff } from "lucide-react";
+import {
+  LogOut,
+  Mic,
+  MicOff,
+  MonitorUp,
+  Video,
+  VideoOff,
+  Wifi,
+} from "lucide-react";
 import useJoinMeeting from "@/lib/hooks/useJoinMeeting";
 import { useParams } from "react-router-dom";
 import { currentWsDetails } from "@/lib/store/userStore";
@@ -20,6 +28,7 @@ import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import useGetMe from "@/lib/hooks/useGetMe";
 import type { ChannelUser } from "@/lib/types";
 import { toast } from "sonner";
+import SignalDisplay from "./SignalDisplay";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -27,9 +36,10 @@ const MeetingContent = () => {
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
   const [connected, setConnected] = useState(true);
+  const [showSignal, setShowSignal] = useState(false);
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
   const { localCameraTrack } = useLocalCameraTrack(cameraOn);
-  const {uplinkNetworkQuality, downlinkNetworkQuality} = useNetworkQuality();
+  const { uplinkNetworkQuality, downlinkNetworkQuality } = useNetworkQuality();
   const { mutate, data } = useJoinMeeting();
   const { currentWsData } = useGetWsDetails();
   const { meetingId } = useParams();
@@ -119,6 +129,10 @@ const MeetingContent = () => {
     }
   };
 
+  const toggleSignal = () => {
+    setShowSignal((prev) => !prev);
+  };
+
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:p-6">
       {data?.channel && (
@@ -131,6 +145,14 @@ const MeetingContent = () => {
       )}
       <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
+          {showSignal && (
+            <div className="absolute bg-black/60 top-4 px-2 py-1 left-4 rounded-xs z-10 text-xs opacity-70">
+              <SignalDisplay
+                up={uplinkNetworkQuality}
+                down={downlinkNetworkQuality}
+              />
+            </div>
+          )}
           <div className="absolute bg-black/60 text-white bottom-4 px-2 py-1 left-4 rounded-xs z-10 text-sm">
             You
           </div>
@@ -208,6 +230,23 @@ const MeetingContent = () => {
           </Button>
           <p className="text-xs font-medium text-black dark:text-white">
             Share
+          </p>
+        </div>
+
+        <div className="flex flex-col items-center gap-1">
+          <Button
+            size="lg"
+            className={`p-3 rounded-md text-white ${
+              showSignal
+                ? "bg-primary/90 hover:bg-primary"
+                : " bg-[#181A1C] hover:bg-[#080808]"
+            }`}
+            onClick={toggleSignal}
+          >
+            <Wifi size={28} strokeWidth={2.5} />
+          </Button>
+          <p className="text-xs font-medium text-black dark:text-white">
+            Network
           </p>
         </div>
 
