@@ -80,7 +80,6 @@ const MeetingContent = () => {
         hasVideo: !!remoteUidsMap[user._id],
       })
     )
-    .filter((u) => u._id !== user?._id);
 
   const toggleMic = async () => {
     if (!localMicrophoneTrack) return;
