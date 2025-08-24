@@ -109,7 +109,7 @@ const MeetingContent = () => {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-[#262728] p-4 md:p-6">
+    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] p-4 md:p-6">
       <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
           {localCameraTrack && cameraOn ? (
@@ -153,7 +153,7 @@ const MeetingContent = () => {
               <VideoOff size={28} strokeWidth={2.5} />
             )}
           </Button>
-          <p className="text-xs font-medium">Video</p>
+          <p className="text-xs font-medium text-black dark:text-white">Video</p>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -172,7 +172,7 @@ const MeetingContent = () => {
               <MicOff size={28} strokeWidth={2.5} />
             )}
           </Button>
-          <p className="text-xs font-medium">Mic</p>
+          <p className="text-xs font-medium text-black dark:text-white">Mic</p>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -182,7 +182,7 @@ const MeetingContent = () => {
           >
             <MonitorUp size={28} strokeWidth={2.5} />
           </Button>
-          <p className="text-xs font-medium">Share</p>
+          <p className="text-xs font-medium text-black dark:text-white">Share</p>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -193,7 +193,7 @@ const MeetingContent = () => {
           >
             <LogOut size={28} strokeWidth={2.5} />
           </Button>
-          <p className="text-xs font-medium">Leave</p>
+          <p className="text-xs font-medium text-black dark:text-white">Leave</p>
         </div>
       </div>
     </div>

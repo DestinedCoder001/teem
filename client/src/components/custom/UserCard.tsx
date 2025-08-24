@@ -39,7 +39,7 @@ const UserCard = ({
   return (
     <div className="rounded-sm overflow-hidden shrink-0 w-48 relative bg-black">
       {!audioOn && (
-        <div className="bg-black/60 absolute top-2 right-2 rounded-sm z-10 p-1">
+        <div className="bg-black/60 text-white absolute top-2 right-2 rounded-sm z-10 p-1">
           <MicOff size={16} />
         </div>
       )}
