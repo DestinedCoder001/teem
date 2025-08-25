@@ -18,8 +18,7 @@ import {
   MicOff,
   MonitorUp,
   Video,
-  VideoOff,
-  Wifi,
+  VideoOff
 } from "lucide-react";
 import useJoinMeeting from "@/lib/hooks/useJoinMeeting";
 import { useParams } from "react-router-dom";
@@ -29,6 +28,7 @@ import useGetMe from "@/lib/hooks/useGetMe";
 import type { ChannelUser } from "@/lib/types";
 import { toast } from "sonner";
 import SignalDisplay from "./SignalDisplay";
+import MeetingOptions from "./MeetingOptions";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -73,12 +73,10 @@ const MeetingContent = () => {
   usePublish([localMicrophoneTrack, localCameraTrack], canJoin);
 
   const remoteUsers = useRemoteUsers();
-
   const { videoTracks } = useRemoteVideoTracks(remoteUsers);
   const remoteVideosMap = Object.fromEntries(
     videoTracks.map((vt) => [vt.getUserId(), vt])
   );
-
   const { audioTracks } = useRemoteAudioTracks(remoteUsers);
   audioTracks.forEach((t) => t.play());
   const remoteAudioMap = Object.fromEntries(
@@ -112,8 +110,8 @@ const MeetingContent = () => {
     try {
       await localMicrophoneTrack.setEnabled(enabled);
       setMicOn(enabled);
-    } catch (error) {
-      if (error) toast.error("Couldn't toggle mic", { position: "top-center" });
+    } catch {
+      toast.error("Couldn't toggle mic", { position: "top-center" });
     }
   };
 
@@ -123,18 +121,13 @@ const MeetingContent = () => {
     try {
       await localCameraTrack.setEnabled(enabled);
       setCameraOn(enabled);
-    } catch (error) {
-      if (error)
-        toast.error("Couldn't toggle camera", { position: "top-center" });
+    } catch {
+      toast.error("Couldn't toggle camera", { position: "top-center" });
     }
   };
 
-  const toggleSignal = () => {
-    setShowSignal((prev) => !prev);
-  };
-
   return (
-    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:p-6">
+    <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:pt-4 md:px-6 md:pb-6">
       {data?.channel && (
         <h2
           title={data.channel}
@@ -234,19 +227,12 @@ const MeetingContent = () => {
         </div>
 
         <div className="flex flex-col items-center gap-1">
-          <Button
-            size="lg"
-            className={`p-3 rounded-md text-white ${
-              showSignal
-                ? "bg-primary/90 hover:bg-primary"
-                : " bg-[#181A1C] hover:bg-[#080808]"
-            }`}
-            onClick={toggleSignal}
-          >
-            <Wifi size={28} strokeWidth={2.5} />
-          </Button>
+          <MeetingOptions
+            showSignal={showSignal}
+            setShowSignal={setShowSignal}
+          />
           <p className="text-xs font-medium text-black dark:text-white">
-            Network
+            Options
           </p>
         </div>
 
