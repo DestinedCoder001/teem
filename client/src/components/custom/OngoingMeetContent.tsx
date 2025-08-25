@@ -11,15 +11,6 @@ import {
   useNetworkQuality,
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
-import { Button } from "@/components/ui/button";
-import {
-  LogOut,
-  Mic,
-  MicOff,
-  MonitorUp,
-  Video,
-  VideoOff
-} from "lucide-react";
 import useJoinMeeting from "@/lib/hooks/useJoinMeeting";
 import { useParams } from "react-router-dom";
 import { currentWsDetails } from "@/lib/store/userStore";
@@ -28,7 +19,7 @@ import useGetMe from "@/lib/hooks/useGetMe";
 import type { ChannelUser } from "@/lib/types";
 import { toast } from "sonner";
 import SignalDisplay from "./SignalDisplay";
-import MeetingOptions from "./MeetingOptions";
+import MeetControls from "./MeetControls";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -126,6 +117,10 @@ const MeetingContent = () => {
     }
   };
 
+  const leave = () => {
+    setConnected(false);
+  };
+
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:pt-4 md:px-6 md:pb-6">
       {data?.channel && (
@@ -173,82 +168,15 @@ const MeetingContent = () => {
         </div>
       </div>
 
-      <div className="flex justify-center gap-4 py-4 text-white">
-        <div className="flex flex-col items-center gap-1">
-          <Button
-            size="lg"
-            className={`p-3 rounded-md text-white ${
-              cameraOn
-                ? "bg-primary/90 hover:bg-primary"
-                : " bg-[#181A1C] hover:bg-[#080808]"
-            }`}
-            onClick={toggleCamera}
-          >
-            {cameraOn ? (
-              <Video size={28} strokeWidth={2.5} />
-            ) : (
-              <VideoOff size={28} strokeWidth={2.5} />
-            )}
-          </Button>
-          <p className="text-xs font-medium text-black dark:text-white">
-            Video
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center gap-1">
-          <Button
-            size="lg"
-            className={`p-3 rounded-md text-white ${
-              micOn
-                ? "bg-primary/90 hover:bg-primary"
-                : " bg-[#181A1C] hover:bg-[#080808]"
-            }`}
-            onClick={toggleMic}
-          >
-            {micOn ? (
-              <Mic size={28} strokeWidth={2.5} />
-            ) : (
-              <MicOff size={28} strokeWidth={2.5} />
-            )}
-          </Button>
-          <p className="text-xs font-medium text-black dark:text-white">Mic</p>
-        </div>
-
-        <div className="flex flex-col items-center gap-1">
-          <Button
-            size="lg"
-            className="p-3 rounded-md bg-[#181A1C] hover:bg-[#080808] text-white"
-          >
-            <MonitorUp size={28} strokeWidth={2.5} />
-          </Button>
-          <p className="text-xs font-medium text-black dark:text-white">
-            Share
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center gap-1">
-          <MeetingOptions
-            showSignal={showSignal}
-            setShowSignal={setShowSignal}
-          />
-          <p className="text-xs font-medium text-black dark:text-white">
-            Options
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center gap-1">
-          <Button
-            size="lg"
-            className="p-3 rounded-md bg-[#F04438] text-white hover:bg-[#e12929]"
-            onClick={() => setConnected(false)}
-          >
-            <LogOut size={28} strokeWidth={2.5} />
-          </Button>
-          <p className="text-xs font-medium text-black dark:text-white">
-            Leave
-          </p>
-        </div>
-      </div>
+      <MeetControls
+        cameraOn={cameraOn}
+        micOn={micOn}
+        toggleCamera={toggleCamera}
+        toggleMic={toggleMic}
+        leave={leave}
+        showSignal={showSignal}
+        setShowSignal={setShowSignal}
+      />
     </div>
   );
 };

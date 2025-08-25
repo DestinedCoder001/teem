@@ -1,4 +1,4 @@
-import React from "react";
+import { type Dispatch, type SetStateAction } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import { Switch } from "../ui/switch";
 
 type Props = {
   showSignal: boolean;
-  setShowSignal: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSignal: Dispatch<SetStateAction<boolean>>;
 };
 
 const MeetingOptions = ({ showSignal, setShowSignal }: Props) => {
