@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   useJoin,
   useLocalCameraTrack,
   useLocalMicrophoneTrack,
+  useLocalScreenTrack,
   usePublish,
   useRemoteUsers,
   useRemoteAudioTracks,
@@ -20,6 +21,7 @@ import type { ChannelUser } from "@/lib/types";
 import { toast } from "sonner";
 import SignalDisplay from "./SignalDisplay";
 import MeetControls from "./MeetControls";
+import { VideoOff } from "lucide-react";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -28,23 +30,29 @@ const MeetingContent = () => {
   const [cameraOn, setCameraOn] = useState(true);
   const [connected, setConnected] = useState(true);
   const [showSignal, setShowSignal] = useState(false);
+  const [screenShareOn, setScreenShareOn] = useState(false);
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
   const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+  const {
+    screenTrack,
+    isLoading: screenLoading,
+    error: screenError,
+  } = useLocalScreenTrack(screenShareOn, {}, "disable");
   const { uplinkNetworkQuality, downlinkNetworkQuality } = useNetworkQuality();
   const { mutate, data } = useJoinMeeting();
   const { currentWsData } = useGetWsDetails();
   const { meetingId } = useParams();
   const { user } = useGetMe();
   const { _id: wsId } = currentWsDetails((state) => state);
+  const mainRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!meetingId || !currentWsData) return;
     mutate(
       { meetingId, wsId: currentWsData._id },
       {
-        onSuccess: (data) => {
-          document.title = `${data?.channel} - Teem Meeting`;
-        },
+        onSuccess: (data) =>
+          (document.title = `${data?.channel} - Teem Meeting`),
       }
     );
   }, [meetingId, mutate, wsId, currentWsData]);
@@ -61,15 +69,23 @@ const MeetingContent = () => {
     canJoin
   );
 
-  usePublish([localMicrophoneTrack, localCameraTrack], canJoin);
+  usePublish(
+    [
+      localMicrophoneTrack,
+      !screenShareOn ? localCameraTrack : null,
+      screenTrack ? screenTrack : null,
+    ],
+    canJoin
+  );
 
   const remoteUsers = useRemoteUsers();
   const { videoTracks } = useRemoteVideoTracks(remoteUsers);
+  const { audioTracks } = useRemoteAudioTracks(remoteUsers);
+  audioTracks.forEach((t) => t.play());
+
   const remoteVideosMap = Object.fromEntries(
     videoTracks.map((vt) => [vt.getUserId(), vt])
   );
-  const { audioTracks } = useRemoteAudioTracks(remoteUsers);
-  audioTracks.forEach((t) => t.play());
   const remoteAudioMap = Object.fromEntries(
     audioTracks.map((at) => [at.getUserId(), at])
   );
@@ -78,16 +94,16 @@ const MeetingContent = () => {
     .filter((u) => remoteUsers.some((ru) => String(ru.uid) === u._id))
     .map(
       (
-        user
+        u
       ): ChannelUser & {
         videoTrack?: IRemoteVideoTrack;
         hasVideo?: boolean;
         hasAudio?: boolean;
       } => {
-        const videoTrack = remoteVideosMap[user._id];
-        const audioTrack = remoteAudioMap[user._id];
+        const videoTrack = remoteVideosMap[u._id];
+        const audioTrack = remoteAudioMap[u._id];
         return {
-          ...user,
+          ...u,
           videoTrack,
           hasVideo: !!videoTrack,
           hasAudio: !!audioTrack,
@@ -95,67 +111,129 @@ const MeetingContent = () => {
       }
     );
 
+  const [remoteScreenTrack, setRemoteScreenTrack] =
+    useState<IRemoteVideoTrack | null>(null);
+  useEffect(() => {
+    const screenCandidate = videoTracks.find((vt) =>
+      vt.getMediaStreamTrack().label.toLowerCase().includes("screen")
+    );
+    setRemoteScreenTrack(screenCandidate || null);
+  }, [videoTracks]);
+
+  const mainUserIsScreenSharing =
+    screenShareOn && screenTrack && !screenLoading;
+  const anotherUserIsScreenSharing = !!remoteScreenTrack;
+
+  useEffect(() => {
+    if (!mainRef.current) return;
+    mainRef.current.innerHTML = "";
+    if (anotherUserIsScreenSharing) {
+      remoteScreenTrack.play(mainRef.current);
+    } else if (mainUserIsScreenSharing) {
+      screenTrack.play(mainRef.current);
+    } else if (cameraOn && localCameraTrack) {
+      localCameraTrack.play(mainRef.current);
+    }
+  }, [
+    anotherUserIsScreenSharing,
+    mainUserIsScreenSharing,
+    remoteScreenTrack,
+    screenTrack,
+    cameraOn,
+    localCameraTrack,
+  ]);
+
+  useEffect(() => {
+    if (screenTrack) {
+      const handleTrackEnded = async () => {
+        setScreenShareOn(false);
+        try {
+          await screenTrack.setEnabled(false);
+          await screenTrack.close();
+        } catch (e) {
+          console.error("Failed to disable or close screen track:", e);
+        }
+        setCameraOn(true);
+        toast.info("Screen sharing stopped");
+      };
+      screenTrack.on("track-ended", handleTrackEnded);
+      return () => {
+        screenTrack.off("track-ended", handleTrackEnded);
+      };
+    }
+    if (screenError) {
+      setScreenShareOn(false);
+      setCameraOn(true);
+      toast.error("Screen sharing failed");
+    }
+  }, [screenTrack, screenError]);
+
   const toggleMic = async () => {
     if (!localMicrophoneTrack) return;
-    const enabled = !micOn;
     try {
-      await localMicrophoneTrack.setEnabled(enabled);
-      setMicOn(enabled);
+      await localMicrophoneTrack.setEnabled(!micOn);
+      setMicOn((v) => !v);
     } catch {
-      toast.error("Couldn't toggle mic", { position: "top-center" });
+      toast.error("Couldn't toggle mic");
     }
   };
 
   const toggleCamera = async () => {
     if (!localCameraTrack) return;
-    const enabled = !cameraOn;
     try {
-      await localCameraTrack.setEnabled(enabled);
-      setCameraOn(enabled);
+      await localCameraTrack.setEnabled(!cameraOn);
+      setCameraOn((v) => !v);
     } catch {
-      toast.error("Couldn't toggle camera", { position: "top-center" });
+      toast.error("Couldn't toggle camera");
     }
   };
 
-  const leave = () => {
-    setConnected(false);
+  const toggleScreenShare = () => {
+    setScreenShareOn((v) => {
+      if (!v) setCameraOn(false);
+      return !v;
+    });
   };
+
+  const leave = () => setConnected(false);
+
+  const showCameraOff =
+    !anotherUserIsScreenSharing && !mainUserIsScreenSharing && !cameraOn;
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:pt-4 md:px-6 md:pb-6">
       {data?.channel && (
-        <h2
-          title={data.channel}
-          className="text-xl mx-auto font-medium dark:text-white w-max max-w-[300px] my-2 truncate"
-        >
+        <h2 className="text-lg mx-auto my-2 dark:text-white truncate">
           {data.channel}
         </h2>
       )}
-      <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
+
+      <div className="flex flex-1 flex-col lg:flex-row overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
           {showSignal && (
-            <div className="absolute bg-black/60 top-4 px-2 py-1 left-4 rounded-xs z-10 text-xs opacity-70">
+            <div className="absolute top-4 left-4 bg-black/60 p-2 text-xs text-white z-10">
               <SignalDisplay
                 up={uplinkNetworkQuality}
                 down={downlinkNetworkQuality}
               />
             </div>
           )}
-          <div className="absolute bg-black/60 text-white bottom-4 px-2 py-1 left-4 rounded-xs z-10 text-sm">
-            You
+          <div className="absolute bottom-4 left-4 bg-black/60 p-2 text-white z-10 text-sm">
+            {anotherUserIsScreenSharing
+              ? "Screen Share"
+              : mainUserIsScreenSharing
+              ? "You (Sharing Screen)"
+              : "You"}
           </div>
-          {localCameraTrack && cameraOn ? (
-            <div
-              ref={(ref) => localCameraTrack.play(ref!)}
-              className="w-full h-full object-contain"
-            />
-          ) : (
-            <div className="text-white">Camera Off</div>
+          <div ref={mainRef} className="w-full h-full object-contain" />
+          {showCameraOff && (
+            <div className="absolute inset-0 flex items-center justify-center text-white/50 text-2xl">
+              <VideoOff size={40} color="#BBB" />
+            </div>
           )}
         </div>
-
         <div className="flex lg:flex-col gap-4 overflow-auto no-scrollbar">
-          {inCallUsers?.map((user) => (
+          {inCallUsers.map((user) => (
             <UserCard
               key={user._id}
               name={`${user.firstName} ${user.lastName}`}
@@ -167,7 +245,6 @@ const MeetingContent = () => {
           ))}
         </div>
       </div>
-
       <MeetControls
         cameraOn={cameraOn}
         micOn={micOn}
@@ -176,6 +253,9 @@ const MeetingContent = () => {
         leave={leave}
         showSignal={showSignal}
         setShowSignal={setShowSignal}
+        toggleScreenShare={toggleScreenShare}
+        isSharingScreen={screenShareOn}
+        screenLoading={screenLoading}
       />
     </div>
   );

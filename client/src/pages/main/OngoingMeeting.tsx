@@ -1,14 +1,22 @@
 import MeetingContent from "@/components/custom/OngoingMeetContent";
-import AgoraRTC, { AgoraRTCProvider, useRTCClient, type ClientConfig } from "agora-rtc-react";
+import AgoraRTC, {
+  AgoraRTCProvider,
+  AgoraRTCScreenShareProvider,
+  useRTCClient,
+  type ClientConfig,
+} from "agora-rtc-react";
 
 const OngoingMeeting = () => {
-  const config = { mode: "rtc", codec: "vp8" };
+  const config: ClientConfig = { mode: "rtc", codec: "vp8" };
 
-  const useClient = useRTCClient(AgoraRTC.createClient(config as ClientConfig));
+  const client = useRTCClient(AgoraRTC.createClient(config));
+  const screenShareClient = useRTCClient(AgoraRTC.createClient(config));
 
   return (
-    <AgoraRTCProvider client={useClient}>
-      <MeetingContent />
+    <AgoraRTCProvider client={client}>
+      <AgoraRTCScreenShareProvider client={screenShareClient}>
+        <MeetingContent />
+      </AgoraRTCScreenShareProvider>
     </AgoraRTCProvider>
   );
 };
