@@ -190,6 +190,7 @@ const handleRefresh = async (req: Request, res: Response) => {
           lastName: user.lastName,
           email: user.email,
           profilePicture: user.profilePicture,
+          authProvider: user.authProvider,
         };
         if (err) {
           res.sendStatus(403);
