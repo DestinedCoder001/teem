@@ -89,7 +89,7 @@ const ChatsCollapsible = () => {
                 title={name}
                 className={({ isActive }) =>
                   clsx(
-                    "flex items-center gap-x-2 text-sm font-medium p-2 rounded-md",
+                    "flex items-center gap-x-2 text-sm font-medium p-2 rounded-md overflow-hidden",
                     "text-slate-500 dark:text-slate-200",
                     "hover:text-slate-600 dark:hover:text-slate-50",
                     !isSidebarOpen ? "lg:hidden" : "",
@@ -114,8 +114,8 @@ const ChatsCollapsible = () => {
                     {user?.lastName[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="shrink-0">
-                  {name.length > 15 ? name.slice(0, 15) + "..." : name}
+                <span className="shrink-0 w-5/6 truncate">
+                  {name}
                 </span>
               </NavLink>
             );

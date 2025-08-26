@@ -55,7 +55,7 @@ const ChannelDrawer = ({
           <div className="bg-slate-100 border-2 border-slate-500 dark:bg-slate-800 dark:text-white rounded-full size-14 flex items-center justify-center mx-auto text-slate-600 font-bold text-xl">
             {channel?.name[0]?.toUpperCase()}
           </div>
-          <DrawerTitle className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
+          <DrawerTitle className="text-xl theme-text-gradient font-medium w-max max-w-full text-center mx-auto">
             {channel?.name}
           </DrawerTitle>
           <DrawerDescription className="text-slate-800 dark:text-slate-100">

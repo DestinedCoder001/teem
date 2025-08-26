@@ -69,13 +69,11 @@ const ChannelsCollapsible = () => {
               title={channel?.name}
               className={({ isActive }) => {
                 return isActive
-                  ? "block text-sm text-slate-500 bg-slate-100 dark:bg-neutral-700 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-slate-800 font-medium p-2 rounded-md"
-                  : "block text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-neutral-800 font-medium p-2 rounded-md";
+                  ? "block truncate text-sm text-slate-500 bg-slate-100 dark:bg-neutral-700 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-slate-800 font-medium p-2 rounded-md"
+                  : "block truncate text-sm text-slate-500 hover:bg-slate-100 hover:text-slate-600 dark:text-slate-200 dark:hover:text-slate-50 dark:hover:bg-neutral-800 font-medium p-2 rounded-md";
               }}
             >
-              {channel?.name.length > 15
-                ? channel?.name.slice(0, 15) + "..."
-                : channel?.name}
+                {channel?.name}
             </NavLink>
           ))}
         <CreateChannelBtn />

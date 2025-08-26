@@ -33,8 +33,8 @@ const MeetingCard = ({
       className="flex flex-col gap-y-4 justify-between bg-white dark:bg-neutral-900 rounded-xl border border-slate-300 dark:border-neutral-700 p-4 w-full mx-auto overflow-hidden"
       title={title}
     >
-      <h2 className="text-lg font-semibold theme-text-gradient w-max">
-        {title?.length > 15 ? title.slice(0, 15) + "..." : title}
+      <h2 className="text-lg font-semibold theme-text-gradient w-max truncate max-w-full">
+        {title}
       </h2>
       <p className="text-slate-600 dark:text-slate-200">
         Status:{" "}

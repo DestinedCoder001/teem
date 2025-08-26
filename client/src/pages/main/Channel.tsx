@@ -261,7 +261,7 @@ const Channel = () => {
           } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 cursor-pointer`}
           onClick={handleOpenDrawer}
         >
-          <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
+          <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto truncate max-w-full">
             {name}
           </h1>
           {activeChannelUsers.length > 0 && (

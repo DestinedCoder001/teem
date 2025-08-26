@@ -101,8 +101,8 @@ const TaskCard = ({
       >
         <div className="flex flex-col gap-y-2">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold theme-text-gradient">
-              {title?.length > 15 ? title.slice(0, 15) + "..." : title}
+            <h2 className="text-lg font-semibold theme-text-gradient truncate">
+              {title}
             </h2>
             {user &&
               (user._id === assignedBy._id || user._id === assignedTo._id) && (

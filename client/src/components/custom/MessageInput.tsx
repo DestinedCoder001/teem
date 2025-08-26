@@ -160,7 +160,7 @@ const MessageInput = ({
         />
       )}
       {isEditing && (
-        <div className="absolute bottom-full left-[3.3rem] w-max px-4 py-1 bg-white dark:bg-neutral-800 border border-slate-300 dark:border-slate-700 rounded-t-lg rounded-bl-lg text-sm">
+        <div className="absolute bottom-full left-[3.3rem] w-max px-4 py-1 bg-white dark:bg-neutral-800 border border-slate-300 dark:border-slate-700 rounded-t-lg rounded-bl-lg text-sm max-w-52">
           <div
             className="absolute bottom-0 left-[110%] cursor-pointer bg-white dark:bg-neutral-700 rounded-full border p-1"
             onClick={cancelEditing}
@@ -168,10 +168,8 @@ const MessageInput = ({
             <XIcon size={14} className="text-slate-800 dark:text-slate-300" />
           </div>
           <p className="theme-text-gradient w-max">Editing </p>
-          <p className="font-medium text-slate-600 dark:text-slate-100">
-            {msg.content.length > 20
-              ? msg.content.slice(0, 20) + "..."
-              : msg.content}
+          <p className="font-medium text-slate-600 dark:text-slate-100 truncate">
+            {msg.content}
           </p>
         </div>
       )}

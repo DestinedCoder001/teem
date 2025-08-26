@@ -130,7 +130,9 @@ const WsSwitch = () => {
               >
                 <Avatar
                   className={`h-8 w-8 rounded-md border ${
-                    ws._id === _id ? "border-primary" : "border-slate-200 dark:border-slate-500"
+                    ws._id === _id
+                      ? "border-primary"
+                      : "border-slate-200 dark:border-slate-500"
                   }`}
                 >
                   <AvatarImage
@@ -143,11 +145,11 @@ const WsSwitch = () => {
                   </AvatarFallback>
                 </Avatar>
                 <span
-                  className={`text-sm text-slate-600 dark:text-slate-100 ${
+                  className={`text-sm text-slate-600 dark:text-slate-100 truncate ${
                     ws._id === wsId ? "font-bold" : "font-normal"
                   }`}
                 >
-                  {ws.name.length > 20 ? ws.name.slice(0, 20) + "..." : ws.name}
+                  {ws.name}
                 </span>
               </DropdownMenuItem>
             </div>
