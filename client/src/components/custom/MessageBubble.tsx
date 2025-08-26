@@ -49,7 +49,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
     if (isChat) {
       setMessage({
         _id: message._id,
-        content: message.content,
+        content: msgContent,
         chatId: message.chatId,
       });
     } else {
