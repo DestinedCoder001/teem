@@ -12,7 +12,7 @@ import meetingRoute from "./routes/meeting.route";
 import dotenv from "dotenv";
 import { verifyToken } from "./middleware/auth.middleware";
 import cors from "cors";
-import { app, server } from "./lib/socket";
+import { app, server } from "./lib/socket/socket";
 dotenv.config();
 app.use(
   cors({
