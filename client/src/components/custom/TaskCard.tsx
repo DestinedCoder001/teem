@@ -108,7 +108,7 @@ const TaskCard = ({
               (user._id === assignedBy._id || user._id === assignedTo._id) && (
                 <DropdownMenu>
                   {isPending || deletePending ? (
-                    <Loader className="h-5 w-5 mr-2 mb-1 text-slate-500 dark:text-slate-200 animate-spin" />
+                    <Loader className="h-5 w-5 mr-2 translate-y-[2px] text-slate-500 dark:text-slate-200 animate-spin" />
                   ) : (
                     <>
                       <DropdownMenuTrigger asChild>
@@ -138,12 +138,14 @@ const TaskCard = ({
                     <DropdownMenuItem
                       onSelect={() => handleTaskUpdate("completed")}
                       className="cursor-pointer group"
+                      disabled={status === "completed"}
                     >
                       <CircleCheck className="mr-2 h-4 w-4 group-hover:text-green-500 group-focus:text-green-500" />
                       Mark Complete
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onSelect={() => handleTaskUpdate("pending")}
+                      disabled={status === "pending"}
                       className="cursor-pointer group"
                     >
                       <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500 group-focus:text-orange-500" />

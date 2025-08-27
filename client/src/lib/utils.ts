@@ -8,7 +8,6 @@ export function cn(...inputs: ClassValue[]) {
 
 export const sanitizeHTML = (dirty: string) =>
   DOMPurify.sanitize(dirty, {
-    USE_PROFILES: { html: true },
     ALLOWED_TAGS: [
       "b", "strong", "i", "em", "u",
       "ul", "ol", "li",

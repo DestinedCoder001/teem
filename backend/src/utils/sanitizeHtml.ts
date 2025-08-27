@@ -6,7 +6,6 @@ const DOMPurify = createDOMPurify(window);
 
 export const sanitizeHtml = (dirty: string) => {
   return DOMPurify.sanitize(dirty, {
-    USE_PROFILES: { html: true },
     ALLOWED_TAGS: [
       "b", "strong", "i", "em", "u",
       "ul", "ol", "li",
