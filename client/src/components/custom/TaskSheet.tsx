@@ -23,7 +23,7 @@ const TaskSheet = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
-      <SheetContent className="py-6 overflow-auto no-scrollbar w-full dark:bg-neutral-900">
+      <SheetContent className="py-6 overflow-hidden no-scrollbar w-full dark:bg-neutral-900">
         <SheetHeader className="text-center">
           <SheetTitle className="theme-text-gradient text-2xl w-max mx-auto">
             {task?.title}
@@ -86,7 +86,7 @@ const TaskSheet = () => {
           </div>
         )}
 
-        <div className="break-words text-left p-4">
+        <div className="break-words text-wrap text-left p-4">
           <div
             dangerouslySetInnerHTML={{ __html: task?.guidelines as string }}
             className="space-y-3 text-slate-700 dark:text-slate-100"

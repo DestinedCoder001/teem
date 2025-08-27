@@ -2,7 +2,7 @@ import type { MeetingCardProps } from "@/lib/types";
 import { Button } from "../ui/button";
 import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
 import useDeleteMeeting from "@/lib/hooks/useDeleteMeeting";
-import { Loader } from "lucide-react";
+import { Loader, PhoneOff, PhoneOutgoingIcon } from "lucide-react";
 
 const MeetingCard = ({
   title,
@@ -54,7 +54,7 @@ const MeetingCard = ({
           onClick={handleWindowOpen}
           className="rounded-md px-4 w-[4rem] bg-green-600 hover:bg-green-700 text-white"
         >
-          {isHost ? "Start" : "Join"}
+          <PhoneOutgoingIcon />
         </Button>
         {(isHost || isWsOwner) && (
           <Button
@@ -62,7 +62,7 @@ const MeetingCard = ({
             onClick={handleDelete}
             className="rounded-md px-4 w-[4rem] bg-red-600 hover:bg-red-700 text-white"
           >
-            {isPending ? <Loader className="animate-spin" /> : "Delete"}
+            {isPending ? <Loader className="animate-spin" /> : <PhoneOff />}
           </Button>
         )}
       </div>
