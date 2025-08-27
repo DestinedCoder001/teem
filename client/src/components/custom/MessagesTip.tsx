@@ -10,6 +10,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogAction,
+  AlertDialogOverlay,
 } from "@/components/ui/alert-dialog";
 
 const MessagesTip = () => {
@@ -27,6 +28,7 @@ const MessagesTip = () => {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
       <AlertDialogContent>
         <AlertDialogHeader className="flex items-center gap-2">
           <Info strokeWidth={1.5} className="size-8 text-secondary" />
@@ -36,7 +38,9 @@ const MessagesTip = () => {
           Long press or right-click on a message for options.
         </AlertDialogDescription>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={handleClose} className="text-white">Got it</AlertDialogAction>
+          <AlertDialogAction onClick={handleClose} className="text-white">
+            Got it
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -81,6 +82,7 @@ const SendInviteDialog = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
       <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="theme-text-gradient w-max">
@@ -139,7 +141,7 @@ const SendInviteDialog = () => {
                     id={user.email}
                     checked={selectedEmail === user.email}
                   />
-                  
+
                   <Avatar className="h-8 w-8 rounded-full cursor-pointer border border-slate-200">
                     <AvatarImage
                       src={user?.profilePicture}

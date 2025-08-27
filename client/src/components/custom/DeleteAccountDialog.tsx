@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ const DeleteAccountDialog = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete Account</DialogTitle>
