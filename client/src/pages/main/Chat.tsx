@@ -305,7 +305,7 @@ const Chat = () => {
                 isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"
               } -translate-x-1/2 rounded-full p-1 cursor-pointer`}
             >
-              <ChevronDown className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
+              <ChevronDown strokeWidth={1.5} className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
             </div>
           )}
 

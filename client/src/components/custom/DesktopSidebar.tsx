@@ -25,7 +25,7 @@ const DesktopSidebar = () => {
         }`}
         onClick={() => setOpen(!isOpen)}
       >
-        <PanelLeft className="group-hover:text-primary" />
+        <PanelLeft strokeWidth={1.5} className="group-hover:text-primary" />
       </div>
       <div className="flex flex-col h-full justify-between w-full overflow-y-auto px-4 pb-4 no-scrollbar">
         <div className="flex flex-col gap-y-6 mt-24 mb-8">

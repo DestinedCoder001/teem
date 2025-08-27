@@ -41,7 +41,7 @@ const ChannelsCollapsible = () => {
         >
           <div className="flex items-center gap-x-3 lg:gap-x-6">
             <span className={`group-hover:text-secondary ${isActive && "text-secondary"}`}>
-              <Rss />
+              <Rss strokeWidth={1.5} />
             </span>
             <span className={`${!isSidebarOpen && "lg:hidden"}`}>Channels</span>
           </div>

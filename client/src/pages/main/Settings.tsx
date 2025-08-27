@@ -63,7 +63,7 @@ const Settings = () => {
 
         <div className="flex items-center justify-between rounded-lg border border-slate-300 dark:border-neutral-700 p-4">
           <div className="flex items-center gap-3">
-            <Trash2 className="h-6 w-6 text-destructive" />
+            <Trash2 strokeWidth={1.5} className="h-6 w-6 text-destructive" />
             <span>Delete Account</span>
           </div>
           <Button

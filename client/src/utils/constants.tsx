@@ -4,17 +4,17 @@ const navlinks = [
   {
     label: "Tasks",
     link: "/tasks",
-    icon: <ListChecks className="" />,
+    icon: <ListChecks strokeWidth={1.5} />,
   },
   {
     label: "Meetings",
     link: "/meetings",
-    icon: <PhoneCall className="" />,
+    icon: <PhoneCall strokeWidth={1.5} />,
   },
   {
     label: "Notifications",
     link: "/notifications",
-    icon: <Bell className="" />,
+    icon: <Bell strokeWidth={1.5} />,
   },
 ];
 

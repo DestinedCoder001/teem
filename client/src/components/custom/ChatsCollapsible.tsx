@@ -56,7 +56,7 @@ const ChatsCollapsible = () => {
                 isActive && "text-secondary"
               }`}
             >
-              <MessagesSquare />
+              <MessagesSquare strokeWidth={1.5} />
             </span>
             <span className={`${!isSidebarOpen && "lg:hidden"}`}>Chat</span>
           </div>

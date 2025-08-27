@@ -31,7 +31,7 @@ const AttachmentPreview = ({ handleRemoveAttachment, attachment }: Props) => {
         ) : (
           <div className="p-2 border flex flex-col items-center gap-y-2 rounded-md max-w-52">
             <div className="flex items-center gap-x-2">
-              <File size={20} className="text-primary" />
+              <File strokeWidth={1.5} size={20} className="text-primary" />
               <div className="text-slate-700 dark:text-slate-100 font-medium text-sm">
                 {attachment.type?.toUpperCase()}
               </div>

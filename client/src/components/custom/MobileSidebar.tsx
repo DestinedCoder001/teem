@@ -40,8 +40,9 @@ const MobileSideBar = () => {
       }}
     >
       <PanelLeftClose
+        strokeWidth={1.5}
         onClick={() => setOpen(false)}
-        className="text-slate-500 dark:text-slate-100 absolute right-4 top-4 cursor-pointer"
+        className="text-black/50 dark:text-slate-100 absolute right-4 top-4 cursor-pointer"
       />
       <div className="flex flex-col h-full justify-between w-full overflow-y-auto px-4 no-scrollbar">
         <div className="flex flex-col gap-y-4 mt-24">

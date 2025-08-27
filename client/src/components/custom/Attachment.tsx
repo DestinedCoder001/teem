@@ -16,6 +16,7 @@ const Attachment = ({ fileName, url, type }: Props) => {
         className="border-2 border-slate-300 dark:border-slate-500 hover:border-primary dark:hover:border-primary border-dotted p-2 rounded-md bg-slate-100 dark:bg-neutral-800 hover:bg-primary/30 group cursor-pointer"
       >
         <Download
+          strokeWidth={1.5}
           className="text-slate-400 group-hover:text-primary"
           size={30}
         />
