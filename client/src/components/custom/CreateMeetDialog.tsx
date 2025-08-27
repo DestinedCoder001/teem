@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogOverlay,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { Checkbox } from "../ui/checkbox";
 import { useCreateMeetingOpen } from "@/lib/store/uiStore";
 import useCreateMeeting from "@/lib/hooks/useCreateMeeting";
 import { Loader } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type FormValues = {
   title: string;
@@ -63,7 +65,8 @@ const CreateMeetingDialog = () => {
         reset();
       }}
     >
-      <DialogContent className="max-w-md mx-auto">
+      <DialogOverlay className="bg-black/10 backdrop-blur-[0.75px]" />
+      <DialogContent  className="sm:max-w-[425px] max-h-[90vh] no-scrollbar overflow-y-auto bg-white dark:bg-neutral-950">
         <DialogHeader>
           <DialogTitle>Create a Meeting</DialogTitle>
           <DialogDescription>
@@ -97,7 +100,7 @@ const CreateMeetingDialog = () => {
                       return (
                         <Label
                           key={u._id}
-                          className="flex items-center gap-2 w-max"
+                          className="flex items-center gap-2 w-max cursor-pointer"
                         >
                           <Checkbox
                             checked={isChecked}
@@ -113,7 +116,20 @@ const CreateMeetingDialog = () => {
                               }
                             }}
                           />
-                          <span>{u.firstName + " " + u.lastName}</span>
+
+                          <Avatar className="size-8 rounded-full cursor-pointer border border-slate-200 dark:border-slate-500">
+                            <AvatarImage
+                              src={u?.profilePicture}
+                              alt={u?.firstName}
+                              className="object-cover object-center w-full"
+                            />
+                            <AvatarFallback className="text-slate-600 dark:text-slate-100">
+                              {u?.firstName[0].toUpperCase() || ""}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-slate-700 dark:text-slate-100">
+                            {u.firstName + " " + u.lastName}
+                          </span>
                         </Label>
                       );
                     })}
