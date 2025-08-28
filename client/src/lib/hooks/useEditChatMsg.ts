@@ -17,7 +17,7 @@ const useEditChatMsg = () => {
       return data.message;
     },
     onSuccess: (data) => {
-      authSocket.emit("edit_chat_message", {
+      authSocket?.emit("edit_chat_message", {
         wsId,
         chatId: data.chatId,
         message: data,

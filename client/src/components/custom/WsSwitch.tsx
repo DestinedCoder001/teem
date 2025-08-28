@@ -75,7 +75,7 @@ const WsSwitch = () => {
   };
 
   const handleSignOut = () => {
-    authSocket.disconnect();
+    authSocket?.disconnect();
     signOut();
     resetAndRedirect();
   };

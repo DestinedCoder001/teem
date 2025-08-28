@@ -25,6 +25,7 @@ import { useEditTaskDialogOpen, useTaskSheetOpen } from "@/lib/store/uiStore";
 import { currentEditingTask, useUserStore } from "@/lib/store/userStore";
 import { formatTaskDueDate } from "@/utils/formatDueDate";
 import { useTheme } from "next-themes";
+import { getSocket } from "@/lib/socket";
 
 interface TaskCardProps {
   id: string;
@@ -55,18 +56,41 @@ const TaskCard = ({
   const { setOpen: setTaskDrawerOpen } = useTaskSheetOpen((state) => state);
   const user = useUserStore((state) => state.user);
   const theme = useTheme().theme;
+  const authSocket = getSocket()!;
 
   const handleTaskUpdate = (taskStatus: "pending" | "completed") => {
+    /* 
+    wrapped in timeout to allow dropdown menu unmount completely before 
+    triggering these functions to prevent a weird flickering issue.
+    */
     setTimeout(() => {
       if (status === taskStatus) return;
-      mutate({ taskId: id, status: taskStatus });
-    }, 100); // wrapped in timeout to allow dropdown menu unmount completely before triggering these functions to prevent a weird flickering issue.
+      mutate(
+        { taskId: id, status: taskStatus },
+        {
+          onSuccess: () => {
+            authSocket?.emit("update_task_status", { id, taskStatus });
+          },
+        }
+      );
+    }, 100);
   };
 
   const handleDelete = () => {
+    /* 
+    wrapped in timeout to allow dropdown menu unmount completely before 
+    triggering these functions to prevent a weird flickering issue.
+    */
     setTimeout(() => {
-      deleteTask({ taskId: id });
-    }, 100); // wrapped in timeout to allow dropdown menu unmount completely before triggering these functions to prevent a weird flickering issue.
+      deleteTask(
+        { taskId: id },
+        {
+          onSuccess: () => {
+            authSocket?.emit("delete_task", id);
+          },
+        }
+      );
+    }, 100);
   };
 
   const taskDetails: TaskPayload = {

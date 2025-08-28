@@ -58,7 +58,7 @@ const createTask = async (req: Request, res: Response) => {
 
     const cleanedGuidlines = sanitizeHtml(guidelines);
 
-    const newTask = await Task.create({
+    const task = await Task.create({
       title,
       guidelines: cleanedGuidlines,
       assignedBy: req.user._id,
@@ -67,9 +67,17 @@ const createTask = async (req: Request, res: Response) => {
       dueDate,
     });
 
+    await task.populate({
+      path: "assignedTo assignedBy",
+      select: "firstName lastName email profilePicture",
+    });
+
+    const newTask = task.toObject();
+    newTask.isDue =
+      task.status === "pending" && new Date(task.dueDate) < new Date();
+
     res.status(201).json({
-      message: "Task created successfully",
-      data: { task: newTask },
+      task: newTask,
     });
   } catch (error: any) {
     console.log("Error in creating task: ", error);

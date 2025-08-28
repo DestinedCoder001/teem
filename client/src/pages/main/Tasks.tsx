@@ -23,6 +23,7 @@ import {
 import type { TaskPayload } from "@/lib/types";
 import TaskStatusFilter from "@/components/custom/TaskStatusFilter";
 import AppError from "@/components/custom/AppError";
+import { getSocket } from "@/lib/socket";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -31,7 +32,7 @@ const Tasks = () => {
   const { tasksData, getTasksSuccess, isPending, error } = useGetTasks();
   const { tasks, setTasks } = useUserTasks((state) => state);
   const { user } = useUserStore((state) => state);
-
+  const authSocket = getSocket()!;
   const [filter, setFilter] = useState("all");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<TaskPayload[]>([]);
@@ -62,6 +63,34 @@ const Tasks = () => {
 
     setFilteredTasks(res);
   };
+
+  useEffect(() => {
+    const handleNewtask = (data: TaskPayload) => {
+      setTasks([...tasks, data]);
+    };
+    const handleDeletetask = (data: string) => {
+      setTasks(tasks.filter((task) => task._id !== data));
+    };
+    const handleTaskStatusUpdate = (data: {
+      taskStatus: string;
+      id: string;
+    }) => {
+      const updatedTasks = tasks.map((task) => {
+        if (data.id !== task._id) return task;
+        return { ...task, status: data.taskStatus };
+      });
+      setTasks(updatedTasks);
+    };
+    authSocket?.on("task_status_update", handleTaskStatusUpdate);
+    authSocket?.on("new_task", handleNewtask);
+    authSocket?.on("task_deleted", handleDeletetask);
+
+    return () => {
+      authSocket?.off("task_status_update", handleTaskStatusUpdate);
+      authSocket?.off("new_task", handleNewtask);
+      authSocket?.off("task_deleted", handleDeletetask);
+    };
+  }, [authSocket, tasks, setTasks]);
 
   useEffect(() => {
     filterTasks();

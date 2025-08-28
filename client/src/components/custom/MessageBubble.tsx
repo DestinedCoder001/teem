@@ -68,7 +68,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
         {
           onSuccess: () => {
             setIsDeleted(true);
-            authSocket.emit("delete_chat_message", {
+            authSocket?.emit("delete_chat_message", {
               wsId,
               chatId,
               messageId: message._id,
@@ -82,7 +82,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
         {
           onSuccess: () => {
             setIsDeleted(true);
-            authSocket.emit("delete_message", message._id);
+            authSocket?.emit("delete_message", message._id);
           },
         }
       );
@@ -90,18 +90,18 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
   };
 
   useEffect(() => {
-    authSocket.on("message_deleted", (messageId: string) => {
+    authSocket?.on("message_deleted", (messageId: string) => {
       if (messageId === message._id) {
         setIsDeleted(true);
       }
     });
-    authSocket.on("edited_message", (msg: MessageProps) => {
+    authSocket?.on("edited_message", (msg: MessageProps) => {
       if (message._id === msg._id) {
         setMsgContent(msg.content);
         setEdited(msg.edited);
       }
     });
-    authSocket.on(
+    authSocket?.on(
       "edited_chat_message",
       (data: { wsId: string; chatId: string; message: MessageProps }) => {
         if (data.wsId !== wsId || data.chatId !== chatId) return;
@@ -111,7 +111,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
         }
       }
     );
-    authSocket.on(
+    authSocket?.on(
       "chat_message_deleted",
       (data: { wsId: string; chatId: string; messageId: string }) => {
         if (
@@ -124,10 +124,10 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
       }
     );
     return () => {
-      authSocket.off("edited_message");
-      authSocket.off("message_deleted");
-      authSocket.off("edited_chat_message");
-      authSocket.off("chat_message_deleted");
+      authSocket?.off("edited_message");
+      authSocket?.off("message_deleted");
+      authSocket?.off("edited_chat_message");
+      authSocket?.off("chat_message_deleted");
     };
   }, [authSocket, message._id, wsId, chatId]);
 

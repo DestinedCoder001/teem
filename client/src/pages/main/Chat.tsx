@@ -89,9 +89,9 @@ const Chat = () => {
 
   useEffect(() => {
     if (!isTyping) return;
-    authSocket.emit("chat_typing", { chatId, wsid: wsId });
+    authSocket?.emit("chat_typing", { chatId, wsid: wsId });
     return () => {
-      authSocket.emit("chat_stopped_typing", { chatId, wsid: wsId });
+      authSocket?.emit("chat_stopped_typing", { chatId, wsid: wsId });
     };
   }, [isTyping]);
 
@@ -121,14 +121,14 @@ const Chat = () => {
       };
 
       const handleSocketDisconnect = () => {
-        authSocket.emit("chat_stopped_typing", {
+        authSocket?.emit("chat_stopped_typing", {
           chatId,
           wsid: wsIdRef.current,
         });
       };
 
       const handleBeforeUnload = () => {
-        authSocket.emit("chat_stopped_typing", {
+        authSocket?.emit("chat_stopped_typing", {
           chatId,
           wsid: wsIdRef.current,
         });
@@ -146,19 +146,19 @@ const Chat = () => {
         setMessagesList((prev) => [...prev, { ...data.message }]);
       };
 
-      authSocket.on("receiver_typing", handleReceiverTyping);
-      authSocket.on("new_chat_message", handleNewMessage);
-      authSocket.on("disconnect", handleSocketDisconnect);
+      authSocket?.on("receiver_typing", handleReceiverTyping);
+      authSocket?.on("new_chat_message", handleNewMessage);
+      authSocket?.on("disconnect", handleSocketDisconnect);
       window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
-        authSocket.emit("chat_stopped_typing", {
+        authSocket?.emit("chat_stopped_typing", {
           chatId,
           wsid: wsIdRef.current,
         });
-        authSocket.off("new_chat_message", handleNewMessage);
-        authSocket.off("receiver_typing", handleReceiverTyping);
-        authSocket.off("disconnect", handleSocketDisconnect);
+        authSocket?.off("new_chat_message", handleNewMessage);
+        authSocket?.off("receiver_typing", handleReceiverTyping);
+        authSocket?.off("disconnect", handleSocketDisconnect);
         window.removeEventListener("beforeunload", handleBeforeUnload);
 
         setNewMessage({
@@ -173,7 +173,7 @@ const Chat = () => {
     if (msg) {
       setMessagesList((prev) => [...prev, { ...msg }]);
       if (authSocket) {
-        authSocket.emit("send_chat_message", { wsId, chatId, msg });
+        authSocket?.emit("send_chat_message", { wsId, chatId, msg });
       }
     }
   }, [msg]);

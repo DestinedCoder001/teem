@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { ChannelUser, JwtPayload } from "../../utils/types";
 import { channelSocketHandler } from "./channelSocketHandler";
 import { chatSocketHandler } from "./chatSocketHandler";
+import { tasksSocketHandler } from "./tasksSocketHandler";
 const app = express();
 const server = http.createServer(app);
 
@@ -53,10 +54,11 @@ io.on("connection", (socket) => {
 
   channelSocketHandler(socket, user!, activeChannelUsers);
   chatSocketHandler(socket);
+  tasksSocketHandler(socket);
 
-  // socket.onAny((event, ...args) => {
-  //   console.log(event, ...args);
-  // });
+  socket.onAny((event, ...args) => {
+    console.log(event, ...args);
+  });
 
   socket.on("disconnect", () => {
     const wsId = socket.data.wsId;

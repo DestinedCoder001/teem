@@ -9,7 +9,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import type { CustomAxiosError } from "@/lib/types";
+import type { CustomAxiosError, TaskPayload } from "@/lib/types";
 import { useCreateTaskDialogOpen } from "@/lib/store/uiStore";
 import { useForm } from "react-hook-form";
 import { Loader } from "lucide-react";
@@ -18,6 +18,7 @@ import DateTimePicker from "./DateTimePicker";
 import { useEffect, useState } from "react";
 import AssignesDropdown from "./AssignesDropdown";
 import GuidelinesEditor from "./GuidlinesEditor";
+import { getSocket } from "@/lib/socket";
 
 type FormValues = {
   taskTitle: string;
@@ -29,6 +30,7 @@ const CreateTaskDialog = () => {
   const { isOpen, setOpen } = useCreateTaskDialogOpen((state) => state);
   const { isPending, mutate } = useCreateTask();
   const [assignee, setAssignee] = useState<string>("");
+  const authSocket = getSocket()!;
 
   const {
     register,
@@ -73,12 +75,13 @@ const CreateTaskDialog = () => {
         assignedTo: assignee,
       },
       {
-        onSuccess: () => {
+        onSuccess: ({ task }: { task: TaskPayload }) => {
           toast.success("Task created successfully", {
             position: "top-center",
           });
           reset();
           setOpen(false);
+          authSocket?.emit("create_task", task);
         },
         onError: (err) => {
           const error = err as CustomAxiosError;
@@ -102,7 +105,10 @@ const CreateTaskDialog = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="taskTitle" className="text-base text-gray-700 dark:text-slate-100">
+              <Label
+                htmlFor="taskTitle"
+                className="text-base text-gray-700 dark:text-slate-100"
+              >
                 Task Title
               </Label>
               <Input
@@ -137,7 +143,10 @@ const CreateTaskDialog = () => {
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="guidelines" className="text-base text-gray-700 dark:text-slate-100">
+              <Label
+                htmlFor="guidelines"
+                className="text-base text-gray-700 dark:text-slate-100"
+              >
                 Guidelines
               </Label>
               <GuidelinesEditor

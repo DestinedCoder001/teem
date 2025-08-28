@@ -124,7 +124,7 @@ const Channel = () => {
   useEffect(() => {
     if (authSocket && wsId && channelID && isMember) {
       const audio = audioRef.current;
-      authSocket.emit("connect_channel", { wsId, id: channelID });
+      authSocket?.emit("connect_channel", { wsId, id: channelID });
 
       const handleActiveUsers = (data: ChannelUser[]) => {
         setActiveChannelUsers(data);
@@ -135,8 +135,8 @@ const Channel = () => {
       };
 
       const handleSocketDisconnect = () => {
-        authSocket.emit("stopped_typing", { wsId, id: channelID });
-        authSocket.emit("disconnect_channel", { wsId, id: channelID });
+        authSocket?.emit("stopped_typing", { wsId, id: channelID });
+        authSocket?.emit("disconnect_channel", { wsId, id: channelID });
       };
 
       const handleNewMessage = (data: MessageProps) => {
@@ -148,27 +148,27 @@ const Channel = () => {
       };
 
       const handleBeforeUnload = () => {
-        authSocket.emit("disconnect_channel", { wsId, id: channelID });
+        authSocket?.emit("disconnect_channel", { wsId, id: channelID });
       };
 
-      authSocket.on("connect", () => {
-        authSocket.emit("connect_channel", { wsId, id: channelID });
+      authSocket?.on("connect", () => {
+        authSocket?.emit("connect_channel", { wsId, id: channelID });
         queryClient.invalidateQueries({ queryKey: ["get-channel-details"] });
       });
 
-      authSocket.on("active_channel_users", handleActiveUsers);
-      authSocket.on("typing_users", handleTypingUsers);
-      authSocket.on("new_message", handleNewMessage);
+      authSocket?.on("active_channel_users", handleActiveUsers);
+      authSocket?.on("typing_users", handleTypingUsers);
+      authSocket?.on("new_message", handleNewMessage);
 
-      authSocket.on("disconnect", handleSocketDisconnect);
+      authSocket?.on("disconnect", handleSocketDisconnect);
       window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
-        authSocket.emit("disconnect_channel", { wsId, id: channelID });
-        authSocket.off("new_message", handleNewMessage);
-        authSocket.off("active_channel_users", handleActiveUsers);
+        authSocket?.emit("disconnect_channel", { wsId, id: channelID });
+        authSocket?.off("new_message", handleNewMessage);
+        authSocket?.off("active_channel_users", handleActiveUsers);
         audio?.pause();
-        authSocket.off("disconnect", handleSocketDisconnect);
+        authSocket?.off("disconnect", handleSocketDisconnect);
         window.removeEventListener("beforeunload", handleBeforeUnload);
 
         setActiveChannelUsers([]);
@@ -186,7 +186,7 @@ const Channel = () => {
     if (msg) {
       setMessagesList((prev) => [...prev, { ...msg }]);
       if (authSocket) {
-        authSocket.emit("send_message", { wsId, id: channelID, message: msg });
+        authSocket?.emit("send_message", { wsId, id: channelID, message: msg });
       }
     }
   }, [msg]);
@@ -202,9 +202,9 @@ const Channel = () => {
 
   useEffect(() => {
     if (!isTyping) return;
-    authSocket.emit("typing", { wsId, id: channelID });
+    authSocket?.emit("typing", { wsId, id: channelID });
     return () => {
-      authSocket.emit("stopped_typing", { wsId, id: channelID });
+      authSocket?.emit("stopped_typing", { wsId, id: channelID });
     };
   }, [isTyping]);
 

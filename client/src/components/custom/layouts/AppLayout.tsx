@@ -48,7 +48,7 @@ const AppLayout = () => {
 
     if (authSocket) {
       setIsOnline(true);
-      authSocket.emit("connect_ws", _id);
+      authSocket?.emit("connect_ws", _id);
     }
 
   }, [

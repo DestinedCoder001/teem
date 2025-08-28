@@ -17,7 +17,7 @@ const useEditMessage = () => {
       return data.message;
     },
     onSuccess: (data) => {
-      authSocket.emit("edit_message", { wsId, id: channelId, message: data });
+      authSocket?.emit("edit_message", { wsId, id: channelId, message: data });
     },
     onError: () => {
       toast.error("Couldn't edit message", { position: "top-center" });
