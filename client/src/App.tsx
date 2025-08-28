@@ -12,11 +12,11 @@ import Channel from "./pages/main/Channel";
 import NotFound from "./components/custom/NotFound";
 import Settings from "./pages/main/Settings";
 import User from "./pages/main/User";
-import Notifications from "./pages/main/Notifications";
 import { ThemeProvider } from "./components/custom/ThemeProvider";
 import Chat from "./pages/main/Chat";
 import OngoingMeeting from "./pages/main/OngoingMeeting";
 import Meeting from "./pages/main/Meeting";
+import Invitations from "./pages/main/Invitations";
 
 function App() {
   const theme = localStorage.getItem("teem-ui-theme") || "light";
@@ -37,7 +37,7 @@ function App() {
               <Route path="chat/:chatId" element={<Chat />} />
               <Route path="tasks" element={<Tasks />} />
               <Route path="users/:userId" element={<User />} />
-              <Route path="notifications" element={<Notifications />} />
+              <Route path="invitations" element={<Invitations />} />
               <Route path="settings" element={<Settings />} />
               <Route path="meetings" element={<Meeting />} />
             </Route>

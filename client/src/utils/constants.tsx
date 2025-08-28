@@ -1,4 +1,4 @@
-import { Bell, ListChecks, PhoneCall } from "lucide-react";
+import { ListChecks, PhoneCall, UserRoundPlus } from "lucide-react";
 
 const navlinks = [
   {
@@ -12,9 +12,9 @@ const navlinks = [
     icon: <PhoneCall strokeWidth={1.5} />,
   },
   {
-    label: "Notifications",
-    link: "/notifications",
-    icon: <Bell strokeWidth={1.5} />,
+    label: "Invitations",
+    link: "/invitations",
+    icon: <UserRoundPlus strokeWidth={1.5} />,
   },
 ];
 

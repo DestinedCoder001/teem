@@ -7,7 +7,7 @@ import { useUserStore } from "@/lib/store/userStore";
 import useAcceptInvite from "@/lib/hooks/useAcceptInvite";
 import useDeclineInvite from "@/lib/hooks/useDeclineInvite";
 
-const NotificationItem = ({ invite }: { invite: Invite }) => {
+const InvitationItem = ({ invite }: { invite: Invite }) => {
   const [open, setOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
@@ -142,4 +142,4 @@ const NotificationItem = ({ invite }: { invite: Invite }) => {
   );
 };
 
-export default NotificationItem;
+export default InvitationItem;
