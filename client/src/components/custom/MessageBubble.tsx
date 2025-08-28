@@ -10,6 +10,7 @@ import { getSocket } from "@/lib/socket";
 import useDeleteChatmsg from "@/lib/hooks/useDeleteChatMsg";
 import { useParams } from "react-router-dom";
 import MessageContextMenu from "./MessageContextMenu";
+import ShimmerImage from "./ShimmerImage";
 
 type MessageBubbleProps = {
   message: MessageProps;
@@ -171,9 +172,9 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                     className="size-52 cursor-pointer"
                     onClick={() => setOpen(true, message.attachment.url)}
                   >
-                    <img
+                    <ShimmerImage
                       src={message.attachment.url}
-                      className="w-full h-full object-cover object-center rounded-lg"
+                      className="w-full h-full rounded-lg"
                     />
                   </div>
                 </MessageContextMenu>
@@ -261,9 +262,9 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                   className="size-52 cursor-pointer"
                   onClick={() => setOpen(true, message.attachment.url)}
                 >
-                  <img
+                  <ShimmerImage
+                    className="rounded-lg w-full h-full"
                     src={message.attachment.url}
-                    className="w-full h-full object-cover object-center rounded-lg"
                   />
                 </div>
               </MessageContextMenu>

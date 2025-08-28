@@ -108,7 +108,7 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   /* --ring: oklch(0.556 0 0); */
-  --ring: oklch(0.91 0.30 342.1);
+  --ring: oklch(0.91 0.3 342.1);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -138,7 +138,8 @@
   svg,
   body,
   button:not(#sign-out) {
-    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out,
+      border-color 0.3s ease-in-out;
   }
 }
 
@@ -203,4 +204,19 @@ body {
   width: 100% !important;
   height: 100% !important;
   object-fit: contain !important;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #e5e7eb 25%, #d1d5db 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
 }

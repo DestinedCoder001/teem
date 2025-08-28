@@ -1,4 +1,5 @@
 import { File, X } from "lucide-react";
+import ShimmerImage from "./ShimmerImage";
 
 type Props = {
   handleRemoveAttachment: () => void;
@@ -17,17 +18,18 @@ const AttachmentPreview = ({ handleRemoveAttachment, attachment }: Props) => {
       }`}
     >
       <div
-        className="absolute -top-2 -right-2 cursor-pointer bg-white dark:bg-neutral-600 rounded-full border p-1"
+        className="absolute -top-2 -right-2 cursor-pointer bg-white dark:bg-neutral-600 rounded-full border p-1 z-10"
         onClick={handleRemoveAttachment}
       >
         <X size={12} className="text-slate-800 dark:text-slate-300" />
       </div>
       {attachment &&
         (isImage ? (
-          <img
-            src={attachment.url}
-            className="w-full h-full object-cover object-center rounded-md"
-          />
+          // <img
+          //   src={attachment.url}
+          //   className="w-full h-full object-cover object-center rounded-md"
+          // />
+          <ShimmerImage src={attachment.url} className="rounded-md w-full h-full" />
         ) : (
           <div className="p-2 border flex flex-col items-center gap-y-2 rounded-md max-w-52">
             <div className="flex items-center gap-x-2">
