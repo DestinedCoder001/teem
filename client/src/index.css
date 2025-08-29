@@ -220,3 +220,9 @@ body {
   background-size: 200% 100%;
   animation: shimmer 2s infinite linear;
 }
+
+.dark .shimmer {
+  background: linear-gradient(90deg, #262626 25%, #404040 50%, #262626 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+}
