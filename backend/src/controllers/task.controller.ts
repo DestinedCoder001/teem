@@ -73,8 +73,7 @@ const createTask = async (req: Request, res: Response) => {
     });
 
     const newTask = task.toObject();
-    newTask.isDue =
-      task.status === "pending" && new Date(task.dueDate) < new Date();
+    newTask.isDue = new Date(task.dueDate) < new Date();
 
     res.status(201).json({
       task: newTask,
@@ -114,8 +113,7 @@ const getTasks = async (req: Request, res: Response) => {
     });
     const modTasks = tasks.map((task) => {
       const taskObj = task.toObject();
-      taskObj.isDue =
-        task.status === "pending" && new Date(task.dueDate) < new Date();
+      taskObj.isDue = new Date(task.dueDate) < new Date();
       return taskObj;
     });
 
