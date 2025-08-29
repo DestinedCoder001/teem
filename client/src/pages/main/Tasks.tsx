@@ -1,4 +1,5 @@
 import {
+  currentEditingTask,
   currentWs,
   useUserStore,
   useUserTasks,
@@ -31,6 +32,7 @@ const Tasks = () => {
   const { setOpen } = useCreateTaskDialogOpen((state) => state);
   const { tasksData, getTasksSuccess, isPending, error } = useGetTasks();
   const { tasks, setTasks } = useUserTasks((state) => state);
+  const {task, setTask} = currentEditingTask((state) => state);
   const { user } = useUserStore((state) => state);
   const authSocket = getSocket()!;
   const [filter, setFilter] = useState("all");
@@ -80,6 +82,10 @@ const Tasks = () => {
         return { ...task, status: data.taskStatus };
       });
       setTasks(updatedTasks);
+      // update the task status open in the task sheet
+      if (task?._id === data.id) {
+        setTask({ ...task, status: data.taskStatus });
+      }
     };
     authSocket?.on("task_status_update", handleTaskStatusUpdate);
     authSocket?.on("new_task", handleNewtask);
