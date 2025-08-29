@@ -74,7 +74,7 @@ const TaskSheet = () => {
               <span className="font-semibold text-slate-700 dark:text-slate-100">
                 {task.assignedTo ? (
                   <>
-                    {task?.assignedTo?.firstName} {task?.assignedBy?.lastName}
+                    {task?.assignedTo?.firstName} {task?.assignedTo?.lastName}
                   </>
                 ) : (
                   "Deleted User"

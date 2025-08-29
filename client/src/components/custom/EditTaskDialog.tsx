@@ -9,7 +9,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import type { CustomAxiosError } from "@/lib/types";
+import type { CustomAxiosError, TaskPayload } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -19,6 +19,7 @@ import { useEditTaskDialogOpen } from "@/lib/store/uiStore";
 import { useEditTask } from "@/lib/hooks/useEditTask";
 import { currentEditingTask } from "@/lib/store/userStore";
 import GuidelinesEditor from "./GuidlinesEditor";
+import { getSocket } from "@/lib/socket";
 
 type FormValues = {
   taskTitle: string;
@@ -30,6 +31,7 @@ const EditTaskDialog = () => {
   const { isOpen, setOpen } = useEditTaskDialogOpen((state) => state);
   const { isPending, mutate } = useEditTask();
   const { task } = currentEditingTask((state) => state);
+  const authSocket = getSocket()!;
 
   const {
     register,
@@ -95,12 +97,13 @@ const EditTaskDialog = () => {
         assignedTo: assignee,
       },
       {
-        onSuccess: () => {
+        onSuccess: ({ task }: { task: TaskPayload }) => {
           toast.success("Task updated successfully", {
             position: "top-center",
           });
           reset();
           setOpen(false);
+          authSocket?.emit("edit_task", task);
         },
         onError: (err) => {
           const error = err as CustomAxiosError;
@@ -124,7 +127,10 @@ const EditTaskDialog = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="taskTitle" className="text-base text-gray-700 dark:text-slate-100">
+              <Label
+                htmlFor="taskTitle"
+                className="text-base text-gray-700 dark:text-slate-100"
+              >
                 Task Title
               </Label>
               <Input
@@ -160,7 +166,10 @@ const EditTaskDialog = () => {
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="guidelines" className="text-base text-gray-700 dark:text-slate-100">
+              <Label
+                htmlFor="guidelines"
+                className="text-base text-gray-700 dark:text-slate-100"
+              >
                 Guidelines
               </Label>
               <GuidelinesEditor

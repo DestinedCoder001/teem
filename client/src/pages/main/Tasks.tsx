@@ -32,7 +32,7 @@ const Tasks = () => {
   const { setOpen } = useCreateTaskDialogOpen((state) => state);
   const { tasksData, getTasksSuccess, isPending, error } = useGetTasks();
   const { tasks, setTasks } = useUserTasks((state) => state);
-  const {task, setTask} = currentEditingTask((state) => state);
+  const { task, setTask } = currentEditingTask((state) => state);
   const { user } = useUserStore((state) => state);
   const authSocket = getSocket()!;
   const [filter, setFilter] = useState("all");
@@ -70,6 +70,17 @@ const Tasks = () => {
     const handleNewtask = (data: TaskPayload) => {
       setTasks([...tasks, data]);
     };
+    const handleTaskEdit = (data: TaskPayload) => {
+      const updatedTasks = tasks.map((task) => {
+        if (data._id !== task._id) return task;
+        return data;
+      });
+      setTasks(updatedTasks);
+      // also update view in task sheet
+      if (task?._id === data._id) {
+        setTask(data);
+      }
+    };
     const handleDeletetask = (data: string) => {
       setTasks(tasks.filter((task) => task._id !== data));
     };
@@ -87,16 +98,18 @@ const Tasks = () => {
         setTask({ ...task, status: data.taskStatus });
       }
     };
+    authSocket?.on("task_edited", handleTaskEdit);
     authSocket?.on("task_status_update", handleTaskStatusUpdate);
     authSocket?.on("new_task", handleNewtask);
     authSocket?.on("task_deleted", handleDeletetask);
 
     return () => {
+      authSocket?.off("task_edited", handleTaskEdit);
       authSocket?.off("task_status_update", handleTaskStatusUpdate);
       authSocket?.off("new_task", handleNewtask);
       authSocket?.off("task_deleted", handleDeletetask);
     };
-  }, [authSocket, tasks, setTasks]);
+  }, [authSocket, tasks, setTasks, task, setTask]);
 
   useEffect(() => {
     filterTasks();

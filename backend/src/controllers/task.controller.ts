@@ -158,14 +158,20 @@ const editTask = async (req: Request, res: Response) => {
 
     const task = await Task.findOneAndUpdate(
       { _id: taskId, assignedBy: req.user._id },
-      { title, guidelines: cleanedGuidelines, dueDate, assignedTo }
-    );
+      { title, guidelines: cleanedGuidelines, dueDate, assignedTo },
+      { new: true }
+    ).populate({
+      path: "assignedTo assignedBy",
+      select: "firstName lastName email profilePicture",
+    });
+    const taskObj = task.toObject();
+    taskObj.isDue = new Date(task.dueDate) < new Date();
 
     if (!task) {
       return res.status(404).json({ message: "Could not edit task" });
     }
 
-    res.status(200).json({ message: "Task updated successfully" });
+    res.status(200).json({ task: taskObj });
   } catch (error: any) {
     console.log("Error in updating task: ", error);
     res.status(500).json(error.message);

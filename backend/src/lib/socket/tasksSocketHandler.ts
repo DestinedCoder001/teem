@@ -9,6 +9,13 @@ export const tasksSocketHandler = (socket: Socket) => {
     }
   });
 
+  socket.on("edit_task", (payload: any) => {
+    const wsId = socket.data.wsId;
+    if (wsId) {
+      io.to(wsId).emit("task_edited", payload);
+    }
+  });
+
   socket.on("update_task_status", (payload: { taskStatus: string; id: string }) => {
     const wsId = socket.data.wsId;
     if (wsId) {
