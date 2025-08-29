@@ -56,9 +56,9 @@ io.on("connection", (socket) => {
   chatSocketHandler(socket);
   tasksSocketHandler(socket);
 
-  socket.onAny((event, ...args) => {
-    console.log(event, ...args);
-  });
+  // socket.onAny((event, ...args) => {
+  //   console.log(event, ...args);
+  // });
 
   socket.on("disconnect", () => {
     const wsId = socket.data.wsId;

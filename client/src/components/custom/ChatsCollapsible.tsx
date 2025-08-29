@@ -58,7 +58,7 @@ const ChatsCollapsible = () => {
             >
               <MessagesSquare strokeWidth={1.5} />
             </span>
-            <span className={`${!isSidebarOpen && "lg:hidden"}`}>Chat</span>
+            <span className={`${!isSidebarOpen && "lg:hidden"}`}>Chats</span>
           </div>
           {isSidebarOpen && (
             <ChevronDown
