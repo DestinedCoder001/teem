@@ -9,18 +9,34 @@ const getChats = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+  const userId = req.user._id;
   const { chatId, workspaceId } = req.params;
+
+  if (!chatId || !workspaceId) {
+    return res.status(400).json({ message: "Missing chat id or workspace id" });
+  }
 
   if (!Types.ObjectId.isValid(workspaceId)) {
     return res.status(400).json({ message: "Invalid workspace id" });
   }
 
+  // prevent others from accessing chat
+  const splitChatId = chatId.split("-");
+  const match = splitChatId.find((id) => id === userId);
+
+  if (!match) {
+    return res.status(404).json({ message: "Chat not found" });
+  }
+
   try {
     await connectDb();
-    const chat = await Message.find({ chatId, workspace: workspaceId }).populate({
+    const chat = await Message.find({
+      chatId,
+      workspace: workspaceId,
+    }).populate({
       path: "sender",
       select: "firstName lastName profilePicture",
-    });;
+    });
     if (!chat) {
       return res.status(404).json({ message: "Chat not found" });
     }

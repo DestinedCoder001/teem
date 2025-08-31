@@ -6,6 +6,7 @@ import { ChannelUser, JwtPayload } from "../../utils/types";
 import { channelSocketHandler } from "./channelSocketHandler";
 import { chatSocketHandler } from "./chatSocketHandler";
 import { tasksSocketHandler } from "./tasksSocketHandler";
+import { notificationSocketHandler } from "./notificationSocketHandler";
 const app = express();
 const server = http.createServer(app);
 
@@ -55,6 +56,7 @@ io.on("connection", (socket) => {
   channelSocketHandler(socket, user!, activeChannelUsers);
   chatSocketHandler(socket);
   tasksSocketHandler(socket);
+  notificationSocketHandler(socket);
 
   // socket.onAny((event, ...args) => {
   //   console.log(event, ...args);

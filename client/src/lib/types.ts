@@ -88,6 +88,7 @@ export type MessageProps = {
     lastName: string;
     profilePicture: string;
   };
+  receiver?: string;
   deleted: boolean;
   edited: boolean;
   attachment: { type: string; url: string; fileName: string };

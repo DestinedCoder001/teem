@@ -50,7 +50,6 @@ const AppLayout = () => {
       setIsOnline(true);
       authSocket?.emit("connect_ws", _id);
     }
-
   }, [
     currentWsData,
     getCurrentWsSuccess,
@@ -85,12 +84,11 @@ const AppLayout = () => {
 
       const handleActiveUsers = (data: string[]) => {
         useActiveUsers.getState().setActiveUsers(data);
-      }
+      };
 
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
       socket.on("active_users", handleActiveUsers);
-
       window.addEventListener("beforeunload", handleBeforeUnload);
 
       return () => {
@@ -114,7 +112,7 @@ const AppLayout = () => {
     <>
       <nav className="h-[50px] w-full flex px-4 md:px-8 lg:px-16 items-center justify-between sticky top-0 z-50 border-b border-slate-300 dark:border-neutral-700">
         <PanelLeft
-        strokeWidth={1.5}
+          strokeWidth={1.5}
           onClick={toggleSidebar}
           className={`text-black/50 dark:text-slate-100 lg:hidden ${
             isOpen ? "opacity-0 cursor-default" : "cursor-pointer"

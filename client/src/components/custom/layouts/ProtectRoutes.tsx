@@ -5,6 +5,7 @@ import { useRefresh } from "@/lib/hooks/useRefresh";
 import type { AxiosError } from "axios";
 import AuthLoading from "../AuthLoading";
 import AuthError from "../AuthError";
+import useSubscribeNotifs from "@/lib/hooks/useSubscribeNotifs";
 
 const ProtectRoutes = () => {
   const { accessToken, setAccessToken } = useAuthStore();
@@ -22,6 +23,9 @@ const ProtectRoutes = () => {
     }
   }, [accessToken, data?.accessToken, isError, setAccessToken]);
 
+  // subscribe to channel and chat notifications
+  useSubscribeNotifs();
+  
   if (!checked || isPending) {
     return <AuthLoading />;
   }

@@ -215,11 +215,22 @@ const Channel = () => {
   }, [typingUsers]);
 
   const handleSendMessage = () => {
-    mutate({
-      message: newMessage.message,
-      channelId: channelID,
-      attachment: newMessage.attachment,
-    });
+    mutate(
+      {
+        message: newMessage.message,
+        channelId: channelID,
+        attachment: newMessage.attachment,
+      },
+      {
+        onSuccess: (message: MessageProps) => {
+          authSocket?.emit("send_channel_notif", {
+            content: message.content ? message.content : "Attachment",
+            channel: name,
+            route: `/channels/${message.channel}`,
+          });
+        },
+      }
+    );
     setNewMessage({
       message: "",
       attachment: { type: "", url: "", fileName: "" },
@@ -250,99 +261,109 @@ const Channel = () => {
 
   return (
     <>
-    <MessagesTip />
-    <div className="h-[calc(100dvh-50px)] overflow-hidden">
-      <div className="flex flex-col relative h-full">
-        <div
-          className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
-            isSidebarOpen
-              ? "lg:w-[calc(100%-220px)]"
-              : "lg:w-[calc(100%-4.5rem)]"
-          } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 cursor-pointer`}
-          onClick={handleOpenDrawer}
-        >
-          <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto truncate max-w-full">
-            {name}
-          </h1>
-          {activeChannelUsers.length > 0 && (
-            <div className="flex items-center gap-x-1 justify-center">
-              <p className="text-slate-600 dark:text-slate-100 text-xs flex items-center gap-x-0.5">
-                <span className="text-sm font-medium text-secondary">
-                  {activeChannelUsers.length}
-                </span>{" "}
-                active
-              </p>
-              <div className="size-1 bg-slate-600 dark:bg-slate-100 rounded-full" />
-              <p className="text-xs text-slate-600 dark:text-slate-100 text-nowrap text-ellipsis">
-                {membersList}
-              </p>
-            </div>
-          )}
-          {isMember && (
-            <p className="text-slate-600 dark:text-slate-200 text-xs text-center">
-              Click to view details &raquo;
-            </p>
-          )}
-        </div>
-
-        <div
-          ref={divRef}
-          className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[90px] px-4"
-        >
-          <audio ref={audioRef} src={messageTone} controls className="hidden" />
-          {!isPending && !messagesList.length && !typingUsers.length && (
-            <NoMessages />
-          )}
-          {!isPending && (
-            <div className="flex flex-col gap-y-4">
-              {messagesList.length > 0 &&
-                messagesList.map((message: MessageProps) => (
-                  <MessageBubble message={message} key={message._id} />
-                ))}
-              <TypingIndicator users={typingUsers} />
-              <div ref={inViewRef} className="h-0" />
-            </div>
-          )}
-          <ChannelDrawer
-            open={drawerOpen}
-            setOpen={setDrawerOpen}
-            activeUsers={activeChannelUsers}
-            channel={channel}
-          />
-        </div>
-
-        {!isNearBottom && (
+      <MessagesTip />
+      <div className="h-[calc(100dvh-50px)] overflow-hidden">
+        <div className="flex flex-col relative h-full">
           <div
-            onClick={handleAutoScroll}
-            className={`bg-white/80 dark:bg-black/60 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"} -translate-x-1/2 rounded-full p-1 cursor-pointer`}
+            className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
+              isSidebarOpen
+                ? "lg:w-[calc(100%-220px)]"
+                : "lg:w-[calc(100%-4.5rem)]"
+            } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 cursor-pointer`}
+            onClick={handleOpenDrawer}
           >
-            <ChevronDown strokeWidth={1.5} className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
+            <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto truncate max-w-full">
+              {name}
+            </h1>
+            {activeChannelUsers.length > 0 && (
+              <div className="flex items-center gap-x-1 justify-center">
+                <p className="text-slate-600 dark:text-slate-100 text-xs flex items-center gap-x-0.5">
+                  <span className="text-sm font-medium text-secondary">
+                    {activeChannelUsers.length}
+                  </span>{" "}
+                  active
+                </p>
+                <div className="size-1 bg-slate-600 dark:bg-slate-100 rounded-full" />
+                <p className="text-xs text-slate-600 dark:text-slate-100 text-nowrap text-ellipsis">
+                  {membersList}
+                </p>
+              </div>
+            )}
+            {isMember && (
+              <p className="text-slate-600 dark:text-slate-200 text-xs text-center">
+                Click to view details &raquo;
+              </p>
+            )}
           </div>
-        )}
 
-        <div
-          className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed bottom-0 w-full lg:transition-[width] duration-300 ${
-            isSidebarOpen
-              ? "lg:w-[calc(100%-220px)]"
-              : "lg:w-[calc(100%-4.5rem)]"
-          } z-40`}
-        >
-          {isMember ? (
-            <MessageInput
-              message={newMessage}
-              setMessage={setNewMessage}
-              inputRef={inputRef}
-              isSending={isSending}
-              handleInputChange={handleInputChange}
-              handleSendMessage={handleSendMessage}
-              authSocket={authSocket}
+          <div
+            ref={divRef}
+            className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[90px] px-4"
+          >
+            <audio
+              ref={audioRef}
+              src={messageTone}
+              controls
+              className="hidden"
             />
-          ) : (
-            <JoinChannel />
+            {!isPending && !messagesList.length && !typingUsers.length && (
+              <NoMessages />
+            )}
+            {!isPending && (
+              <div className="flex flex-col gap-y-4">
+                {messagesList.length > 0 &&
+                  messagesList.map((message: MessageProps) => (
+                    <MessageBubble message={message} key={message._id} />
+                  ))}
+                <TypingIndicator users={typingUsers} />
+                <div ref={inViewRef} className="h-0" />
+              </div>
+            )}
+            <ChannelDrawer
+              open={drawerOpen}
+              setOpen={setDrawerOpen}
+              activeUsers={activeChannelUsers}
+              channel={channel}
+            />
+          </div>
+
+          {!isNearBottom && (
+            <div
+              onClick={handleAutoScroll}
+              className={`bg-white/80 dark:bg-black/60 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${
+                isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"
+              } -translate-x-1/2 rounded-full p-1 cursor-pointer`}
+            >
+              <ChevronDown
+                strokeWidth={1.5}
+                className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]"
+              />
+            </div>
           )}
+
+          <div
+            className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed bottom-0 w-full lg:transition-[width] duration-300 ${
+              isSidebarOpen
+                ? "lg:w-[calc(100%-220px)]"
+                : "lg:w-[calc(100%-4.5rem)]"
+            } z-40`}
+          >
+            {isMember ? (
+              <MessageInput
+                message={newMessage}
+                setMessage={setNewMessage}
+                inputRef={inputRef}
+                isSending={isSending}
+                handleInputChange={handleInputChange}
+                handleSendMessage={handleSendMessage}
+                authSocket={authSocket}
+              />
+            ) : (
+              <JoinChannel />
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 };

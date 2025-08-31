@@ -1,6 +1,6 @@
 import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
 import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import type { MessageProps, User } from "@/lib/types";
 import { getSocket } from "@/lib/socket";
@@ -58,6 +58,14 @@ const Chat = () => {
   }
 
   const wsIdRef = useRef(wsId);
+
+  const receiverData = useMemo(() => {
+  if (!chatId || !me?._id) return undefined;
+  const arr = chatId.split("-");
+  const receiverId = arr.find((item) => item !== me._id);
+  return wsUsers.find((user) => user._id === receiverId);
+}, [chatId, me?._id, wsUsers]);
+
   useEffect(() => {
     // make ws id available before unload
     wsIdRef.current = wsId;
@@ -96,16 +104,13 @@ const Chat = () => {
   }, [isTyping]);
 
   useEffect(() => {
-    const arr = chatId?.split("-");
-    const receiverId = arr?.filter((item) => item !== me?._id);
-    const receiverData = wsUsers.find((user) => user._id === receiverId![0]);
     if (receiverData) {
       setCurrentChat(receiverData);
     }
     return () => {
       setCurrentChat(undefined);
     };
-  }, [chatId, wsUsers, me]);
+  }, [receiverData]);
 
   useEffect(() => {
     if (authSocket && wsId && chatId) {
@@ -186,11 +191,24 @@ const Chat = () => {
 
   const handleSendMessage = () => {
     if (!currentChat) return;
-    sendChat({
-      message: newMessage.message,
-      attachment: newMessage.attachment,
-      receiverId: currentChat._id,
-    });
+    sendChat(
+      {
+        message: newMessage.message,
+        attachment: newMessage.attachment,
+        receiverId: currentChat._id,
+      },
+      {
+        onSuccess: (message: MessageProps) => {
+          authSocket?.emit("send_chat_notif", {
+            content: message.content ? message.content : "Attachment",
+            sender: `${message.sender?.firstName} ${message.sender?.lastName}`,
+            receiver: message.receiver,
+            icon: message.sender?.profilePicture,
+            route: `/chat/${chatId}`,
+          });
+        },
+      }
+    );
     setNewMessage({
       message: "",
       attachment: { type: "", url: "", fileName: "" },
@@ -214,7 +232,6 @@ const Chat = () => {
     return <AppError />;
   }
 
-  console.log(currentChat);
 
   return (
     <>
@@ -305,7 +322,10 @@ const Chat = () => {
                 isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"
               } -translate-x-1/2 rounded-full p-1 cursor-pointer`}
             >
-              <ChevronDown strokeWidth={1.5} className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]" />
+              <ChevronDown
+                strokeWidth={1.5}
+                className="text-slate-600 dark:text-slate-100 translate-y-[0.08rem]"
+              />
             </div>
           )}
 
