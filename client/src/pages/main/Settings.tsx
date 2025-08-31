@@ -1,4 +1,5 @@
 import DeleteAccountDialog from "@/components/custom/DeleteAccountDialog";
+import NotificationsToggle from "@/components/custom/NotificationsToggle";
 import SendInviteDialog from "@/components/custom/SendInviteDialog";
 import ThemeToggle from "@/components/custom/ThemeToggle";
 import UserRemoveAlert from "@/components/custom/UserRemoveAlert";
@@ -53,6 +54,7 @@ const Settings = () => {
     <div className="p-4 h-auto">
       <WorkspaceSettings />
       <ThemeToggle />
+      <NotificationsToggle />
       <section className="space-y-4 mt-8">
         <div>
           <h3 className="text-xl font-medium">Delete Account</h3>

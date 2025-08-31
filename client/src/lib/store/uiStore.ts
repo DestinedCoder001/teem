@@ -17,6 +17,21 @@ const useSidebarOpen = create<{
   )
 );
 
+const useAllowNotifications = create<{
+  subscribe: boolean;
+  toggleSubscribe: (subscribe: boolean) => void;
+}>()(
+  persist(
+    (set) => ({
+      subscribe: true,
+      toggleSubscribe: (subscribe) => set({ subscribe: subscribe }),
+    }),
+    {
+      name: "teem-notifs",
+    }
+  )
+);
+
 const useCreateWsDialogOpen = create<{
   isOpen: boolean;
   setOpen: (open: boolean) => void;
@@ -136,6 +151,7 @@ const useCreateMeetingOpen = create<{
 
 export {
   useSidebarOpen,
+  useAllowNotifications,
   useCreateWsDialogOpen,
   useCreateChannelDialogOpen,
   useCreateTaskDialogOpen,

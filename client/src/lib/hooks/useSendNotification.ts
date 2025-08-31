@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAllowNotifications } from "../store/uiStore";
 
 export const useSendNotification = () => {
   const navigate = useNavigate();
   const {pathname} = useLocation()
+  const {subscribe} = useAllowNotifications(state => state);
 
   const requestPermission = () => {
     if ("Notification" in window) {
@@ -23,7 +25,8 @@ export const useSendNotification = () => {
     tag?: string;
     route?: string;
   }) => {
-    if ("Notification" in window && Notification.permission === "granted") {
+    const notificationsAllowed = "Notification" in window && Notification.permission === "granted" && subscribe
+    if (notificationsAllowed) {
       const isCurrentRoute = route && pathname === route
       if (!isCurrentRoute || document.hidden) {
         const notification = new Notification(title, {
