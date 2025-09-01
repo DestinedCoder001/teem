@@ -8,6 +8,8 @@ import { Types } from "mongoose";
 import WorkspaceInvite from "../models/workspaceInvite.model";
 import Channel from "../models/channel.model";
 import { Task } from "../models/task.model";
+import { Meeting } from "../models/meeting.model";
+import Message from "../models/message.model";
 
 const createWs = async (req: Request, res: Response) => {
   const validationResults = validationResult(req);
@@ -359,6 +361,8 @@ const deleteWs = async (req: Request, res: Response) => {
     await Task.deleteMany({ workspace: workspaceId });
     await Channel.deleteMany({ workspace: workspaceId });
     await WorkspaceInvite.deleteMany({ workspace: workspaceId });
+    await Meeting.deleteMany({ workspace: workspaceId });
+    await Message.deleteMany({ workspace: workspaceId });
     const deletedWorkspace = await Workspace.findOneAndDelete({
       _id: workspaceId,
     });
