@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import SignalDisplay from "./SignalDisplay";
 import MeetControls from "./MeetControls";
 import { VideoOff } from "lucide-react";
+import LeftMeeting from "./LeftMeeting";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -38,7 +39,7 @@ const MeetingContent = () => {
     screenTrack,
     isLoading: screenLoading,
     error: screenError,
-  } = useLocalScreenTrack(screenShareOn, {systemAudio: "include"}, "auto");
+  } = useLocalScreenTrack(screenShareOn, { systemAudio: "include" }, "auto");
 
   const { uplinkNetworkQuality, downlinkNetworkQuality } = useNetworkQuality();
   const { mutate, data } = useJoinMeeting();
@@ -291,11 +292,36 @@ const MeetingContent = () => {
     }
   };
 
-  const leave = () => setConnected(false);
+  const leave = async () => {
+    setConnected(false);
+
+    // Stop local tracks
+    if (localCameraTrack) {
+      await localCameraTrack.setEnabled(false).catch(console.error);
+      await localCameraTrack.close();
+    }
+
+    if (localMicrophoneTrack) {
+      await localMicrophoneTrack.setEnabled(false).catch(console.error);
+      await localMicrophoneTrack.close();
+    }
+
+    if (screenTrack) {
+      const videoTrack = Array.isArray(screenTrack)
+        ? screenTrack[0]
+        : screenTrack;
+      await videoTrack.setEnabled(false).catch(console.error);
+      await videoTrack.close();
+    }
+  };
 
   const showCameraOff =
     (!selectedUser && !cameraOn && !screenShareOn) ||
     (selectedUser && !selectedUser.hasVideo && !cameraOn && !screenShareOn);
+
+  if (!connected) {
+    return <LeftMeeting />;
+  }
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:pt-4 md:px-6 md:pb-6">
