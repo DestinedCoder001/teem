@@ -65,6 +65,9 @@ const deleteMeeting = async (req: Request, res: Response) => {
       meeting.host.toString() === req.user._id ||
       workspace.createdBy.toString() === req.user._id;
 
+    if (!meeting) {
+      return res.status(404).json({ message: "Meeting not found" });
+    }
     if (!isAllowed) {
       return res.status(403).json({ message: "Action not permitted." });
     }

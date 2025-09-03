@@ -23,6 +23,9 @@ import SignalDisplay from "./SignalDisplay";
 import MeetControls from "./MeetControls";
 import { VideoOff } from "lucide-react";
 import LeftMeeting from "./LeftMeeting";
+import type { AxiosError } from "axios";
+import NotFound from "./NotFound";
+import AppError from "./AppError";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -42,7 +45,7 @@ const MeetingContent = () => {
   } = useLocalScreenTrack(screenShareOn, { systemAudio: "include" }, "auto");
 
   const { uplinkNetworkQuality, downlinkNetworkQuality } = useNetworkQuality();
-  const { mutate, data } = useJoinMeeting();
+  const { mutate, data, error: joinError } = useJoinMeeting();
   const { currentWsData } = useGetWsDetails();
   const { meetingId } = useParams();
   const { user } = useGetMe();
@@ -318,6 +321,14 @@ const MeetingContent = () => {
   const showCameraOff =
     (!selectedUser && !cameraOn && !screenShareOn) ||
     (selectedUser && !selectedUser.hasVideo && !cameraOn && !screenShareOn);
+
+  if (joinError) {
+    const err = joinError as AxiosError;
+    if (err.status === 404) {
+      return <NotFound text="Meeting not found" />;
+    }
+    return <AppError />;
+  }
 
   if (!connected) {
     return <LeftMeeting />;
