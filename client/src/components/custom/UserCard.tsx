@@ -8,6 +8,7 @@ type UserCardProps = {
   videoTrack?: IRemoteVideoTrack;
   videoOn?: boolean;
   audioOn?: boolean;
+  isSelected?: boolean;
 };
 
 const UserCard = ({
@@ -16,12 +17,14 @@ const UserCard = ({
   videoTrack,
   videoOn = true,
   audioOn = true,
+  isSelected = false,
 }: UserCardProps) => {
   const videoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (videoRef.current) {
-      if (videoTrack && videoOn) {
+      if (videoTrack && videoOn && !isSelected) {
+        // Only play video if NOT in main screen
         videoTrack.stop();
         videoTrack.play(videoRef.current);
       } else if (videoTrack) {
@@ -34,16 +37,20 @@ const UserCard = ({
         videoTrack.stop();
       }
     };
-  }, [videoTrack, videoOn]);
+  }, [videoTrack, videoOn, isSelected]);
 
   return (
-    <div className="rounded-sm overflow-hidden shrink-0 w-48 relative bg-black">
+    <div
+      className={`rounded-sm overflow-hidden shrink-0 w-48 relative bg-black ${
+        isSelected ? "border-2 border-primary" : ""
+      }`}
+    >
       {!audioOn && (
         <div className="bg-black/60 text-white absolute top-2 right-2 rounded-sm z-10 p-1">
           <MicOff size={16} />
         </div>
       )}
-      {videoTrack && videoOn ? (
+      {videoTrack && videoOn && !isSelected ? (
         <div ref={videoRef} className="w-full h-28" />
       ) : (
         <img src={src} alt={name} className="w-full h-28 object-cover" />
