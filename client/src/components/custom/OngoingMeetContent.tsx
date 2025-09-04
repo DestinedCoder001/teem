@@ -10,6 +10,7 @@ import {
   useRemoteVideoTracks,
   type IRemoteVideoTrack,
   useNetworkQuality,
+  useRTCClient,
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
 import useJoinMeeting from "@/lib/hooks/useJoinMeeting";
@@ -36,6 +37,7 @@ const MeetingContent = () => {
   const [showSignal, setShowSignal] = useState(false);
   const [screenShareOn, setScreenShareOn] = useState(false);
 
+  const client = useRTCClient();
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
   const { localCameraTrack } = useLocalCameraTrack(cameraOn);
   const {
@@ -85,21 +87,19 @@ const MeetingContent = () => {
     canJoin
   );
 
-  const trackToPublish =
-    screenShareOn && screenTrack
-      ? Array.isArray(screenTrack)
-        ? screenTrack // [video, audio]
-        : [screenTrack] // only video
-      : null;
+  // Initial publish of tracks that are on by default
+  const initialTracks = [];
+  if (micOn && localMicrophoneTrack) initialTracks.push(localMicrophoneTrack);
+  if (cameraOn && localCameraTrack && !screenShareOn) initialTracks.push(localCameraTrack);
+  if (screenShareOn && screenTrack) {
+    if (Array.isArray(screenTrack)) {
+      initialTracks.push(...screenTrack);
+    } else {
+      initialTracks.push(screenTrack);
+    }
+  }
 
-  usePublish(
-    [
-      micOn ? localMicrophoneTrack : null,
-      !screenShareOn && cameraOn ? localCameraTrack : null,
-      ...(trackToPublish ?? []),
-    ],
-    canJoin
-  );
+  usePublish(initialTracks, canJoin);
 
   // Remote users
   const remoteUsers = useRemoteUsers();
@@ -166,7 +166,7 @@ const MeetingContent = () => {
         vid.style.transform = "";
         vid.style.objectFit = "contain";
       });
-    } else if (cameraOn && localCameraTrack) {
+    } else if (cameraOn && localCameraTrack && !screenShareOn) {
       localCameraTrack.play(mainRef.current);
       requestAnimationFrame(() => {
         const vids = mainRef.current!.getElementsByTagName("video");
@@ -179,29 +179,13 @@ const MeetingContent = () => {
   }, [selectedUser, cameraOn, localCameraTrack, screenShareOn, screenTrack]);
 
   useEffect(() => {
-    if (screenTrack) {
+    if (screenTrack && screenShareOn) {
       const videoTrack = Array.isArray(screenTrack)
         ? screenTrack[0]
         : screenTrack;
 
       const handleTrackEnded = async () => {
         setScreenShareOn(false);
-        try {
-          await videoTrack.setEnabled(false);
-          await videoTrack.close();
-        } catch (e) {
-          console.error("Failed to disable or close screen track:", e);
-        }
-
-        //Re-enable camera if it was on
-        if (cameraOn && localCameraTrack) {
-          try {
-            await localCameraTrack.setEnabled(true);
-          } catch (e) {
-            console.error("Failed to re-enable camera after screen share:", e);
-          }
-        }
-
         toast.info("Screen sharing stopped");
       };
 
@@ -213,22 +197,10 @@ const MeetingContent = () => {
 
     if (screenError) {
       setScreenShareOn(false);
+      // setScreenTrackKey(0);
       toast.error("Screen sharing failed");
     }
-  }, [screenTrack, screenError, cameraOn, localCameraTrack]);
-
-  useEffect(() => {
-    if (screenShareOn) {
-      setCameraOn(false);
-      if (localCameraTrack) {
-        localCameraTrack
-          .setEnabled(false)
-          .catch((e) =>
-            console.error("Failed to disable camera during screen share:", e)
-          );
-      }
-    }
-  }, [screenShareOn, localCameraTrack]);
+  }, [screenTrack, screenError, screenShareOn]);
 
   useEffect(() => {
     if (!selectedUser) return;
@@ -241,80 +213,137 @@ const MeetingContent = () => {
   }, [remoteUsers, selectedUser]);
 
   const toggleMic = async () => {
-    if (!localMicrophoneTrack) {
-      setMicOn((v) => !v);
-      return;
-    }
+    if (!client || !canJoin) return;
+    
     try {
-      await localMicrophoneTrack.setEnabled(!micOn);
-      setMicOn((v) => !v);
-    } catch {
+      if (micOn && localMicrophoneTrack) {
+        // Unpublish mic
+        await client.unpublish(localMicrophoneTrack);
+        await localMicrophoneTrack.setEnabled(false);
+      } else if (!micOn && localMicrophoneTrack) {
+        // Republish mic
+        await localMicrophoneTrack.setEnabled(true);
+        await client.publish(localMicrophoneTrack);
+      }
+      setMicOn(!micOn);
+    } catch (error) {
+      console.error("Error toggling mic:", error);
       toast.error("Couldn't toggle mic");
     }
   };
 
   const toggleCamera = async () => {
-    if (!localCameraTrack) {
-      setCameraOn((v) => !v);
-      return;
-    }
+    if (!client || !canJoin || screenShareOn) return;
+    
     try {
-      await localCameraTrack.setEnabled(!cameraOn);
-      setCameraOn((v) => !v);
-    } catch {
+      if (cameraOn && localCameraTrack) {
+        // Unpublish camera
+        await client.unpublish(localCameraTrack);
+        await localCameraTrack.setEnabled(false);
+      } else if (!cameraOn && localCameraTrack) {
+        // Republish camera
+        await localCameraTrack.setEnabled(true);
+        await client.publish(localCameraTrack);
+      }
+      setCameraOn(!cameraOn);
+    } catch (error) {
+      console.error("Error toggling camera:", error);
       toast.error("Couldn't toggle camera");
     }
   };
 
   const toggleScreenShare = async () => {
-    if (!screenShareOn) {
-      setScreenShareOn(true);
-      return;
-    } else {
-      setScreenShareOn(false);
-      if (screenTrack) {
-        const videoTrack = Array.isArray(screenTrack)
-          ? screenTrack[0]
-          : screenTrack;
-        try {
-          await videoTrack.setEnabled(false);
-          await videoTrack.close();
-        } catch (e) {
-          console.error("Error closing screen track on stop:", e);
-        }
-      }
+    if (!client || !canJoin) return;
 
-      //Re-enable camera if it was supposed to be on
-      if (cameraOn && localCameraTrack) {
-        try {
+    try {
+      if (!screenShareOn) {
+        // Starting screen share
+        setScreenShareOn(true);
+        
+        // Unpublish camera first if it's on
+        if (cameraOn && localCameraTrack) {
+          await client.unpublish(localCameraTrack);
+          await localCameraTrack.setEnabled(false);
+        }
+      } else {
+        // Stopping screen share
+        setScreenShareOn(false);
+        
+        // Unpublish screen tracks
+        if (screenTrack) {
+          if (Array.isArray(screenTrack)) {
+            await client.unpublish(screenTrack);
+            await screenTrack[0].close();
+            if (screenTrack[1]) await screenTrack[1].close();
+          } else {
+            await client.unpublish(screenTrack);
+            await screenTrack.close();
+          }
+        }
+        
+        // Republish camera if it should be on
+        if (cameraOn && localCameraTrack) {
           await localCameraTrack.setEnabled(true);
-        } catch (e) {
-          console.error("Failed to re-enable camera after screen share:", e);
+          await client.publish(localCameraTrack);
         }
       }
+    } catch (error) {
+      console.error("Error toggling screen share:", error);
+      toast.error("Screen sharing failed");
+      setScreenShareOn(false);
     }
   };
+
+  // Handle screen track publishing when it becomes available
+  useEffect(() => {
+    if (!client || !canJoin || !screenShareOn || !screenTrack) return;
+
+    const publishScreenTrack = async () => {
+      try {
+        if (Array.isArray(screenTrack)) {
+          await client.publish(screenTrack);
+        } else {
+          await client.publish(screenTrack);
+        }
+      } catch (error) {
+        console.error("Error publishing screen track:", error);
+        setScreenShareOn(false);
+        toast.error("Failed to start screen sharing");
+      }
+    };
+
+    publishScreenTrack();
+  }, [client, canJoin, screenShareOn, screenTrack]);
 
   const leave = async () => {
     setConnected(false);
 
-    // Stop local tracks
-    if (localCameraTrack) {
-      await localCameraTrack.setEnabled(false).catch(console.error);
-      await localCameraTrack.close();
-    }
+    try {
+      // Unpublish and close all tracks
+      if (client) {
+        await client.unpublish();
+      }
 
-    if (localMicrophoneTrack) {
-      await localMicrophoneTrack.setEnabled(false).catch(console.error);
-      await localMicrophoneTrack.close();
-    }
+      if (localCameraTrack) {
+        await localCameraTrack.setEnabled(false);
+        await localCameraTrack.close();
+      }
 
-    if (screenTrack) {
-      const videoTrack = Array.isArray(screenTrack)
-        ? screenTrack[0]
-        : screenTrack;
-      await videoTrack.setEnabled(false).catch(console.error);
-      await videoTrack.close();
+      if (localMicrophoneTrack) {
+        await localMicrophoneTrack.setEnabled(false);
+        await localMicrophoneTrack.close();
+      }
+
+      if (screenTrack) {
+        if (Array.isArray(screenTrack)) {
+          await screenTrack[0].close();
+          if (screenTrack[1]) await screenTrack[1].close();
+        } else {
+          await screenTrack.close();
+        }
+      }
+    } catch (error) {
+      console.error("Error during leave:", error);
     }
   };
 
