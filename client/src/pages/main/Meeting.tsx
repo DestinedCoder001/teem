@@ -54,7 +54,6 @@ const Meeting = () => {
               _id={meeting._id}
               key={meeting._id}
               title={meeting.title}
-              ongoing={meeting.ongoing}
               host={meeting.host}
             />
           ))}

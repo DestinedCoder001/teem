@@ -193,7 +193,7 @@ const MeetingContent = () => {
           console.error("Failed to disable or close screen track:", e);
         }
 
-        // ✅ Re-enable camera if it was on
+        //Re-enable camera if it was on
         if (cameraOn && localCameraTrack) {
           try {
             await localCameraTrack.setEnabled(true);
@@ -284,7 +284,7 @@ const MeetingContent = () => {
         }
       }
 
-      // ✅ Re-enable camera if it was supposed to be on
+      //Re-enable camera if it was supposed to be on
       if (cameraOn && localCameraTrack) {
         try {
           await localCameraTrack.setEnabled(true);

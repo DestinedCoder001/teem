@@ -33,7 +33,6 @@ const createMeeting = async (req: Request, res: Response) => {
       title,
       allowedUsers,
       host: req.user._id,
-      ongoing: true,
       workspace: workspaceId,
     });
     return res.status(200).json({ message: "Meeting created successfully" });
@@ -126,10 +125,6 @@ const joinMeeting = async (req: Request, res: Response) => {
 
     if (!meeting) {
       return res.status(404).json({ message: "Meeting not found" });
-    }
-
-    if (!meeting.ongoing) {
-      return res.status(401).json({ message: "Meeting has ended" });
     }
 
     const isAllowed = meeting.allowedUsers.find(

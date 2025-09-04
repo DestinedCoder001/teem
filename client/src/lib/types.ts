@@ -114,7 +114,6 @@ export type ChannelUser = {
 export type MeetingCardProps = {
   _id: string;
   title: string;
-  ongoing: boolean;
   host: ChannelUser;
   allowedUsers: ChannelUser[];
 };
