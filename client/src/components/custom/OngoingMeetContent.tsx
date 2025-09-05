@@ -1,16 +1,17 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   useJoin,
   useLocalCameraTrack,
   useLocalMicrophoneTrack,
   useLocalScreenTrack,
-  usePublish,
   useRemoteUsers,
   useRemoteAudioTracks,
   useRemoteVideoTracks,
   type IRemoteVideoTrack,
   useNetworkQuality,
   useRTCClient,
+  type ILocalVideoTrack,
+  type ILocalAudioTrack,
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
 import useJoinMeeting from "@/lib/hooks/useJoinMeeting";
@@ -31,18 +32,22 @@ import AppError from "./AppError";
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
 const MeetingContent = () => {
-  const [micOn, setMicOn] = useState(true);
-  const [cameraOn, setCameraOn] = useState(true);
+  const [micOn, setMicOn] = useState(false);
+  const [cameraOn, setCameraOn] = useState(false);
   const [connected, setConnected] = useState(true);
   const [showSignal, setShowSignal] = useState(false);
   const [screenShareOn, setScreenShareOn] = useState(false);
 
+  const [micLoading, setMicLoading] = useState(false);
+  const [cameraLoading, setCameraLoading] = useState(false);
+  const [screenLoading, setScreenLoading] = useState(false);
+
   const client = useRTCClient();
-  const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
-  const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+  const { localMicrophoneTrack } = useLocalMicrophoneTrack(true);
+  const { localCameraTrack } = useLocalCameraTrack(true);
   const {
     screenTrack,
-    isLoading: screenLoading,
+    isLoading: screenTrackLoading,
     error: screenError,
   } = useLocalScreenTrack(screenShareOn, { systemAudio: "include" }, "auto");
 
@@ -55,7 +60,6 @@ const MeetingContent = () => {
 
   const mainRef = useRef<HTMLDivElement>(null);
 
-  // Track selected user for main display
   const [selectedUser, setSelectedUser] = useState<{
     _id: string;
     name: string;
@@ -87,25 +91,103 @@ const MeetingContent = () => {
     canJoin
   );
 
-  // Initial publish of tracks that are on by default
-  const initialTracks = [];
-  if (micOn && localMicrophoneTrack) initialTracks.push(localMicrophoneTrack);
-  if (cameraOn && localCameraTrack && !screenShareOn) initialTracks.push(localCameraTrack);
-  if (screenShareOn && screenTrack) {
-    if (Array.isArray(screenTrack)) {
-      initialTracks.push(...screenTrack);
-    } else {
-      initialTracks.push(screenTrack);
+  const tracksToPublish = useCallback(() => {
+    const tracks = [];
+
+    if (micOn && localMicrophoneTrack) {
+      tracks.push(localMicrophoneTrack);
     }
-  }
 
-  usePublish(initialTracks, canJoin);
+    if (screenShareOn && screenTrack) {
+      if (Array.isArray(screenTrack)) {
+        tracks.push(...screenTrack);
+      } else {
+        tracks.push(screenTrack);
+      }
+    } else if (cameraOn && localCameraTrack && !screenShareOn) {
+      tracks.push(localCameraTrack);
+    }
 
-  // Remote users
+    return tracks;
+  }, [
+    micOn,
+    localMicrophoneTrack,
+    screenShareOn,
+    screenTrack,
+    cameraOn,
+    localCameraTrack,
+  ]);
+
+  const [currentPublishedTracks, setCurrentPublishedTracks] = useState<
+    (ILocalVideoTrack | ILocalAudioTrack)[]
+  >([]);
+  const [hasInitiallyPublished, setHasInitiallyPublished] = useState(false);
+
+  useEffect(() => {
+    if (!canJoin || !connected || !client) return;
+
+    const updateTracks = async () => {
+      try {
+        const newTracks = tracksToPublish();
+
+        const tracksChanged =
+          currentPublishedTracks.length !== newTracks.length ||
+          !currentPublishedTracks.every((currentTrack) =>
+            newTracks.some((newTrack) => newTrack === currentTrack)
+          ) ||
+          !newTracks.every((newTrack) =>
+            currentPublishedTracks.some(
+              (currentTrack) => currentTrack === newTrack
+            )
+          );
+
+        if (!tracksChanged && hasInitiallyPublished) return;
+
+        const tracksToUnpublish = currentPublishedTracks.filter(
+          (currentTrack) => !newTracks.includes(currentTrack)
+        );
+
+        const tracksToPublishNew = newTracks.filter(
+          (newTrack) => !currentPublishedTracks.includes(newTrack)
+        );
+
+        if (tracksToUnpublish.length > 0) {
+          await client.unpublish(tracksToUnpublish).catch(console.warn);
+        }
+
+        if (tracksToPublishNew.length > 0) {
+          await client.publish(tracksToPublishNew);
+        }
+
+        setCurrentPublishedTracks(newTracks);
+        setHasInitiallyPublished(true);
+      } catch (error) {
+        console.error("Error updating published tracks:", error);
+      }
+    };
+
+    updateTracks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    canJoin,
+    connected,
+    client,
+    localMicrophoneTrack,
+    localCameraTrack,
+    screenTrack,
+    micOn,
+    cameraOn,
+    screenShareOn,
+    hasInitiallyPublished,
+  ]);
+
   const remoteUsers = useRemoteUsers();
   const { videoTracks } = useRemoteVideoTracks(remoteUsers);
   const { audioTracks } = useRemoteAudioTracks(remoteUsers);
-  audioTracks.forEach((t) => t.play());
+
+  useEffect(() => {
+    audioTracks.forEach((track) => track.play());
+  }, [audioTracks]);
 
   const remoteAudioMap = Object.fromEntries(
     audioTracks.map((at) => [String(at.getUserId()), at])
@@ -113,250 +195,245 @@ const MeetingContent = () => {
 
   const inCallUsers = ((currentWsData?.users as ChannelUser[]) || [])
     .filter((u) => remoteUsers.some((ru) => String(ru.uid) === u._id))
-    .map(
-      (
-        u
-      ): ChannelUser & {
-        videoTrack?: IRemoteVideoTrack;
-        hasVideo?: boolean;
-        hasAudio?: boolean;
-      } => {
-        const userId = u._id;
-        const userVideoTrack = videoTracks.find(
-          (vt) => String(vt.getUserId()) === userId
-        );
-        const audioTrack = remoteAudioMap[userId];
-        return {
-          ...u,
-          videoTrack: userVideoTrack,
-          hasVideo: !!userVideoTrack,
-          hasAudio: !!audioTrack,
-        };
-      }
-    );
+    .map((u) => {
+      const userId = u._id;
+      const userVideoTrack = videoTracks.find(
+        (vt) => String(vt.getUserId()) === userId
+      );
+      const audioTrack = remoteAudioMap[userId];
+      return {
+        ...u,
+        videoTrack: userVideoTrack,
+        hasVideo: !!userVideoTrack,
+        hasAudio: !!audioTrack,
+      };
+    });
 
-  // Main display logic
   useEffect(() => {
     if (!mainRef.current) return;
     mainRef.current.innerHTML = "";
 
-    // If selected user exists but lost video -> revert to my own stream/content
     if (selectedUser && !selectedUser.hasVideo) {
       setSelectedUser(null);
     }
 
-    if (selectedUser?.videoTrack && selectedUser.hasVideo) {
-      selectedUser.videoTrack.play(mainRef.current);
+    const displayVideo = (
+      track: IRemoteVideoTrack | ILocalVideoTrack,
+      shouldMirror = false
+    ) => {
+      if (mainRef.current) track.play(mainRef.current);
       requestAnimationFrame(() => {
-        const vids = mainRef.current!.getElementsByTagName("video");
-        const vid = vids[vids.length - 1] as HTMLVideoElement | null;
-        if (!vid) return;
-        vid.style.transform = "";
-        vid.style.objectFit = "contain";
+        const videos = mainRef.current!.getElementsByTagName("video");
+        const video = videos[videos.length - 1] as HTMLVideoElement;
+        if (video) {
+          video.style.transform = shouldMirror ? "scaleX(-1)" : "";
+          video.style.objectFit = "contain";
+        }
       });
+    };
+
+    if (selectedUser?.videoTrack && selectedUser.hasVideo) {
+      displayVideo(selectedUser.videoTrack);
     } else if (screenShareOn && screenTrack) {
       const videoTrack = Array.isArray(screenTrack)
         ? screenTrack[0]
         : screenTrack;
-      videoTrack.play(mainRef.current);
-      requestAnimationFrame(() => {
-        const vids = mainRef.current!.getElementsByTagName("video");
-        const vid = vids[vids.length - 1] as HTMLVideoElement | null;
-        if (!vid) return;
-        vid.style.transform = "";
-        vid.style.objectFit = "contain";
-      });
+      displayVideo(videoTrack);
     } else if (cameraOn && localCameraTrack && !screenShareOn) {
-      localCameraTrack.play(mainRef.current);
-      requestAnimationFrame(() => {
-        const vids = mainRef.current!.getElementsByTagName("video");
-        const vid = vids[vids.length - 1] as HTMLVideoElement | null;
-        if (!vid) return;
-        vid.style.transform = "scaleX(-1)";
-        vid.style.objectFit = "contain";
-      });
+      displayVideo(localCameraTrack, true);
     }
   }, [selectedUser, cameraOn, localCameraTrack, screenShareOn, screenTrack]);
 
   useEffect(() => {
-    if (screenTrack && screenShareOn) {
-      const videoTrack = Array.isArray(screenTrack)
-        ? screenTrack[0]
-        : screenTrack;
+    if (!screenTrack || !screenShareOn) return;
 
-      const handleTrackEnded = async () => {
-        setScreenShareOn(false);
-        toast.info("Screen sharing stopped");
-      };
+    const videoTrack = Array.isArray(screenTrack)
+      ? screenTrack[0]
+      : screenTrack;
 
-      videoTrack.on("track-ended", handleTrackEnded);
-      return () => {
-        videoTrack.off("track-ended", handleTrackEnded);
-      };
-    }
+    const handleTrackEnded = () => {
+      setScreenShareOn(false);
+      toast.info("Screen sharing stopped");
+    };
 
+    videoTrack.on("track-ended", handleTrackEnded);
+    return () => videoTrack.off("track-ended", handleTrackEnded);
+  }, [screenTrack, screenShareOn]);
+
+  useEffect(() => {
     if (screenError) {
       setScreenShareOn(false);
-      // setScreenTrackKey(0);
       toast.error("Screen sharing failed");
     }
-  }, [screenTrack, screenError, screenShareOn]);
+  }, [screenError]);
 
   useEffect(() => {
     if (!selectedUser) return;
-    const stillInCall = remoteUsers.some(
+
+    const stillHasVideo = remoteUsers.some(
       (ru) => String(ru.uid) === selectedUser._id && ru.videoTrack
     );
-    if (!stillInCall) {
+
+    if (!stillHasVideo) {
       setSelectedUser(null);
     }
   }, [remoteUsers, selectedUser]);
 
-  const toggleMic = async () => {
-    if (!client || !canJoin) return;
-    
-    try {
-      if (micOn && localMicrophoneTrack) {
-        // Unpublish mic
-        await client.unpublish(localMicrophoneTrack);
-        await localMicrophoneTrack.setEnabled(false);
-      } else if (!micOn && localMicrophoneTrack) {
-        // Republish mic
-        await localMicrophoneTrack.setEnabled(true);
-        await client.publish(localMicrophoneTrack);
-      }
-      setMicOn(!micOn);
-    } catch (error) {
-      console.error("Error toggling mic:", error);
-      toast.error("Couldn't toggle mic");
-    }
-  };
+  const toggleMic = useCallback(async () => {
+    if (!localMicrophoneTrack || micLoading) return;
 
-  const toggleCamera = async () => {
-    if (!client || !canJoin || screenShareOn) return;
-    
+    setMicLoading(true);
+
     try {
-      if (cameraOn && localCameraTrack) {
-        // Unpublish camera
-        await client.unpublish(localCameraTrack);
-        await localCameraTrack.setEnabled(false);
-      } else if (!cameraOn && localCameraTrack) {
-        // Republish camera
-        await localCameraTrack.setEnabled(true);
-        await client.publish(localCameraTrack);
-      }
-      setCameraOn(!cameraOn);
+      const newState = !micOn;
+      await localMicrophoneTrack.setEnabled(newState);
+      setMicOn(newState);
+    } catch (error) {
+      console.error("Error toggling microphone:", error);
+      toast.error("Failed to toggle microphone");
+    } finally {
+      setMicLoading(false);
+    }
+  }, [localMicrophoneTrack, micOn, micLoading]);
+
+  const toggleCamera = useCallback(async () => {
+    if (!localCameraTrack || cameraLoading || screenShareOn) return;
+
+    setCameraLoading(true);
+
+    try {
+      const newState = !cameraOn;
+      await localCameraTrack.setEnabled(newState);
+      setCameraOn(newState);
     } catch (error) {
       console.error("Error toggling camera:", error);
-      toast.error("Couldn't toggle camera");
+      toast.error("Failed to toggle camera");
+    } finally {
+      setCameraLoading(false);
     }
-  };
+  }, [localCameraTrack, cameraOn, cameraLoading, screenShareOn]);
 
-  const toggleScreenShare = async () => {
-    if (!client || !canJoin) return;
+  const toggleScreenShare = useCallback(async () => {
+    if (screenLoading || screenTrackLoading) return;
+
+    setScreenLoading(true);
 
     try {
-      if (!screenShareOn) {
-        // Starting screen share
-        setScreenShareOn(true);
-        
-        // Unpublish camera first if it's on
+      const newState = !screenShareOn;
+      setScreenShareOn(newState);
+
+      if (newState) {
         if (cameraOn && localCameraTrack) {
-          await client.unpublish(localCameraTrack);
           await localCameraTrack.setEnabled(false);
+          setCameraOn(false);
         }
+        toast.info("Screen sharing started");
       } else {
-        // Stopping screen share
-        setScreenShareOn(false);
-        
-        // Unpublish screen tracks
-        if (screenTrack) {
-          if (Array.isArray(screenTrack)) {
-            await client.unpublish(screenTrack);
-            await screenTrack[0].close();
-            if (screenTrack[1]) await screenTrack[1].close();
-          } else {
-            await client.unpublish(screenTrack);
-            await screenTrack.close();
-          }
-        }
-        
-        // Republish camera if it should be on
-        if (cameraOn && localCameraTrack) {
-          await localCameraTrack.setEnabled(true);
-          await client.publish(localCameraTrack);
-        }
+        toast.info("Screen sharing stopped");
       }
     } catch (error) {
       console.error("Error toggling screen share:", error);
       toast.error("Screen sharing failed");
       setScreenShareOn(false);
+    } finally {
+      setScreenLoading(false);
     }
-  };
+  }, [
+    screenShareOn,
+    screenLoading,
+    screenTrackLoading,
+    cameraOn,
+    localCameraTrack,
+  ]);
 
-  // Handle screen track publishing when it becomes available
-  useEffect(() => {
-    if (!client || !canJoin || !screenShareOn || !screenTrack) return;
-
-    const publishScreenTrack = async () => {
-      try {
-        if (Array.isArray(screenTrack)) {
-          await client.publish(screenTrack);
-        } else {
-          await client.publish(screenTrack);
-        }
-      } catch (error) {
-        console.error("Error publishing screen track:", error);
-        setScreenShareOn(false);
-        toast.error("Failed to start screen sharing");
-      }
-    };
-
-    publishScreenTrack();
-  }, [client, canJoin, screenShareOn, screenTrack]);
-
-  const leave = async () => {
+  const leave = useCallback(async () => {
     setConnected(false);
 
     try {
-      // Unpublish and close all tracks
-      if (client) {
-        await client.unpublish();
+      if (client && currentPublishedTracks.length > 0) {
+        await client.unpublish(currentPublishedTracks).catch(console.warn);
       }
 
+      const cleanupPromises = [];
+
       if (localCameraTrack) {
-        await localCameraTrack.setEnabled(false);
-        await localCameraTrack.close();
+        cleanupPromises.push(
+          localCameraTrack
+            .setEnabled(false)
+            .then(() => localCameraTrack.close())
+            .catch(console.warn)
+        );
       }
 
       if (localMicrophoneTrack) {
-        await localMicrophoneTrack.setEnabled(false);
-        await localMicrophoneTrack.close();
+        cleanupPromises.push(
+          localMicrophoneTrack
+            .setEnabled(false)
+            .then(() => localMicrophoneTrack.close())
+            .catch(console.warn)
+        );
       }
 
       if (screenTrack) {
-        if (Array.isArray(screenTrack)) {
-          await screenTrack[0].close();
-          if (screenTrack[1]) await screenTrack[1].close();
-        } else {
-          await screenTrack.close();
-        }
+        const tracks = Array.isArray(screenTrack) ? screenTrack : [screenTrack];
+        cleanupPromises.push(
+          Promise.allSettled(tracks.map((track) => track.close()))
+        );
       }
+
+      await Promise.allSettled(cleanupPromises);
+      setCurrentPublishedTracks([]);
     } catch (error) {
       console.error("Error during leave:", error);
     }
-  };
+  }, [
+    client,
+    localCameraTrack,
+    localMicrophoneTrack,
+    screenTrack,
+    currentPublishedTracks,
+  ]);
+
+  const handleUserSelect = useCallback(
+    (
+      user: ChannelUser & {
+        videoTrack?: IRemoteVideoTrack;
+        hasVideo?: boolean;
+        hasAudio?: boolean;
+      }
+    ) => {
+      setSelectedUser((prev) =>
+        prev?._id === user._id
+          ? null
+          : {
+              _id: user._id,
+              name: `${user.firstName} ${user.lastName}`,
+              profilePicture: user.profilePicture,
+              videoTrack: user.videoTrack,
+              hasVideo: user.hasVideo,
+            }
+      );
+    },
+    []
+  );
 
   const showCameraOff =
     (!selectedUser && !cameraOn && !screenShareOn) ||
     (selectedUser && !selectedUser.hasVideo && !cameraOn && !screenShareOn);
+
+  const isAnyLoading =
+    micLoading || cameraLoading || screenLoading || screenTrackLoading;
 
   if (joinError) {
     const err = joinError as AxiosError;
     if (err.status === 404) {
       return <NotFound text="Meeting not found" />;
     }
-    return <AppError />;
+    return (
+      <div className="h-[100dvh]">
+        <AppError />
+      </div>
+    );
   }
 
   if (!connected) {
@@ -374,59 +451,49 @@ const MeetingContent = () => {
       <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
           {showSignal && (
-            <div className="absolute top-4 left-4 bg-black/60 p-2 text-xs text-white z-10">
+            <div className="absolute top-4 left-4 bg-black/60 p-2 text-xs text-white z-10 rounded">
               <SignalDisplay
                 up={uplinkNetworkQuality}
                 down={downlinkNetworkQuality}
               />
             </div>
           )}
-          <div className="absolute bottom-4 left-4 bg-black/60 p-2 text-white z-10 text-sm rounded-sm">
+
+          <div className="absolute bottom-4 left-4 bg-black/60 p-2 text-white z-10 text-sm rounded">
             {selectedUser?.name || "You"}
           </div>
-          <div ref={mainRef} className="w-full h-full object-contain" />
+
+          <div ref={mainRef} className="w-full h-full" />
+
           {showCameraOff && (
-            <div className="absolute inset-0 flex items-center justify-center text-white/50 text-2xl">
-              <VideoOff size={40} color="#BBB" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <VideoOff size={48} className="text-gray-400" />
             </div>
           )}
-          {selectedUser &&
-            !selectedUser.hasVideo &&
-            selectedUser.profilePicture && (
-              <img
-                src={selectedUser.profilePicture}
-                alt={selectedUser.name}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            )}
+
+          {selectedUser?.profilePicture && !selectedUser.hasVideo && (
+            <img
+              src={selectedUser.profilePicture}
+              alt={selectedUser.name}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
         </div>
 
-        <div className="flex lg:flex-col gap-4 overflow-auto no-scrollbar">
-          {inCallUsers.map((u) => (
+        <div className="flex lg:flex-col gap-4 overflow-auto">
+          {inCallUsers.map((user) => (
             <div
-              key={u._id}
-              onClick={() =>
-                setSelectedUser((prev) =>
-                  prev?._id === u._id
-                    ? null
-                    : {
-                        _id: u._id,
-                        name: `${u.firstName} ${u.lastName}`,
-                        profilePicture: u.profilePicture,
-                        videoTrack: u.videoTrack,
-                        hasVideo: u.hasVideo,
-                      }
-                )
-              }
-              className="cursor-pointer"
+              key={user._id}
+              onClick={() => handleUserSelect(user)}
+              className="cursor-pointer flex-shrink-0"
             >
               <UserCard
-                name={`${u.firstName} ${u.lastName}`}
-                src={u.profilePicture}
-                videoTrack={u.videoTrack}
-                videoOn={u.hasVideo}
-                audioOn={u.hasAudio}
-                isSelected={selectedUser?._id === u._id}
+                name={`${user.firstName} ${user.lastName}`}
+                src={user.profilePicture}
+                videoTrack={user.videoTrack}
+                videoOn={user.hasVideo}
+                audioOn={user.hasAudio}
+                isSelected={selectedUser?._id === user._id}
               />
             </div>
           ))}
@@ -443,7 +510,7 @@ const MeetingContent = () => {
         setShowSignal={setShowSignal}
         toggleScreenShare={toggleScreenShare}
         isSharingScreen={screenShareOn}
-        screenLoading={screenLoading}
+        screenLoading={isAnyLoading}
       />
     </div>
   );

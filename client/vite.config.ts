@@ -18,6 +18,6 @@ export default defineConfig({
     proxy: {
       "/api": "http://localhost:3001",
     },
-    allowedHosts: ["dce7bb918a23.ngrok-free.app"],
+    allowedHosts: ["b7d6816557d8.ngrok-free.app"],
   },
 });
