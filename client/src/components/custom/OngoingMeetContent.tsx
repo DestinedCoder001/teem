@@ -29,6 +29,7 @@ import type { AxiosError } from "axios";
 import NotFound from "./NotFound";
 import AppError from "./AppError";
 import { useMeetingControls } from "@/lib/hooks/useMeetingControls";
+import { Skeleton } from "../ui/skeleton";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
@@ -41,7 +42,12 @@ const MeetingContent = () => {
   const { localCameraTrack } = useLocalCameraTrack(true);
 
   const { uplinkNetworkQuality, downlinkNetworkQuality } = useNetworkQuality();
-  const { mutate, data, error: joinError } = useJoinMeeting();
+  const {
+    mutate,
+    data,
+    error: joinError,
+    isPending: joinPending,
+  } = useJoinMeeting();
   const { currentWsData } = useGetWsDetails();
   const { meetingId } = useParams();
   const { user } = useGetMe();
@@ -62,7 +68,6 @@ const MeetingContent = () => {
   >([]);
   const [hasInitiallyPublished, setHasInitiallyPublished] = useState(false);
 
-  
   // Initialize meeting controls hook
   const {
     micOn,
@@ -83,7 +88,6 @@ const MeetingContent = () => {
     setConnected,
   });
 
-  
   const {
     screenTrack,
     isLoading: screenTrackLoading,
@@ -296,7 +300,6 @@ const MeetingContent = () => {
     }
   }, [remoteUsers, selectedUser]);
 
-
   const handleLeave = useCallback(async () => {
     await leave(screenTrack);
   }, [leave, screenTrack]);
@@ -348,11 +351,13 @@ const MeetingContent = () => {
 
   return (
     <div className="flex flex-col h-[100dvh] w-screen overflow-hidden bg-white dark:bg-[#262728] pt-2 px-4 pb-4 md:pt-4 md:px-6 md:pb-6">
-      {data?.channel && (
+      {joinPending ? (
+        <Skeleton className="h-8 w-40 rounded-md mx-auto my-2 bg-gray-300 dark:bg-[#363a3d]" />
+      ) : data?.channel ? (
         <h2 className="text-lg mx-auto my-2 dark:text-white truncate">
           {data.channel}
         </h2>
-      )}
+      ) : null}
 
       <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
