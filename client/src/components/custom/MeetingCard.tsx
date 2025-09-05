@@ -2,7 +2,7 @@ import type { MeetingCardProps } from "@/lib/types";
 import { Button } from "../ui/button";
 import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
 import useDeleteMeeting from "@/lib/hooks/useDeleteMeeting";
-import { Loader, PhoneOff, PhoneOutgoingIcon } from "lucide-react";
+import { Loader, PhoneOff, PhoneOutgoingIcon, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const MeetingCard = ({ title, host, _id, allowedUsers }: MeetingCardProps) => {
@@ -32,14 +32,16 @@ const MeetingCard = ({ title, host, _id, allowedUsers }: MeetingCardProps) => {
       <h2 className="text-lg font-semibold theme-text-gradient w-max truncate max-w-full">
         {title}
       </h2>
-      <p className="text-slate-600 dark:text-slate-200 text-sm truncate">
+      <p className="text-slate-700 dark:text-slate-200 text-sm truncate">
         {isHost
           ? "You hosted this meeting"
-          : `Hosted by: ${host?.firstName} ${host?.lastName}`}
+          : <>Hosted by <span className="font-medium">{host?.firstName} {host?.lastName}</span></>}
       </p>
       <div className="flex items-center gap-2">
-        {[host, ...allowedUsers].slice(0, 5).map((user) => (
-          <Avatar className="size-8 rounded-full border border-slate-200 dark:border-neutral-600">
+        {[host, ...allowedUsers].slice(0, 5).map((user, i) => (
+          <>
+          <Avatar className="size-8 rounded-full border border-slate-200 dark:border-neutral-600 relative">
+            {i === 0 && <Star className="text-yellow-300 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 size-4 z-10 rounded-full" />}
             <AvatarImage
               className="object-cover object-center w-full"
               src={user?.profilePicture}
@@ -50,6 +52,7 @@ const MeetingCard = ({ title, host, _id, allowedUsers }: MeetingCardProps) => {
               {user?.lastName[0]?.toUpperCase()}
             </AvatarFallback>
           </Avatar>
+          </>
         ))}
         {allowedUsers.length > 4 && (
           <div className="size-8 flex items-center justify-center text-slate-600 dark:text-slate-100 border border-slate-400 dark:border-neutral-500 rounded-full font-medium text-sm">
