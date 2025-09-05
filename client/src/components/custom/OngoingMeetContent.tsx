@@ -28,28 +28,17 @@ import LeftMeeting from "./LeftMeeting";
 import type { AxiosError } from "axios";
 import NotFound from "./NotFound";
 import AppError from "./AppError";
+import { useMeetingControls } from "@/lib/hooks/useMeetingControls";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
 const MeetingContent = () => {
-  const [micOn, setMicOn] = useState(false);
-  const [cameraOn, setCameraOn] = useState(false);
   const [connected, setConnected] = useState(true);
   const [showSignal, setShowSignal] = useState(false);
-  const [screenShareOn, setScreenShareOn] = useState(false);
-
-  const [micLoading, setMicLoading] = useState(false);
-  const [cameraLoading, setCameraLoading] = useState(false);
-  const [screenLoading, setScreenLoading] = useState(false);
 
   const client = useRTCClient();
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(true);
   const { localCameraTrack } = useLocalCameraTrack(true);
-  const {
-    screenTrack,
-    isLoading: screenTrackLoading,
-    error: screenError,
-  } = useLocalScreenTrack(screenShareOn, { systemAudio: "include" }, "auto");
 
   const { uplinkNetworkQuality, downlinkNetworkQuality } = useNetworkQuality();
   const { mutate, data, error: joinError } = useJoinMeeting();
@@ -67,6 +56,39 @@ const MeetingContent = () => {
     videoTrack?: IRemoteVideoTrack;
     hasVideo?: boolean;
   } | null>(null);
+
+  const [currentPublishedTracks, setCurrentPublishedTracks] = useState<
+    (ILocalVideoTrack | ILocalAudioTrack)[]
+  >([]);
+  const [hasInitiallyPublished, setHasInitiallyPublished] = useState(false);
+
+  
+  // Initialize meeting controls hook
+  const {
+    micOn,
+    cameraOn,
+    screenShareOn,
+    setScreenShareOn,
+    toggleMic,
+    toggleCamera,
+    toggleScreenShare,
+    leave,
+    isAnyLoading,
+  } = useMeetingControls({
+    localMicrophoneTrack,
+    localCameraTrack,
+    client,
+    currentPublishedTracks,
+    setCurrentPublishedTracks,
+    setConnected,
+  });
+
+  
+  const {
+    screenTrack,
+    isLoading: screenTrackLoading,
+    error: screenError,
+  } = useLocalScreenTrack(screenShareOn, { systemAudio: "include" }, "auto");
 
   useEffect(() => {
     if (!meetingId || !currentWsData) return;
@@ -117,11 +139,6 @@ const MeetingContent = () => {
     cameraOn,
     localCameraTrack,
   ]);
-
-  const [currentPublishedTracks, setCurrentPublishedTracks] = useState<
-    (ILocalVideoTrack | ILocalAudioTrack)[]
-  >([]);
-  const [hasInitiallyPublished, setHasInitiallyPublished] = useState(false);
 
   useEffect(() => {
     if (!canJoin || !connected || !client) return;
@@ -258,14 +275,14 @@ const MeetingContent = () => {
 
     videoTrack.on("track-ended", handleTrackEnded);
     return () => videoTrack.off("track-ended", handleTrackEnded);
-  }, [screenTrack, screenShareOn]);
+  }, [screenTrack, screenShareOn, setScreenShareOn]);
 
   useEffect(() => {
     if (screenError) {
       setScreenShareOn(false);
       toast.error("Screen sharing failed");
     }
-  }, [screenError]);
+  }, [screenError, setScreenShareOn]);
 
   useEffect(() => {
     if (!selectedUser) return;
@@ -279,120 +296,10 @@ const MeetingContent = () => {
     }
   }, [remoteUsers, selectedUser]);
 
-  const toggleMic = useCallback(async () => {
-    if (!localMicrophoneTrack || micLoading) return;
 
-    setMicLoading(true);
-
-    try {
-      const newState = !micOn;
-      await localMicrophoneTrack.setEnabled(newState);
-      setMicOn(newState);
-    } catch (error) {
-      console.error("Error toggling microphone:", error);
-      toast.error("Failed to toggle microphone");
-    } finally {
-      setMicLoading(false);
-    }
-  }, [localMicrophoneTrack, micOn, micLoading]);
-
-  const toggleCamera = useCallback(async () => {
-    if (!localCameraTrack || cameraLoading || screenShareOn) return;
-
-    setCameraLoading(true);
-
-    try {
-      const newState = !cameraOn;
-      await localCameraTrack.setEnabled(newState);
-      setCameraOn(newState);
-    } catch (error) {
-      console.error("Error toggling camera:", error);
-      toast.error("Failed to toggle camera");
-    } finally {
-      setCameraLoading(false);
-    }
-  }, [localCameraTrack, cameraOn, cameraLoading, screenShareOn]);
-
-  const toggleScreenShare = useCallback(async () => {
-    if (screenLoading || screenTrackLoading) return;
-
-    setScreenLoading(true);
-
-    try {
-      const newState = !screenShareOn;
-      setScreenShareOn(newState);
-
-      if (newState) {
-        if (cameraOn && localCameraTrack) {
-          await localCameraTrack.setEnabled(false);
-          setCameraOn(false);
-        }
-        toast.info("Screen sharing started");
-      } else {
-        toast.info("Screen sharing stopped");
-      }
-    } catch (error) {
-      console.error("Error toggling screen share:", error);
-      toast.error("Screen sharing failed");
-      setScreenShareOn(false);
-    } finally {
-      setScreenLoading(false);
-    }
-  }, [
-    screenShareOn,
-    screenLoading,
-    screenTrackLoading,
-    cameraOn,
-    localCameraTrack,
-  ]);
-
-  const leave = useCallback(async () => {
-    setConnected(false);
-
-    try {
-      if (client && currentPublishedTracks.length > 0) {
-        await client.unpublish(currentPublishedTracks).catch(console.warn);
-      }
-
-      const cleanupPromises = [];
-
-      if (localCameraTrack) {
-        cleanupPromises.push(
-          localCameraTrack
-            .setEnabled(false)
-            .then(() => localCameraTrack.close())
-            .catch(console.warn)
-        );
-      }
-
-      if (localMicrophoneTrack) {
-        cleanupPromises.push(
-          localMicrophoneTrack
-            .setEnabled(false)
-            .then(() => localMicrophoneTrack.close())
-            .catch(console.warn)
-        );
-      }
-
-      if (screenTrack) {
-        const tracks = Array.isArray(screenTrack) ? screenTrack : [screenTrack];
-        cleanupPromises.push(
-          Promise.allSettled(tracks.map((track) => track.close()))
-        );
-      }
-
-      await Promise.allSettled(cleanupPromises);
-      setCurrentPublishedTracks([]);
-    } catch (error) {
-      console.error("Error during leave:", error);
-    }
-  }, [
-    client,
-    localCameraTrack,
-    localMicrophoneTrack,
-    screenTrack,
-    currentPublishedTracks,
-  ]);
+  const handleLeave = useCallback(async () => {
+    await leave(screenTrack);
+  }, [leave, screenTrack]);
 
   const handleUserSelect = useCallback(
     (
@@ -421,8 +328,7 @@ const MeetingContent = () => {
     (!selectedUser && !cameraOn && !screenShareOn) ||
     (selectedUser && !selectedUser.hasVideo && !cameraOn && !screenShareOn);
 
-  const isAnyLoading =
-    micLoading || cameraLoading || screenLoading || screenTrackLoading;
+  const finalIsAnyLoading = isAnyLoading || screenTrackLoading;
 
   if (joinError) {
     const err = joinError as AxiosError;
@@ -505,12 +411,12 @@ const MeetingContent = () => {
         micOn={micOn}
         toggleCamera={toggleCamera}
         toggleMic={toggleMic}
-        leave={leave}
+        leave={handleLeave}
         showSignal={showSignal}
         setShowSignal={setShowSignal}
         toggleScreenShare={toggleScreenShare}
         isSharingScreen={screenShareOn}
-        screenLoading={isAnyLoading}
+        screenLoading={finalIsAnyLoading}
       />
     </div>
   );
