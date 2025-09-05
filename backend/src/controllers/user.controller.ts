@@ -10,6 +10,7 @@ import { Task } from "../models/task.model";
 import bcrypt from "bcrypt";
 import { matchedData, validationResult } from "express-validator";
 import { verifyGoogleToken } from "../lib/googleAuthHelper";
+import { Meeting } from "../models/meeting.model";
 
 const me = async (req: Request, res: Response) => {
   if (!req.user) {
@@ -153,6 +154,8 @@ const deleteAccount = async (req: Request, res: Response) => {
     await User.findOneAndDelete({ _id: userId });
     await Otp.deleteMany({ email: req.user.email });
     await WorkspaceInvite.deleteMany({ receiver: userId });
+    await Meeting.deleteMany({ host: userId });
+    await Meeting.updateMany({ users: userId }, { $pull: { allowedUsers: userId } });
     await Workspace.deleteMany({createdBy: userId});
     await Channel.deleteMany({createdBy: userId});
     await Workspace.updateMany({ users: userId }, { $pull: { users: userId } });
