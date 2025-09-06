@@ -23,7 +23,7 @@ import { parseMembers } from "@/utils/parseMembers";
 import { useInView } from "react-intersection-observer";
 import ChannelDrawer from "@/components/custom/ChannelDrawer";
 import MessageInput from "@/components/custom/MessageInput";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MoreVertical, Search } from "lucide-react";
 import { useEditingMessage, useSidebarOpen } from "@/lib/store/uiStore";
 import MessagesTip from "@/components/custom/MessagesTip";
 
@@ -265,35 +265,48 @@ const Channel = () => {
       <div className="h-[calc(100dvh-50px)] overflow-hidden">
         <div className="flex flex-col relative h-full">
           <div
-            className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
+            className={`p-2 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
               isSidebarOpen
                 ? "lg:w-[calc(100%-220px)]"
                 : "lg:w-[calc(100%-4.5rem)]"
-            } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 cursor-pointer`}
-            onClick={handleOpenDrawer}
+            } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 flex justify-between items-center`}
           >
-            <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto truncate max-w-full">
-              {name}
-            </h1>
-            {activeChannelUsers.length > 0 && (
-              <div className="flex items-center gap-x-1 justify-center">
-                <p className="text-slate-600 dark:text-slate-100 text-xs flex items-center gap-x-0.5">
-                  <span className="text-sm font-medium text-secondary">
-                    {activeChannelUsers.length}
-                  </span>{" "}
-                  active
-                </p>
-                <div className="size-1 bg-slate-600 dark:bg-slate-100 rounded-full" />
-                <p className="text-xs text-slate-600 dark:text-slate-100 text-nowrap text-ellipsis">
-                  {membersList}
-                </p>
-              </div>
-            )}
-            {isMember && (
-              <p className="text-slate-600 dark:text-slate-200 text-xs text-center">
-                Click to view details &raquo;
-              </p>
-            )}
+            <div className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-neutral-700 cursor-pointer">
+              <Search
+                size={20}
+                strokeWidth={1.5}
+                className="text-slate-600 dark:text-slate-100"
+              />
+            </div>
+            <div className="w-max">
+              <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto truncate max-w-full">
+                {name}
+              </h1>
+              {activeChannelUsers.length > 0 && (
+                <div className="flex items-center gap-x-1 justify-center">
+                  <p className="text-slate-600 dark:text-slate-100 text-xs flex items-center gap-x-0.5">
+                    <span className="text-sm font-medium text-secondary">
+                      {activeChannelUsers.length}
+                    </span>{" "}
+                    active
+                  </p>
+                  <div className="size-1 bg-slate-600 dark:bg-slate-100 rounded-full" />
+                  <p className="text-xs text-slate-600 dark:text-slate-100 text-nowrap text-ellipsis">
+                    {membersList}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div
+              onClick={handleOpenDrawer}
+              className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-neutral-700 cursor-pointer"
+            >
+              <MoreVertical
+                size={20}
+                strokeWidth={1.5}
+                className="text-slate-600 dark:text-slate-100"
+              />
+            </div>
           </div>
 
           <div
