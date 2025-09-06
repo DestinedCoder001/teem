@@ -10,47 +10,62 @@ import useSubscribeNotifs from "@/lib/hooks/useSubscribeNotifs";
 const ProtectRoutes = () => {
   const { accessToken, setAccessToken } = useAuthStore();
   const [checked, setChecked] = useState(false);
+
+  const shouldRefresh = !accessToken;
   const { data, isPending, isError, error } = useRefresh();
 
   useEffect(() => {
-    if (!accessToken && data?.accessToken) {
+    if (accessToken) {
+      setChecked(true);
+      return;
+    }
+
+    if (data?.accessToken) {
       setAccessToken(data.accessToken);
       setChecked(true);
-    } else if (!accessToken && isError) {
+      return;
+    }
+
+    if (isError) {
       setChecked(true);
-    } else if (accessToken) {
-      setChecked(true);
+      return;
     }
   }, [accessToken, data?.accessToken, isError, setAccessToken]);
 
-  // subscribe to channel and chat notifications
+  // Subscribe to channel and chat notifications only after auth is resolved
   useSubscribeNotifs();
-  
-  if (!checked || isPending) {
+
+  if (!checked || (shouldRefresh && isPending)) {
     return <AuthLoading />;
   }
 
-  const axiosErr = error as AxiosError<{ message?: string }>;
-  const message = axiosErr?.response?.data?.message || "";
-  const isTokenError =
-    (axiosErr?.response?.status === 401 &&
-      (message.toLowerCase().includes("expired") ||
-        message.toLowerCase().includes("invalid"))) ||
-    message.toLowerCase().includes("no user found");
+  if (!accessToken && isError && error) {
+    const axiosErr = error as AxiosError<{ message?: string }>;
+    const message = axiosErr?.response?.data?.message || "";
 
-  if (isError && error) {
-    let err;
+    const isTokenError =
+      (axiosErr?.response?.status === 401 &&
+        (message.toLowerCase().includes("expired") ||
+          message.toLowerCase().includes("invalid"))) ||
+      message.toLowerCase().includes("no user found");
+
+    if (isTokenError) {
+      return (
+        <Navigate to="/login" state={{ from: location.pathname }} replace />
+      );
+    }
+
+    let errorMessage;
     if (error.message === "Network Error") {
-      err = "Network error";
+      errorMessage = "Network error";
     } else {
-      err = "Something went wrong while restoring your session.";
+      errorMessage = "Something went wrong while restoring your session.";
     }
-    if (!useAuthStore.getState().accessToken && !isTokenError) {
-      return <AuthError error={err} />;
-    }
+
+    return <AuthError error={errorMessage} />;
   }
 
-  if (isTokenError) {
+  if (!accessToken) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
