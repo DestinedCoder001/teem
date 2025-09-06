@@ -26,6 +26,8 @@ const useDeleteWs = () => {
       _id: "",
       name: "",
       description: "",
+      createdBy: { _id: "", firstName: "", lastName: "", profilePicture: "" },
+      members: [],
     });
     navigate("/", { replace: true });
   };

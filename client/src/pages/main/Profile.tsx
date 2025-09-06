@@ -49,6 +49,7 @@ const UserProfile = () => {
         firstName: data?.firstName,
         lastName: data?.lastName,
         profilePicture: data?.profilePicture,
+        authProvider: data?.authProvider
       };
 
       setUser(updatedUser);
