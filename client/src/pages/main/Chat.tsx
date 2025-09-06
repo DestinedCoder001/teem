@@ -1,4 +1,3 @@
-import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
 import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
@@ -7,7 +6,7 @@ import { getSocket } from "@/lib/socket";
 import messageTone from "@/assets/incoming-msg.mp3";
 import { useInView } from "react-intersection-observer";
 import MessageInput from "@/components/custom/MessageInput";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { useActiveUsers, useSidebarOpen } from "@/lib/store/uiStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useGetChat from "@/lib/hooks/useGetChat";
@@ -19,12 +18,15 @@ import NotFound from "@/components/custom/NotFound";
 import AppError from "@/components/custom/AppError";
 import TypingIndicator from "@/components/custom/TypingIndicator";
 import MessagesTip from "@/components/custom/MessagesTip";
+import ChatSearch from "@/components/custom/ChatSearch";
+import ChatSkeleton from "@/components/custom/ChatSkeleton";
 
 const Chat = () => {
   const { chatId } = useParams();
   const wsId = currentWsDetails.getState()._id;
   const isSidebarOpen = useSidebarOpen((state) => state.isOpen);
   const [messagesList, setMessagesList] = useState<MessageProps[]>([]);
+  const [searchList, setSearchList] = useState<MessageProps[]>([]);
   const [newMessage, setNewMessage] = useState({
     message: "",
     attachment: {
@@ -35,6 +37,7 @@ const Chat = () => {
   });
   const [currentChat, setCurrentChat] = useState<User>();
   const [isTyping, setIsTyping] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [isRecieverTyping, setIsRecieverTyping] = useState(false);
   const { activeUsers } = useActiveUsers((state) => state);
   const { users: wsUsers } = currentWsDetails((state) => state);
@@ -60,11 +63,11 @@ const Chat = () => {
   const wsIdRef = useRef(wsId);
 
   const receiverData = useMemo(() => {
-  if (!chatId || !me?._id) return undefined;
-  const arr = chatId.split("-");
-  const receiverId = arr.find((item) => item !== me._id);
-  return wsUsers.find((user) => user._id === receiverId);
-}, [chatId, me?._id, wsUsers]);
+    if (!chatId || !me?._id) return undefined;
+    const arr = chatId.split("-");
+    const receiverId = arr.find((item) => item !== me._id);
+    return wsUsers.find((user) => user._id === receiverId);
+  }, [chatId, me?._id, wsUsers]);
 
   useEffect(() => {
     // make ws id available before unload
@@ -145,6 +148,7 @@ const Chat = () => {
         message: MessageProps;
       }) => {
         if (data.wsId !== wsId || data.chatId !== chatId) return;
+        console.log("should play...");
         if (audio) {
           audio.play();
         }
@@ -222,7 +226,7 @@ const Chat = () => {
     setIsTyping(true);
   };
 
-  if (isPending) return <ChannelSkeleton />;
+  if (isPending) return <ChatSkeleton usage="chat" />;
 
   if (error) {
     const err = error as AxiosError;
@@ -231,7 +235,7 @@ const Chat = () => {
     }
     return <AppError />;
   }
-
+  const messageMap = isSearching ? searchList : messagesList;
 
   return (
     <>
@@ -239,45 +243,71 @@ const Chat = () => {
       <div className="h-[calc(100dvh-50px)] overflow-hidden">
         <div className="flex flex-col relative h-full">
           <div
-            className={`p-4 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
+            className={`p-2 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
               isSidebarOpen
                 ? "lg:w-[calc(100%-220px)]"
                 : "lg:w-[calc(100%-4.5rem)]"
-            } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40`}
+            } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 flex justify-between items-center`}
           >
-            {currentChat ? (
-              <div className="flex items-center gap-x-4 w-max mx-auto">
-                <Avatar
-                  className={`size-8 rounded-full border border-slate-200 dark:border-neutral-600 ${
-                    activeUsers.includes(currentChat._id)
-                      ? "ring ring-secondary"
-                      : ""
-                  }`}
-                >
-                  <AvatarImage
-                    className="object-cover object-center w-full"
-                    src={currentChat?.profilePicture}
-                    alt={currentChat?.firstName}
-                  />
-                  <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
-                    {currentChat?.firstName[0]?.toUpperCase()}
-                    {currentChat?.lastName[0]?.toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
-                  {currentChat?.firstName + " " + currentChat?.lastName}
-                </h1>
-              </div>
-            ) : (
-              <div className="flex items-center gap-x-4 w-max mx-auto">
-                <div className="size-8 lg:h-6 lg:w-6 rounded-full font-bold sticky bottom-2 flex justify-center items-center bg-gray-200 text-gray-500">
-                  !
-                </div>
-                <h1>User unavailable</h1>
-              </div>
-            )}
-          </div>
+            <div className="flex-1"></div>
 
+            <div className="flex-shrink-0">
+              {currentChat ? (
+                <div className="flex items-center gap-x-4 w-max">
+                  <Avatar
+                    className={`size-8 rounded-full border border-slate-200 dark:border-neutral-600 ${
+                      activeUsers.includes(currentChat._id)
+                        ? "ring ring-secondary"
+                        : ""
+                    }`}
+                  >
+                    <AvatarImage
+                      className="object-cover object-center w-full"
+                      src={currentChat?.profilePicture}
+                      alt={currentChat?.firstName}
+                    />
+                    <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
+                      {currentChat?.firstName[0]?.toUpperCase()}
+                      {currentChat?.lastName[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <h1 className="text-xl theme-text-gradient font-medium w-max text-center mx-auto">
+                    {currentChat?.firstName + " " + currentChat?.lastName}
+                  </h1>
+                </div>
+              ) : (
+                <div className="flex items-center gap-x-4 w-max">
+                  <div className="size-8 lg:h-6 lg:w-6 rounded-full font-bold sticky bottom-2 flex justify-center items-center bg-gray-200 text-gray-500">
+                    !
+                  </div>
+                  <h1>User unavailable</h1>
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1 flex justify-end items-center gap-x-2">
+              <ChatSearch
+                usage="chat"
+                messagesList={messagesList}
+                isSearching={isSearching}
+                setSearchList={setSearchList}
+              />
+              <div
+                onClick={() => setIsSearching(!isSearching)}
+                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-neutral-700 cursor-pointer"
+              >
+                <Search
+                  size={20}
+                  strokeWidth={1.5}
+                  className={`${
+                    isSearching
+                      ? "text-secondary"
+                      : "text-slate-600 dark:text-slate-100"
+                  }`}
+                />
+              </div>
+            </div>
+          </div>
           <div
             ref={divRef}
             className="flex-1 overflow-y-auto no-scrollbar pt-[120px] pb-[90px] px-4"
@@ -289,13 +319,13 @@ const Chat = () => {
               className="hidden"
             />
 
-            {!isPending && !messagesList.length && !isRecieverTyping && (
+            {!isPending && !messageMap.length && !isRecieverTyping && (
               <NoMessages />
             )}
             {!isPending && (
               <div className="flex flex-col gap-y-4">
-                {messagesList.length > 0 &&
-                  messagesList.map((message: MessageProps) => (
+                {messageMap.length > 0 &&
+                  messageMap.map((message: MessageProps) => (
                     <MessageBubble message={message} key={message._id} isChat />
                   ))}
                 {isRecieverTyping && currentChat && (

@@ -1,4 +1,3 @@
-import ChannelSkeleton from "@/components/custom/ChannelSkeleton";
 import {
   currentChannelDetails,
   currentWsDetails,
@@ -26,6 +25,8 @@ import MessageInput from "@/components/custom/MessageInput";
 import { ChevronDown, MoreVertical, Search } from "lucide-react";
 import { useEditingMessage, useSidebarOpen } from "@/lib/store/uiStore";
 import MessagesTip from "@/components/custom/MessagesTip";
+import ChatSearch from "@/components/custom/ChatSearch";
+import ChatSkeleton from "@/components/custom/ChatSkeleton";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -56,6 +57,7 @@ const Channel = () => {
     channelId as string
   );
   const [messagesList, setMessagesList] = useState<MessageProps[]>([]);
+  const [searchList, setSearchList] = useState<MessageProps[]>([]);
   const [newMessage, setNewMessage] = useState({
     message: "",
     attachment: {
@@ -65,6 +67,7 @@ const Channel = () => {
     },
   });
   const [isTyping, setIsTyping] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [isMember, setIsMember] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -249,7 +252,7 @@ const Channel = () => {
     setDrawerOpen(true);
   };
 
-  if (isPending) return <ChannelSkeleton />;
+  if (isPending) return <ChatSkeleton />;
 
   if (error) {
     const err = error as AxiosError;
@@ -258,6 +261,8 @@ const Channel = () => {
     }
     return <AppError />;
   }
+
+  const messageMap = isSearching ? searchList : messagesList;
 
   return (
     <>
@@ -271,11 +276,23 @@ const Channel = () => {
                 : "lg:w-[calc(100%-4.5rem)]"
             } bg-white/80 dark:bg-black/80 backdrop-blur-sm z-40 flex justify-between items-center`}
           >
-            <div className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-neutral-700 cursor-pointer">
+            <ChatSearch
+              messagesList={messagesList}
+              isSearching={isSearching}
+              setSearchList={setSearchList}
+            />
+            <div
+              onClick={() => setIsSearching(!isSearching)}
+              className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-neutral-700 cursor-pointer"
+            >
               <Search
                 size={20}
                 strokeWidth={1.5}
-                className="text-slate-600 dark:text-slate-100"
+                className={`${
+                  isSearching
+                    ? "text-secondary"
+                    : "text-slate-600 dark:text-slate-100"
+                }`}
               />
             </div>
             <div className="w-max">
@@ -319,13 +336,13 @@ const Channel = () => {
               controls
               className="hidden"
             />
-            {!isPending && !messagesList.length && !typingUsers.length && (
+            {!isPending && !messageMap.length && !typingUsers.length && (
               <NoMessages />
             )}
             {!isPending && (
               <div className="flex flex-col gap-y-4">
-                {messagesList.length > 0 &&
-                  messagesList.map((message: MessageProps) => (
+                {messageMap.length > 0 &&
+                  messageMap.map((message: MessageProps) => (
                     <MessageBubble message={message} key={message._id} />
                   ))}
                 <TypingIndicator users={typingUsers} />
