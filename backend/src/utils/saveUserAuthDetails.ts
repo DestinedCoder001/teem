@@ -27,8 +27,11 @@ export const saveUserAuthDetails = (res: Response, user: User) => {
       expiresIn: "7d",
     }
   );
+  const isProd = process.env.NODE_ENV === "production";
   res.cookie("tjwt", refreshToken, {
     httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
   return accessToken;
