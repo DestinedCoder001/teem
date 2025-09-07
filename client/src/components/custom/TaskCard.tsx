@@ -22,7 +22,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useUpdateTaskStatus } from "@/lib/hooks/useUpdateTaskStatus";
 import { useDeleteTask } from "@/lib/hooks/useDeleteTask";
 import { useEditTaskDialogOpen, useTaskSheetOpen } from "@/lib/store/uiStore";
-import { currentEditingTask, useUserStore } from "@/lib/store/userStore";
+import {
+  currentEditingTask,
+  currentWsDetails,
+  useUserStore,
+} from "@/lib/store/userStore";
 import { formatTaskDueDate } from "@/utils/formatDueDate";
 import { useTheme } from "next-themes";
 import { getSocket } from "@/lib/socket";
@@ -53,6 +57,7 @@ const TaskCard = ({
   const { mutate: deleteTask, isPending: deletePending } = useDeleteTask();
   const { setOpen } = useEditTaskDialogOpen((state) => state);
   const { setTask } = currentEditingTask((state) => state);
+  const { createdBy: wsCreator } = currentWsDetails((state) => state);
   const { setOpen: setTaskDrawerOpen } = useTaskSheetOpen((state) => state);
   const user = useUserStore((state) => state.user);
   const theme = useTheme().theme;
@@ -129,7 +134,8 @@ const TaskCard = ({
               {title}
             </h2>
             {user &&
-              (user._id === assignedBy?._id || user._id === assignedTo?._id) && (
+              (user._id === assignedBy?._id ||
+                user._id === assignedTo?._id) && (
                 <DropdownMenu>
                   {isPending || deletePending ? (
                     <Loader className="h-5 w-5 mr-2 translate-y-[2px] text-slate-500 dark:text-slate-200 animate-spin" />
@@ -175,15 +181,17 @@ const TaskCard = ({
                       <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500 group-focus:text-orange-500" />
                       Mark In Progress
                     </DropdownMenuItem>
-                    {user && user._id === assignedBy?._id && (
-                      <DropdownMenuItem
-                        onSelect={handleDelete}
-                        className="cursor-pointer group"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
-                        Delete Task
-                      </DropdownMenuItem>
-                    )}
+                    {user &&
+                      (user._id === assignedBy?._id ||
+                        user._id === wsCreator) && (
+                        <DropdownMenuItem
+                          onSelect={handleDelete}
+                          className="cursor-pointer group"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4 group-hover:text-red-500 group-focus:text-red-500" />
+                          Delete Task
+                        </DropdownMenuItem>
+                      )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}

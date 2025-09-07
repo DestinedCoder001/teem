@@ -239,13 +239,21 @@ const deleteTask = async (req: Request, res: Response) => {
   try {
     await connectDb();
 
-    const task = await Task.findOneAndDelete({
-      _id: taskId,
-      assignedBy: req.user._id,
-    });
+    const task = await Task.findById(taskId);
 
     if (!task) {
       return res.status(404).json({ message: "Unable to delete task" });
+    }
+
+    const workspace = await Workspace.findOne({
+      _id: task.workspace,
+    });
+
+    if (
+      workspace.createdBy.toString() !== req.user._id &&
+      task.assignedBy.toString() !== req.user._id
+    ) {
+      return res.status(403).json({ message: "Action not permitted." });
     }
 
     res.status(200).json({ message: "Task deleted successfully" });
