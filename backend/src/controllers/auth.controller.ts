@@ -99,8 +99,8 @@ const googleSignup = async (req: Request, res: Response) => {
     }
     const payload = await verifyGoogleToken(code);
 
-    if (!payload?.email || !payload.given_name || !payload.family_name) {
-      return res.status(400).json({ message: "Invalid Google token" });
+    if (!payload?.email || !payload?.sub || !payload?.email_verified) {
+      return res.status(400).json({ message: "Couldn't verify user" });
     }
     await connectDb();
     const existingUser = await User.findOne({ email: payload.email });
@@ -111,8 +111,8 @@ const googleSignup = async (req: Request, res: Response) => {
 
     const newUser = await User.create({
       email: payload.email,
-      firstName: payload.given_name,
-      lastName: payload.family_name,
+      firstName: payload.given_name || "<firstname>",
+      lastName: payload.family_name || "<lastname>",
       password: generatePassword(8, false),
       isVerified: true,
       authProvider: "google",
