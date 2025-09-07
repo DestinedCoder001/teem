@@ -54,4 +54,6 @@ interface ChannelUser {
   profilePicture: string;
 };
 
-export { SignUpBody, JwtPayload, User, ChannelUser };
+type SameSite = "strict" | "lax" | "none";
+
+export { SignUpBody, JwtPayload, User, ChannelUser, SameSite };

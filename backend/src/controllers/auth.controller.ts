@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { SignUpBody } from "../utils/types";
+import { SameSite, SignUpBody } from "../utils/types";
 import { matchedData, validationResult } from "express-validator";
 import { connectDb } from "../lib/connectDb";
 import { handleSignup } from "../lib/handleSignUp";
@@ -170,7 +170,7 @@ const signOut = async (res: Response) => {
   const cookie = {
     httpOnly: true,
     secure: isProd,
-    sameSite: (isProd ? "none" : "lax") as CookieSameSite,
+    sameSite: (isProd ? "none" : "lax") as SameSite,
     maxAge: 1000 * 60 * 60 * 24 * 7,
   }
   res.clearCookie("tjwt", cookie);

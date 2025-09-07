@@ -129,7 +129,7 @@ const TaskCard = ({
               {title}
             </h2>
             {user &&
-              (user._id === assignedBy._id || user._id === assignedTo._id) && (
+              (user._id === assignedBy?._id || user._id === assignedTo?._id) && (
                 <DropdownMenu>
                   {isPending || deletePending ? (
                     <Loader className="h-5 w-5 mr-2 translate-y-[2px] text-slate-500 dark:text-slate-200 animate-spin" />
@@ -147,7 +147,7 @@ const TaskCard = ({
                     className="text-slate-700 dark:text-slate-200 -translate-x-6 lg:-translate-x-0"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {user && user._id === assignedBy._id && (
+                    {user && user._id === assignedBy?._id && (
                       <DropdownMenuItem
                         onSelect={() => {
                           setOpen(true);
@@ -175,7 +175,7 @@ const TaskCard = ({
                       <PlayCircle className="mr-2 h-4 w-4 group-hover:text-orange-500 group-focus:text-orange-500" />
                       Mark In Progress
                     </DropdownMenuItem>
-                    {user && user._id === assignedBy._id && (
+                    {user && user._id === assignedBy?._id && (
                       <DropdownMenuItem
                         onSelect={handleDelete}
                         className="cursor-pointer group"
