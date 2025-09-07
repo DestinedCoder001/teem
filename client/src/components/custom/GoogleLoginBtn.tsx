@@ -41,6 +41,7 @@ const GoogleLoginBtn = () => {
       variant="outline"
       onClick={() => login()}
       type="button"
+      disabled={isPending}
       className="text-[#333333] dark:text-slate-200 border border-black rounded-full py-5 font-normal text-md"
     >
       {isPending ? (

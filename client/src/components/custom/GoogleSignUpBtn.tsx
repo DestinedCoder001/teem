@@ -43,6 +43,7 @@ const GoogleSignupButton = () => {
     <Button
       variant="outline"
       type="button"
+      disabled={isPending}
       onClick={() => signup()}
       className="text-[#333333] dark:text-slate-200 border border-black rounded-full py-5 font-normal text-md"
     >
