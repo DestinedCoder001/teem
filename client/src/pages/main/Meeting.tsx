@@ -4,6 +4,7 @@ import MeetingCard from "@/components/custom/MeetingCard";
 import MeetingLoading from "@/components/custom/MeetingsLoading";
 import { Button } from "@/components/ui/button";
 import useGetMeetings from "@/lib/hooks/useGetMeetings";
+import { useMeta } from "@/lib/hooks/useMeta";
 import { useCreateMeetingOpen } from "@/lib/store/uiStore";
 import { currentWsDetails, useUserWorkspaces } from "@/lib/store/userStore";
 import type { MeetingCardProps } from "@/lib/types";
@@ -16,6 +17,13 @@ const Meeting = () => {
   const [meetings, setMeetings] = useState<MeetingCardProps[]>([]);
 
   const { data, isSuccess, isPending, error } = useGetMeetings();
+
+  useMeta({
+    title: "Meetings | Teem",
+    description: "Teem Meetings page",
+    ogTitle: "Teem Meetings",
+    ogDescription: "Teem Meetings page",
+  });
 
   useEffect(() => {
     if (isSuccess) {

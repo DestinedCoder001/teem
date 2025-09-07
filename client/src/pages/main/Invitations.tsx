@@ -2,10 +2,18 @@ import AppError from "@/components/custom/AppError";
 import InvitationItem from "@/components/custom/InvitationItem";
 import { Skeleton } from "@/components/ui/skeleton";
 import useGetInvites from "@/lib/hooks/useGetInvites";
+import { useMeta } from "@/lib/hooks/useMeta";
 import type { Invite } from "@/lib/types";
 
 const Invitations = () => {
   const { data, isPending, error, isSuccess } = useGetInvites();
+
+  useMeta({
+    title: "Invitations | Teem",
+    description: "Teem Invitations page",
+    ogTitle: "Teem Invitations",
+    ogDescription: "Teem Invitations page",
+  });
 
   if (error) {
     return <AppError />;

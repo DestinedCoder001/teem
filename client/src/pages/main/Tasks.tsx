@@ -25,6 +25,7 @@ import type { TaskPayload } from "@/lib/types";
 import TaskStatusFilter from "@/components/custom/TaskStatusFilter";
 import AppError from "@/components/custom/AppError";
 import { getSocket } from "@/lib/socket";
+import { useMeta } from "@/lib/hooks/useMeta";
 
 const Tasks = () => {
   const { workspaces } = useUserWorkspaces((state) => state);
@@ -38,6 +39,13 @@ const Tasks = () => {
   const [filter, setFilter] = useState("all");
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<TaskPayload[]>([]);
+
+    useMeta({
+      title: "Tasks | Teem",
+      description: "Teem Tasks page",
+      ogTitle: "Teem Tasks",
+      ogDescription: "Teem Tasks page",
+    })
 
   useEffect(() => {
     if (getTasksSuccess) {

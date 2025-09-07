@@ -27,6 +27,7 @@ import { useEditingMessage, useSidebarOpen } from "@/lib/store/uiStore";
 import MessagesTip from "@/components/custom/MessagesTip";
 import ChatSearch from "@/components/custom/ChatSearch";
 import ChatSkeleton from "@/components/custom/ChatSkeleton";
+import { useMeta } from "@/lib/hooks/useMeta";
 
 const Channel = () => {
   const { channelId } = useParams();
@@ -99,6 +100,13 @@ const Channel = () => {
       });
     }
   };
+
+  useMeta({
+    title: `${name || "Channel"} | Teem`,
+    description: description || "Teem channel",
+    ogTitle: `${name || "Channel"} | Teem`,
+    ogDescription: description || "Teem channel",
+  });
 
   useEffect(() => {
     const user = useUserStore.getState().user?._id;

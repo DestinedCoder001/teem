@@ -16,6 +16,7 @@ import useGetMe from "@/lib/hooks/useGetMe";
 import ProfileSkeleton from "@/components/custom/ProfileSkeleton";
 import { useUpdateDp } from "@/lib/hooks/useUpdateDp";
 import { useUserOnline } from "@/lib/store/uiStore";
+import { useMeta } from "@/lib/hooks/useMeta";
 
 type FormValues = {
   firstName: string;
@@ -99,6 +100,13 @@ const UserProfile = () => {
       reader.readAsDataURL(file);
     }
   };
+
+    useMeta({
+      title: "Profile | Teem",
+      description: "Teem Profile page",
+      ogTitle: "Teem Profile",
+      ogDescription: "Teem Profile page",
+    })
 
   useEffect(() => {
     if (img) {

@@ -38,6 +38,7 @@
     "@tiptap/pm": "^3.0.7",
     "@tiptap/react": "^3.0.7",
     "@tiptap/starter-kit": "^3.0.7",
+    "@unhead/react": "^2.0.14",
     "agora-rtc-react": "^2.5.0",
     "axios": "^1.10.0",
     "class-variance-authority": "^0.7.1",

@@ -20,6 +20,7 @@ import TypingIndicator from "@/components/custom/TypingIndicator";
 import MessagesTip from "@/components/custom/MessagesTip";
 import ChatSearch from "@/components/custom/ChatSearch";
 import ChatSkeleton from "@/components/custom/ChatSkeleton";
+import { useMeta } from "@/lib/hooks/useMeta";
 
 const Chat = () => {
   const { chatId } = useParams();
@@ -68,6 +69,15 @@ const Chat = () => {
     const receiverId = arr.find((item) => item !== me._id);
     return wsUsers.find((user) => user._id === receiverId);
   }, [chatId, me?._id, wsUsers]);
+
+  const name = receiverData?.firstName + " " + receiverData?.lastName;
+
+  useMeta({
+    title: `${name || "Chat"} | Teem`,
+    description: `Chat with ${name || "User"}`,
+    ogTitle: `${name || "Chat"} | Teem`,
+    ogDescription: `Chat with ${name || "User"}`,
+  });
 
   useEffect(() => {
     // make ws id available before unload

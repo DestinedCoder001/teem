@@ -7,6 +7,7 @@ import WorkspaceSettings from "@/components/custom/WorkspaceSettings";
 import WsDeleteAlert from "@/components/custom/WsDeleteAlert";
 import { Button } from "@/components/ui/button";
 import useDeleteAccount from "@/lib/hooks/useDeleteAccount";
+import { useMeta } from "@/lib/hooks/useMeta";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useDeleteAccountOpen } from "@/lib/store/uiStore";
 import { useUserStore } from "@/lib/store/userStore";
@@ -22,6 +23,13 @@ const Settings = () => {
   const { setAccessToken } = useAuthStore((state) => state);
   const { mutate } = useDeleteAccount();
   const navigate = useNavigate();
+
+  useMeta({
+    title: "Settings | Teem",
+    description: "Teem Settings page",
+    ogTitle: "Teem Settings",
+    ogDescription: "Teem Settings page",
+  })
 
   const googleAuth = useGoogleLogin({
     flow: "auth-code",

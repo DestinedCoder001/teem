@@ -13,6 +13,7 @@ import { useOtpDialogStore } from "@/lib/store/dialogStore";
 import GoogleSignupButton from "@/components/custom/GoogleSignUpBtn";
 import { generatePicUrl } from "@/lib/generatePicUrl";
 import { Loader } from "lucide-react";
+import { useMeta } from "@/lib/hooks/useMeta";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +26,13 @@ const SignUp = () => {
     formState: { errors },
   } = useForm<SignUpDetails>();
 
+  useMeta({
+    title: "Sign Up | Teem",
+    description: "Create an account on Teem",
+    ogTitle: "Sign Up | Teem",
+    ogDescription: "Create an account on Teem",
+  });
+
   const onSubmit = ({
     email,
     password,
@@ -32,7 +40,13 @@ const SignUp = () => {
     lastName,
   }: SignUpDetails) => {
     const randomPicUrl = generatePicUrl();
-    const obj = { email, password, firstName, lastName, profilePicture: randomPicUrl };
+    const obj = {
+      email,
+      password,
+      firstName,
+      lastName,
+      profilePicture: randomPicUrl,
+    };
     mutate(obj, {
       onSuccess: () => {
         setOtpEmail(email);
@@ -69,7 +83,10 @@ const SignUp = () => {
 
                 <span className="text-[0.8rem] block text-center text-[#333333] dark:text-slate-200">
                   Already have an account?{" "}
-                  <Link to="/login" className="text-sm underline text-black dark:text-white">
+                  <Link
+                    to="/login"
+                    className="text-sm underline text-black dark:text-white"
+                  >
                     login
                   </Link>
                 </span>
@@ -90,7 +107,9 @@ const SignUp = () => {
                     type="text"
                     id="firstName"
                     className={`border ${
-                      errors.firstName ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
+                      errors.firstName
+                        ? "border-red-500"
+                        : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("firstName", {
                       required: "First name is required",
@@ -114,7 +133,9 @@ const SignUp = () => {
                     type="text"
                     id="lastName"
                     className={`border ${
-                      errors.lastName ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
+                      errors.lastName
+                        ? "border-red-500"
+                        : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("lastName", {
                       required: "Last name is required",
@@ -128,14 +149,19 @@ const SignUp = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-[#666666] font-normal dark:text-slate-200">
+                  <Label
+                    htmlFor="email"
+                    className="text-[#666666] font-normal dark:text-slate-200"
+                  >
                     Email
                   </Label>
                   <Input
                     type="email"
                     id="email"
                     className={`border ${
-                      errors.email ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
+                      errors.email
+                        ? "border-red-500"
+                        : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("email", {
                       required: "Email is required",
@@ -153,7 +179,10 @@ const SignUp = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pwd" className="text-[#666666] font-normal dark:text-slate-200">
+                  <Label
+                    htmlFor="pwd"
+                    className="text-[#666666] font-normal dark:text-slate-200"
+                  >
                     Password
                   </Label>
                   <Input
@@ -161,7 +190,9 @@ const SignUp = () => {
                     autoComplete="off"
                     id="pwd"
                     className={`border ${
-                      errors.password ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
+                      errors.password
+                        ? "border-red-500"
+                        : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("password", {
                       required: "Password is required",
@@ -203,7 +234,7 @@ const SignUp = () => {
                   )}
                 </Button>
 
-               <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4">
                   <div className="w-full h-[1px] bg-[#D9D9D9] dark:bg-slate-700" />
                   <span className="text-[#666666] dark:text-slate-300">OR</span>
                   <div className="w-full h-[1px] bg-[#D9D9D9] dark:bg-slate-700" />

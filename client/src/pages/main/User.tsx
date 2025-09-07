@@ -9,6 +9,7 @@ import type { AxiosError } from "axios";
 import { formatDates } from "@/utils/formatDates";
 import UserSkeleton from "@/components/custom/UserSkeleton";
 import { useActiveUsers } from "@/lib/store/uiStore";
+import { useMeta } from "@/lib/hooks/useMeta";
 
 const User = () => {
   const { userId } = useParams();
@@ -24,6 +25,18 @@ const User = () => {
     },
     retry: false,
     refetchOnWindowFocus: false,
+  });
+
+  const name = data?.user?.firstName + " " + data?.user?.lastName;
+
+  useMeta({
+    title: `${name + "'s Profile" || "User Profile"} | Teem`,
+    description:
+      name + "'s Profile page containing account information" || "User Profile",
+    ogTitle: `${name + "'s Profile" || "User Profile"} | Teem`,
+    ogDescription:
+      name + "'s Profile page containing account information" || "User Profile",
+    ogImage: data?.user?.profilePicture || "",
   });
 
   if (isPending) {
@@ -79,7 +92,9 @@ const User = () => {
           <h1 className="text-2xl font-bold theme-text-gradient">
             {user?.firstName} {user?.lastName}
           </h1>
-          <p className="text-sm text-gray-500 dark:text-slate-200">{user?.email}</p>
+          <p className="text-sm text-gray-500 dark:text-slate-200">
+            {user?.email}
+          </p>
         </div>
         {user.createdAt && (
           <p className="text-center font-bold text-slate-700 dark:text-slate-100">

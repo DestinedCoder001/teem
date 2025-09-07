@@ -1,4 +1,11 @@
-const NotFound = ({text}: {text: string}) => {
+import { useMeta } from "@/lib/hooks/useMeta";
+
+const NotFound = ({ text }: { text: string }) => {
+  
+  useMeta({
+    title: "Page not found",
+  });
+
   return (
     <div className="h-screen w-full flex justify-center items-center">
       <div className="text-center">

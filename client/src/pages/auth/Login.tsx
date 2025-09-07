@@ -19,6 +19,7 @@ import OTPDialog from "@/components/custom/OtpDialog";
 import { RequestResetOtpDialog } from "@/components/custom/RequestResetOtpDialog";
 import { useAuthStore } from "@/lib/store/authStore";
 import GoogleLoginBtn from "@/components/custom/GoogleLoginBtn";
+import { useMeta } from "@/lib/hooks/useMeta";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +43,13 @@ const Login = () => {
 
   const { mutate, isPending } = useLogin();
 
+  useMeta({
+    title: "Login | Teem",
+    description: "Log in to your Teem account",
+    ogTitle: "Login | Teem",
+    ogDescription: "Log in to your Teem account",
+  });
+
   const onSubmit = ({ email, password }: LoginDetails) => {
     mutate(
       { email, password },
@@ -56,7 +64,7 @@ const Login = () => {
           if (err.code === "ERR_NETWORK") {
             message = "Network error";
           } else if (err.status !== 500) {
-            message = err.response?.data.message as string || "Log in error";
+            message = (err.response?.data.message as string) || "Log in error";
           } else {
             message = "Couldn't log in. Try again";
           }
@@ -94,7 +102,10 @@ const Login = () => {
 
                 <span className="text-[0.8rem] block text-center text-[#333333] dark:text-slate-200">
                   Don't have an account?{" "}
-                  <Link to="/signup" className="text-sm underline text-black dark:text-white">
+                  <Link
+                    to="/signup"
+                    className="text-sm underline text-black dark:text-white"
+                  >
                     sign up
                   </Link>
                 </span>
@@ -105,14 +116,19 @@ const Login = () => {
                 className="flex flex-col gap-4"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-[#666666] dark:text-slate-200 font-normal">
+                  <Label
+                    htmlFor="email"
+                    className="text-[#666666] dark:text-slate-200 font-normal"
+                  >
                     Email
                   </Label>
                   <Input
                     type="email"
                     id="email"
                     className={`border ${
-                      errors.email ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
+                      errors.email
+                        ? "border-red-500"
+                        : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("email", {
                       required: "Email is required",
@@ -130,7 +146,10 @@ const Login = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="pwd" className="text-[#666666] dark:text-slate-200 font-normal">
+                  <Label
+                    htmlFor="pwd"
+                    className="text-[#666666] dark:text-slate-200 font-normal"
+                  >
                     Password
                   </Label>
                   <Input
@@ -138,7 +157,9 @@ const Login = () => {
                     id="pwd"
                     autoComplete="off"
                     className={`border ${
-                      errors.password ? "border-red-500" : "border-[#bbb] dark:border-neutral-700"
+                      errors.password
+                        ? "border-red-500"
+                        : "border-[#bbb] dark:border-neutral-700"
                     }`}
                     {...register("password", {
                       required: "Password is required",
@@ -182,11 +203,7 @@ const Login = () => {
                   disabled={isPending}
                   className="rounded-full py-6 font-normal text-md dark:text-white"
                 >
-                  {isPending ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "Log in"
-                  )}
+                  {isPending ? <Loader className="animate-spin" /> : "Log in"}
                 </Button>
 
                 <div className="flex items-center gap-4">
