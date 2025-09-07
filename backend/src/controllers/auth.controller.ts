@@ -247,7 +247,7 @@ const handlePasswordReset = async (req: Request, res: Response) => {
 
     if (existingOtp && !canRequestOtp(existingOtp.updatedAt)) {
       const retryIn = Math.ceil(
-        300 - (Date.now() - existingOtp.updatedAt.getTime()) / 1000
+        90 - (Date.now() - existingOtp.updatedAt.getTime()) / 1000
       );
       throw new Error(`Please wait ${retryIn}s before requesting another OTP`);
     }

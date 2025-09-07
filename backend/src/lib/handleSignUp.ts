@@ -14,7 +14,7 @@ export const handleSignup = async (email: string, password: string, firstName: s
     const existingOtp = await Otp.findOne({ email });
     if (existingOtp && !canRequestOtp(existingOtp.updatedAt)) {
       const retryIn = Math.ceil(
-        300 -
+        90 -
         (Date.now() - existingOtp.updatedAt.getTime()) / 1000
       );
       throw new Error(`Please wait ${retryIn}s before requesting another OTP`);
