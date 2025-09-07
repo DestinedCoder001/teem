@@ -166,7 +166,14 @@ const googleLogin = async (req: Request, res: Response) => {
 };
 
 const signOut = async (res: Response) => {
-  res.clearCookie("tjwt");
+  const isProd = process.env.NODE_ENV === "production";
+  const cookie = {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: (isProd ? "none" : "lax") as CookieSameSite,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  }
+  res.clearCookie("tjwt", cookie);
   return res.status(200).json({ message: "Signed out successfully." });
 };
 
