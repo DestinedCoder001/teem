@@ -1,9 +1,14 @@
-import { Resend } from "resend";
-import dotenv from "dotenv"
+import { createTransport } from "nodemailer";
+import dotenv from "dotenv";
 dotenv.config();
 
-const resendKey = process.env.RESEND_API_KEY as string;
-const resend = new Resend(resendKey);
+const transporter = createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
 export const sendOtpEmail = async (
   email: string,
@@ -34,16 +39,19 @@ export const sendOtpEmail = async (
     `;
     subject = "Teem Email Verification";
   }
- 
-  const { data, error } = await resend.emails.send({
-    from: "Teem OTP <onboarding@resend.dev>",
-    to: email,
-    subject,
-    html: htmlContent,
-  });
 
-  if (error) {
-    console.error("Resend sendOtpEmail error:", error);
+  const mailOptions = {
+    from: `"Teem OTP" <${process.env.GMAIL_USER}>`,
+    to: email,
+    subject: subject,
+    html: htmlContent,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    return info;
+  } catch (error) {
+    console.error("Nodemailer sendOtpEmail error:", error);
     throw new Error("Failed to send OTP");
   }
 };
