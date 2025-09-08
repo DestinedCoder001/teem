@@ -359,7 +359,7 @@ const MeetingContent = () => {
         </h2>
       ) : null}
 
-      <div className="flex flex-1 flex-col lg:flex-row gap-4 overflow-hidden">
+      <div className="flex flex-1 flex-col landscape:flex-row gap-4 overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
           {showSignal && (
             <div className="absolute top-4 left-4 bg-black/60 p-2 text-xs text-white z-10 rounded">

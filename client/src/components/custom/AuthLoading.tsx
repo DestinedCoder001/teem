@@ -4,7 +4,7 @@ const AuthLoading = () => {
   return (
     <div
       id="auth-loading"
-      className="h-screen flex items-center justify-center"
+      className="h-[100dvh] flex items-center justify-center"
     >
       <div className="text-xl font-semibold animate-spin">
         <Loader size={36} color="#EC4899" className="font-bold" />
