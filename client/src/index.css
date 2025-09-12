@@ -234,3 +234,18 @@ body {
   background-size: 200% 100%;
   animation: shimmer 2s infinite linear;
 }
+
+.loading-svg {
+  animation: pulse-scale 1s infinite ease-in-out;
+}
+
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+
