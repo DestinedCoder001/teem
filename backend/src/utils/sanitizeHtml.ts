@@ -12,6 +12,6 @@ export const sanitizeHtml = (dirty: string) => {
       "p", "br",
       "h1", "h2", "h3"
     ],
-    ALLOWED_ATTR: ["class"],
+    ALLOWED_ATTR: ["class", "style"],
   });
 };

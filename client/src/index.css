@@ -139,7 +139,7 @@
   html.dark {
     background-color: #0a0a0a;
   }
-  
+
   div,
   p,
   a,
@@ -173,23 +173,22 @@ body {
   -ms-overflow-style: none;
 }
 
-.tiptap h1 {
+
+/* for text display gotten from tiptap */
+.text-display h1 {
   @apply text-2xl font-bold;
 }
-.tiptap h2 {
+.text-display h2 {
   @apply text-xl font-semibold;
 }
-.tiptap h3 {
+.text-display h3 {
   @apply text-lg font-semibold;
 }
-.tiptap ul {
-  @apply list-disc list-outside pl-2;
+.text-display ul {
+  @apply list-disc list-outside pl-4;
 }
-.tiptap ol {
-  @apply list-decimal list-outside pl-2;
-}
-.tiptap p {
-  @apply text-sm;
+.text-display ol {
+  @apply list-decimal list-outside pl-4;
 }
 
 .cover {
@@ -240,12 +239,11 @@ body {
 }
 
 @keyframes pulse-scale {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
     transform: scale(1.1);
   }
 }
-
-

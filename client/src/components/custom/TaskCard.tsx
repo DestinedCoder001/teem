@@ -205,10 +205,13 @@ const TaskCard = ({
               </div>
             )}
 
-            <div
-              dangerouslySetInnerHTML={{ __html: guidelines }}
-              className="text-sm text-slate-800 dark:text-white/80 custom-ellipsis"
-            />
+            <div className="relative custom-ellipsis">
+              <div
+                dangerouslySetInnerHTML={{ __html: guidelines }}
+                className="text-display text-slate-800 dark:text-white/80"
+              />
+              <div className="absolute bottom-0 left-0 w-full h-full dark:h-5/6 bg-gradient-to-t from-white dark:from-neutral-900 to-transparent" />
+            </div>
           </div>
         </div>
 

@@ -100,7 +100,7 @@ const GuidelinesEditor = ({
     editorProps: {
       attributes: {
         class:
-          "tiptap min-h-[150px] max-h-[300px] overflow-y-auto border-t bg-background rounded-b-md p-4 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>*:not(:last-child)]:mb-3 [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:list-inside [&_ol]:list-inside [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-semibold",
+          "text-display min-h-[150px] max-h-[300px] overflow-y-auto border-t bg-background rounded-b-md p-4 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>*:not(:last-child)]:mb-3 [&_p]:text-base",
       },
     },
   });
