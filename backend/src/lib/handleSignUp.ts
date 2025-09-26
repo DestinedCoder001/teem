@@ -47,5 +47,10 @@ export const handleSignup = async (email: string, password: string, firstName: s
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
 
-  await sendOtpEmail(email, otpCode, "signup");
+  try {
+    await sendOtpEmail(email, otpCode, "signup");
+  } catch (error) {
+    throw new Error("Failed to send OTP.");
+  }
+
 };
