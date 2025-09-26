@@ -65,7 +65,7 @@ const DeleteAccountDialog = () => {
           </Button>
           <Button
             variant="destructive"
-            disabled={!password.trim()}
+            disabled={!password.trim() || isPending}
             className="min-w-[6rem] dark:bg-red-500"
             onClick={handleDelete}
           >
