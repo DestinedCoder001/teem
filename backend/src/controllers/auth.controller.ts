@@ -172,7 +172,7 @@ const signOut = async (res: Response) => {
     secure: isProd,
     sameSite: (isProd ? "none" : "lax") as SameSite,
     maxAge: 1000 * 60 * 60 * 24 * 7,
-  }
+  };
   res.clearCookie("tjwt", cookie);
   return res.status(200).json({ message: "Signed out successfully." });
 };
@@ -217,47 +217,53 @@ const handleRefresh = async (req: Request, res: Response) => {
 };
 
 const handlePasswordReset = async (req: Request, res: Response) => {
-  const result = validationResult(req);
+  const errors = validationResult(req);
 
-  if (!result.isEmpty()) {
-    return res.status(400).send({
-      results: result.array(),
-    });
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ results: errors.array() });
   }
 
   try {
     await connectDb();
     const { email } = matchedData(req);
-    const user = await User.findOne({ email });
 
-    if (!user) throw new Error("User not found");
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     if (!user.isVerified) {
-      // if user hasn't verified their account on account creation, using OTP sent to email.
-      throw new Error(
-        "Verify your account first before requesting a password reset."
-      );
+      return res.status(400).json({
+        message:
+          "Verify your account first before requesting a password reset.",
+      });
     }
 
     if (user.authProvider === "google") {
-      throw new Error("Password reset not supported for Google users.");
+      return res
+        .status(400)
+        .json({ message: "Password reset not supported for Google users." });
     }
 
     const existingOtp = await Otp.findOne({ email });
-
     if (existingOtp && !canRequestOtp(existingOtp.updatedAt)) {
       const retryIn = Math.ceil(
         90 - (Date.now() - existingOtp.updatedAt.getTime()) / 1000
       );
-      throw new Error(`Please wait ${retryIn}s before requesting another OTP`);
+      return res.status(429).json({
+        message: `Please wait ${retryIn}s before requesting another OTP`,
+      });
     }
 
     const code = generateOtp();
+    const hashedCode = bcrypt.hashSync(code, 10);
+
     if (!existingOtp) {
+      // Create new OTP entry
       const newOtp = await Otp.create({
-        code: bcrypt.hashSync(code, 10),
+        code: hashedCode,
         email,
-        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 mins
       });
 
       await sendOtpEmail(newOtp.email, code, "forgotPassword");
@@ -268,20 +274,20 @@ const handlePasswordReset = async (req: Request, res: Response) => {
       await Otp.findOneAndUpdate(
         { email },
         {
-          code: bcrypt.hashSync(code, 10),
-          email,
+          code: hashedCode,
           expiresAt: new Date(Date.now() + 5 * 60 * 1000),
-        },
-        { upsert: true, new: true }
+        },        { new: true }
       );
+
       await sendOtpEmail(existingOtp.email, code, "forgotPassword");
       return res
         .status(200)
         .json({ message: "OTP sent successfully", email: existingOtp.email });
     }
   } catch (error: any) {
+    console.error("Password reset error:", error);
     return res.status(500).json({
-      message: error.message,
+      message: "An unexpected error occurred. Please try again later.",
     });
   }
 };
