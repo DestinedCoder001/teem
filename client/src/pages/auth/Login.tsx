@@ -20,6 +20,7 @@ import { RequestResetOtpDialog } from "@/components/custom/RequestResetOtpDialog
 import { useAuthStore } from "@/lib/store/authStore";
 import GoogleLoginBtn from "@/components/custom/GoogleLoginBtn";
 import { useMeta } from "@/lib/hooks/useMeta";
+import { useGuestLogin } from "@/lib/hooks/useGuestLogin";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +43,7 @@ const Login = () => {
   } = useForm<LoginDetails>();
 
   const { mutate, isPending } = useLogin();
+  const { mutate: guestMutate, isPending: guestPending } = useGuestLogin();
 
   useMeta({
     title: "Login | Teem",
@@ -49,6 +51,21 @@ const Login = () => {
     ogTitle: "Login | Teem",
     ogDescription: "Log in to your Teem account",
   });
+
+  const handleLoginError = (error: Error) => {
+    const err = error as CustomAxiosError;
+    let message = "";
+    if (err.code === "ERR_NETWORK") {
+      message = "Network error";
+    } else if (err.status !== 500) {
+      message = (err.response?.data.message as string) || "Log in error";
+    } else {
+      message = "Couldn't log in. Try again";
+    }
+    toast.error(message, {
+      position: "top-center",
+    });
+  };
 
   const onSubmit = ({ email, password }: LoginDetails) => {
     mutate(
@@ -59,21 +76,22 @@ const Login = () => {
           navigate(from, { replace: true });
         },
         onError: (error) => {
-          const err = error as CustomAxiosError;
-          let message = "";
-          if (err.code === "ERR_NETWORK") {
-            message = "Network error";
-          } else if (err.status !== 500) {
-            message = (err.response?.data.message as string) || "Log in error";
-          } else {
-            message = "Couldn't log in. Try again";
-          }
-          toast.error(message, {
-            position: "top-center",
-          });
+          handleLoginError(error);
         },
       }
     );
+  };
+
+  const handleGuestLogin = () => {
+    guestMutate(undefined, {
+      onSuccess: (data: { accessToken: string }) => {
+        setAccessToken(data.accessToken);
+        navigate(from, { replace: true });
+      },
+      onError: (error) => {
+        handleLoginError(error);
+      },
+    });
   };
 
   return (
@@ -200,7 +218,7 @@ const Login = () => {
 
                 <Button
                   type="submit"
-                  disabled={isPending}
+                  disabled={isPending || guestPending}
                   className="rounded-full py-6 font-normal text-md dark:text-white"
                 >
                   {isPending ? <Loader className="animate-spin" /> : "Log in"}
@@ -213,6 +231,19 @@ const Login = () => {
                 </div>
 
                 <GoogleLoginBtn />
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={handleGuestLogin}
+                  disabled={isPending || guestPending}
+                  className="text-[#333333] text-sm w-max mx-auto dark:text-slate-200 py-2 font-normal"
+                >
+                  {guestPending ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Log in as Guest"
+                  )}
+                </Button>
               </form>
             </div>
           </div>
