@@ -114,6 +114,11 @@ const deleteAccount = async (req: Request, res: Response) => {
 
   const userId = req.user._id;
 
+  // prevent deleting guest account i set up :(
+  if (userId === "68df95764ae8a3a49cd112eb") {
+    return res.status(403).json({ message: "You cannot delete this account" });
+  }
+
   if (!Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ message: "Invalid user id." });
   }
@@ -155,9 +160,12 @@ const deleteAccount = async (req: Request, res: Response) => {
     await Otp.deleteMany({ email: req.user.email });
     await WorkspaceInvite.deleteMany({ receiver: userId });
     await Meeting.deleteMany({ host: userId });
-    await Meeting.updateMany({ users: userId }, { $pull: { allowedUsers: userId } });
-    await Workspace.deleteMany({createdBy: userId});
-    await Channel.deleteMany({createdBy: userId});
+    await Meeting.updateMany(
+      { users: userId },
+      { $pull: { allowedUsers: userId } }
+    );
+    await Workspace.deleteMany({ createdBy: userId });
+    await Channel.deleteMany({ createdBy: userId });
     await Workspace.updateMany({ users: userId }, { $pull: { users: userId } });
     await Channel.updateMany(
       { members: userId },
