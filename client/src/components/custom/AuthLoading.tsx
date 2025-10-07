@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import LoadingSvg from "./LoadingSvg";
 
 const AuthLoading = () => {
-  /* to show additional text if server is taking time to respond
+  /* to show loading bar if server is taking time to respond
    (e.g starting application after a long time)
    Render server is usually asleep during this time
   */
@@ -23,16 +23,13 @@ const AuthLoading = () => {
       <div className="loading-svg">
         <LoadingSvg />
       </div>
-      {responsePending && (
-        <div className="mt-6 text-slate-600 dark:text-slate-200 font-medium flex items-center gap-x-2">
-          <span className="text-xs">Connecting to server </span>
-          <div className="dots">
-            <span>.</span>
-            <span>.</span>
-            <span>.</span>
-          </div>
-        </div>
-      )}
+
+      <div
+        style={{ visibility: responsePending ? "visible" : "hidden" }}
+        className="h-[2px] w-40 bg-gray-300 dark:bg-neutral-600 translate-y-4 rounded-full overflow-hidden"
+      >
+        <div className="h-full w-1/2 bg-gradient-to-r from-primary to-secondary loading-bar" />
+      </div>
     </div>
   );
 };
