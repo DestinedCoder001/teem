@@ -7,9 +7,10 @@ import {
   useRemoteUsers,
   useRemoteAudioTracks,
   useRemoteVideoTracks,
-  type IRemoteVideoTrack, useRTCClient,
+  type IRemoteVideoTrack,
+  useRTCClient,
   type ILocalVideoTrack,
-  type ILocalAudioTrack
+  type ILocalAudioTrack,
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
 import useJoinMeeting from "@/lib/hooks/useJoinMeeting";
@@ -20,7 +21,7 @@ import useGetMe from "@/lib/hooks/useGetMe";
 import type { ChannelUser } from "@/lib/types";
 import { toast } from "sonner";
 import MeetControls from "./MeetControls";
-import { VideoOff } from "lucide-react";
+import { Maximize, Minimize, VideoOff } from "lucide-react";
 import LeftMeeting from "./LeftMeeting";
 import type { AxiosError } from "axios";
 import NotFound from "./NotFound";
@@ -32,6 +33,7 @@ const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
 const MeetingContent = () => {
   const [connected, setConnected] = useState(true);
+  const [isFUllScreen, setIsFullScreen] = useState(false);
   const client = useRTCClient();
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(true);
   const { localCameraTrack } = useLocalCameraTrack(true);
@@ -48,6 +50,7 @@ const MeetingContent = () => {
   const { _id: wsId } = currentWsDetails((state) => state);
 
   const mainRef = useRef<HTMLDivElement>(null);
+  const mainDivRef = useRef<HTMLDivElement>(null);
 
   const [selectedUser, setSelectedUser] = useState<{
     _id: string;
@@ -257,7 +260,14 @@ const MeetingContent = () => {
     } else if (cameraOn && localCameraTrack && !screenShareOn) {
       displayVideo(localCameraTrack, true);
     }
-  }, [selectedUser, cameraOn, localCameraTrack, screenShareOn, screenTrack]);
+  }, [
+    selectedUser,
+    cameraOn,
+    localCameraTrack,
+    screenShareOn,
+    screenTrack,
+    isFUllScreen,
+  ]);
 
   useEffect(() => {
     if (!screenTrack || !screenShareOn) return;
@@ -298,6 +308,18 @@ const MeetingContent = () => {
     await leave(screenTrack);
   }, [leave, screenTrack]);
 
+  // leave fullscreen in case user presses esc button
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullScreen(!!document.fullscreenElement || false);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
   const handleUserSelect = useCallback(
     (
       user: ChannelUser & {
@@ -320,6 +342,22 @@ const MeetingContent = () => {
     },
     []
   );
+
+  const handleFullScreen = () => {
+    if (!mainDivRef.current) return;
+
+    if (!isFUllScreen) {
+      if (mainDivRef.current.requestFullscreen) {
+        mainDivRef.current.requestFullscreen().then(() => {
+          setIsFullScreen(true);
+        });
+      }
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullScreen(false);
+      });
+    }
+  };
 
   const showCameraOff =
     (!selectedUser && !cameraOn && !screenShareOn) ||
@@ -354,7 +392,12 @@ const MeetingContent = () => {
       ) : null}
 
       <div className="flex flex-1 flex-col landscape:flex-row gap-4 overflow-hidden">
-        <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
+        <div
+          ref={mainDivRef}
+          className={`flex-1 flex items-center justify-center bg-neutral-900 overflow-hidden relative ${
+            !isFUllScreen ? "rounded-sm" : ""
+          }`}
+        >
           <div className="absolute bottom-4 left-4 bg-black/60 p-2 text-white z-10 text-sm rounded">
             {selectedUser?.name || "You"}
           </div>
@@ -374,8 +417,20 @@ const MeetingContent = () => {
               className="absolute inset-0 w-full h-full object-cover"
             />
           )}
+
+          <button
+            onClick={handleFullScreen}
+            className="absolute bottom-4 right-4 rounded-full text-white hover:bg-neutral-700 p-2 cursor-pointer"
+          >
+            {isFUllScreen ? (
+              <Minimize strokeWidth={1.5} size={16} />
+            ) : (
+              <Maximize strokeWidth={1.5} size={16} />
+            )}
+          </button>
         </div>
 
+        {/* don't show users cards list in full screen */}
         <div className="flex lg:flex-col gap-4 overflow-auto">
           {inCallUsers.map((user) => (
             <div

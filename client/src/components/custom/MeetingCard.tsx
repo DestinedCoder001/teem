@@ -2,7 +2,7 @@ import type { MeetingCardProps } from "@/lib/types";
 import { Button } from "../ui/button";
 import { currentWsDetails, useUserStore } from "@/lib/store/userStore";
 import useDeleteMeeting from "@/lib/hooks/useDeleteMeeting";
-import { Loader, PhoneOff, PhoneOutgoingIcon, Star } from "lucide-react";
+import { Loader, PhoneOff, PhoneOutgoingIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const MeetingCard = ({ title, host, _id, allowedUsers }: MeetingCardProps) => {
@@ -38,10 +38,9 @@ const MeetingCard = ({ title, host, _id, allowedUsers }: MeetingCardProps) => {
           : <>Hosted by <span className="font-medium">{host?.firstName} {host?.lastName}</span></>}
       </p>
       <div className="flex items-center gap-2">
-        {[host, ...allowedUsers].slice(0, 5).map((user, i) => (
+        {[host, ...allowedUsers].slice(0, 5).map((user) => (
           <>
-          <Avatar className="size-8 rounded-full border border-slate-200 dark:border-neutral-600 relative">
-            {i === 0 && <Star className="text-yellow-300 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 size-4 z-10 rounded-full" />}
+          <Avatar className="size-8 rounded-full border border-slate-200 dark:border-neutral-600">
             <AvatarImage
               className="object-cover object-center w-full"
               src={user?.profilePicture}
