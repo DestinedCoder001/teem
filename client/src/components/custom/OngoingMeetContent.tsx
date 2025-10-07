@@ -7,11 +7,9 @@ import {
   useRemoteUsers,
   useRemoteAudioTracks,
   useRemoteVideoTracks,
-  type IRemoteVideoTrack,
-  useNetworkQuality,
-  useRTCClient,
+  type IRemoteVideoTrack, useRTCClient,
   type ILocalVideoTrack,
-  type ILocalAudioTrack,
+  type ILocalAudioTrack
 } from "agora-rtc-react";
 import UserCard from "@/components/custom/UserCard";
 import useJoinMeeting from "@/lib/hooks/useJoinMeeting";
@@ -21,7 +19,6 @@ import useGetWsDetails from "@/lib/hooks/useGetWsDetails";
 import useGetMe from "@/lib/hooks/useGetMe";
 import type { ChannelUser } from "@/lib/types";
 import { toast } from "sonner";
-import SignalDisplay from "./SignalDisplay";
 import MeetControls from "./MeetControls";
 import { VideoOff } from "lucide-react";
 import LeftMeeting from "./LeftMeeting";
@@ -35,13 +32,10 @@ const APP_ID = import.meta.env.VITE_AGORA_APP_ID!;
 
 const MeetingContent = () => {
   const [connected, setConnected] = useState(true);
-  const [showSignal, setShowSignal] = useState(false);
-
   const client = useRTCClient();
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(true);
   const { localCameraTrack } = useLocalCameraTrack(true);
 
-  const { uplinkNetworkQuality, downlinkNetworkQuality } = useNetworkQuality();
   const {
     mutate,
     data,
@@ -361,15 +355,6 @@ const MeetingContent = () => {
 
       <div className="flex flex-1 flex-col landscape:flex-row gap-4 overflow-hidden">
         <div className="flex-1 flex items-center justify-center bg-neutral-900 rounded-sm overflow-hidden relative">
-          {showSignal && (
-            <div className="absolute top-4 left-4 bg-black/60 p-2 text-xs text-white z-10 rounded">
-              <SignalDisplay
-                up={uplinkNetworkQuality}
-                down={downlinkNetworkQuality}
-              />
-            </div>
-          )}
-
           <div className="absolute bottom-4 left-4 bg-black/60 p-2 text-white z-10 text-sm rounded">
             {selectedUser?.name || "You"}
           </div>
@@ -417,8 +402,6 @@ const MeetingContent = () => {
         toggleCamera={toggleCamera}
         toggleMic={toggleMic}
         leave={handleLeave}
-        showSignal={showSignal}
-        setShowSignal={setShowSignal}
         toggleScreenShare={toggleScreenShare}
         isSharingScreen={screenShareOn}
         screenLoading={finalIsAnyLoading}

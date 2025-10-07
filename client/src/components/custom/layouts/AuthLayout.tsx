@@ -24,7 +24,8 @@ const AuthLayout = () => {
     }
   }, [accessToken, isError]);
 
-  if (!checked || isPending) return <AuthLoading />;
+  if (!checked || isPending) 
+    return <AuthLoading />;
 
   if (accessToken) return <Navigate to={from} replace />;
 

@@ -1,19 +1,15 @@
-import type { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
-import MeetingOptions from "./MeetingOptions";
 import { LogOut, Mic, MicOff, MonitorUp, Video, VideoOff } from "lucide-react";
 
 type Props = {
   cameraOn: boolean;
   micOn: boolean;
   isSharingScreen: boolean;
-  showSignal: boolean;
   screenLoading: boolean;
   toggleCamera: () => void;
   toggleMic: () => void;
   toggleScreenShare: () => void;
   leave: () => void;
-  setShowSignal: Dispatch<SetStateAction<boolean>>;
 };
 const MeetControls = ({
   cameraOn,
@@ -23,8 +19,6 @@ const MeetControls = ({
   toggleCamera,
   toggleMic,
   leave,
-  showSignal,
-  setShowSignal,
   toggleScreenShare,
 }: Props) => {
   return (
@@ -82,13 +76,6 @@ const MeetControls = ({
           <MonitorUp size={28} strokeWidth={2.5} />
         </Button>
         <p className="text-xs font-medium text-black dark:text-white">Share</p>
-      </div>
-
-      <div className="flex flex-col items-center gap-1">
-        <MeetingOptions showSignal={showSignal} setShowSignal={setShowSignal} />
-        <p className="text-xs font-medium text-black dark:text-white">
-          Options
-        </p>
       </div>
 
       <div className="flex flex-col items-center gap-1">
