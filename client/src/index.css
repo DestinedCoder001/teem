@@ -140,15 +140,16 @@
     background-color: #0a0a0a;
   }
 
-  div,
-  p,
-  a,
-  svg,
-  body,
-  button:not(#sign-out) {
-    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out,
-      border-color 0.3s ease-in-out;
-  }
+}
+
+div,
+p,
+a,
+svg,
+body,
+button:not(#sign-out) {
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out,
+    border-color 0.3s ease-in-out;
 }
 
 body {

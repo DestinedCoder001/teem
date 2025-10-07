@@ -236,7 +236,7 @@ const Login = () => {
                   type="button"
                   onClick={handleGuestLogin}
                   disabled={isPending || guestPending}
-                  className="text-[#333333] text-sm w-max mx-auto dark:text-slate-200 py-2 font-normal"
+                  className="text-[#333333] text-sm w-max mx-auto min-w-[9rem] dark:text-slate-200 py-2 font-normal"
                 >
                   {guestPending ? (
                     <Loader className="animate-spin" />

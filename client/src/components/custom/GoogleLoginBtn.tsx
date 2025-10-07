@@ -42,7 +42,7 @@ const GoogleLoginBtn = () => {
       onClick={() => login()}
       type="button"
       disabled={isPending}
-      className="text-[#333333] dark:text-slate-200 border border-black rounded-full py-5 font-normal text-md"
+      className="text-[#333333] dark:text-slate-200 border border-neutral-400 rounded-full py-5 font-normal text-md"
     >
       {isPending ? (
         <Loader className="animate-spin dark:text-white" />
