@@ -53,7 +53,7 @@ const MobileSideBar = () => {
               to={link.link}
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
-                `group flex items-center gap-x-3 w-full px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 dark:text-slate-100 dark:hover:text-slate-50 transition-colors ${
+                `group flex items-center gap-x-3 w-full px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-slate-700 dark:text-slate-100 dark:hover:text-slate-50 transition-colors ${
                   isActive
                     ? "bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/50 dark:to-secondary/50"
                     : "hover:bg-slate-100 dark:hover:bg-neutral-800"

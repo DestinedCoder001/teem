@@ -44,7 +44,7 @@ const ChatsCollapsible = () => {
         <div
           className={`group flex items-center justify-between ${
             isSidebarOpen ? "w-full" : "w-max"
-          } px-3 py-2 lg:p-2 cursor-pointer rounded-md text-sm font-medium text-slate-600 hover:text-slate-700 dark:text-slate-100 dark:hover:text-slate-50 transition-colors ${
+          } px-3 py-2 lg:p-2 cursor-pointer rounded-md text-base md:text-sm font-medium text-slate-600 hover:text-slate-700 dark:text-slate-100 dark:hover:text-slate-50 transition-colors ${
             isActive
               ? "bg-gradient-to-r from-primary/10 to-secondary/10 dark:from-primary/50 dark:to-secondary/50"
               : "hover:bg-slate-100 dark:hover:bg-neutral-800"
@@ -89,7 +89,7 @@ const ChatsCollapsible = () => {
                 title={name}
                 className={({ isActive }) =>
                   clsx(
-                    "flex items-center gap-x-2 text-sm font-medium p-2 rounded-md overflow-hidden",
+                    "flex items-center gap-x-2 text-base md:text-sm font-medium p-2 rounded-md overflow-hidden",
                     "text-slate-500 dark:text-slate-200",
                     "hover:text-slate-600 dark:hover:text-slate-50",
                     !isSidebarOpen ? "lg:hidden" : "",
@@ -109,7 +109,7 @@ const ChatsCollapsible = () => {
                     src={user?.profilePicture}
                     alt={user?.firstName}
                   />
-                  <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-sm">
+                  <AvatarFallback className="text-slate-600 dark:text-slate-100 font-medium text-base md:text-sm">
                     {user?.firstName[0]?.toUpperCase()}
                     {user?.lastName[0]?.toUpperCase()}
                   </AvatarFallback>
