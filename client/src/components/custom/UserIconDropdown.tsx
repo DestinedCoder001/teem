@@ -2,6 +2,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import api from "@/lib/axios";
@@ -40,26 +41,28 @@ export const UserIconDropdown = () => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mr-2 lg:mr-4 bg-white/80 dark:bg-neutral-900 backdrop-blur-sm dark:backdrop-blur-none" align="start">
+      <DropdownMenuContent className="mr-2 lg:mr-4 bg-white/80 dark:bg-neutral-900 backdrop-blur-sm dark:backdrop-blur-none p-0" align="start">
         <DropdownMenuItem
-          className="cursor-pointer text-slate-600 dark:text-slate-300 font-medium gap-2"
+          className="cursor-pointer text-base md:text-sm gap-2 rounded-none"
           onClick={() => navigate("/profile")}
         >
-          <User className="w-4 h-4 dark:text-slate-300" />
+          <User className="w-4 h-4 text-black dark:text-white" />
           Profile
         </DropdownMenuItem>
+        <DropdownMenuSeparator className="my-0"/>
         <DropdownMenuItem
-          className="cursor-pointer text-slate-600 dark:text-slate-300 font-medium gap-2"
+          className="cursor-pointer text-base md:text-sm gap-2 rounded-none"
           onClick={() => navigate("/settings")}
         >
-          <Settings className="w-4 h-4 dark:text-slate-300" />
+          <Settings className="w-4 h-4 text-black dark:text-white" />
           Settings
         </DropdownMenuItem>
+        <DropdownMenuSeparator className="my-0"/>
         <DropdownMenuItem
-          className="cursor-pointer text-slate-600 dark:text-slate-300 font-medium gap-2"
+          className="cursor-pointer text-base md:text-sm gap-2 rounded-none"
           onClick={handleLogout}
         >
-          <LogOut className="w-4 h-4 dark:text-slate-300" />
+          <LogOut className="w-4 h-4 text-black dark:text-white" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
