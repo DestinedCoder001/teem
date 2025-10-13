@@ -259,7 +259,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                 handleEdit={handleEdit}
               >
                 <div
-                  className="size-52 cursor-pointer"
+                  className="size-52"
                   onClick={() => setOpen(true, message.attachment.url)}
                 >
                   <ShimmerImage

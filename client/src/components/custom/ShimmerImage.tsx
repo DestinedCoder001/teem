@@ -11,14 +11,20 @@ const ShimmerImage = ({ src, alt, className }: ShimmerImageProps) => {
 
   return (
     <div className={`relative overflow-hidden ${className || ""}`}>
-      {!loaded && <div className="absolute inset-0 shimmer"></div>}
+      {!loaded && (
+        <div
+          className="absolute inset-0 shimmer"
+          // prevent opening image if not loaded
+          onClick={(e) => e.stopPropagation()}
+        ></div>
+      )}
 
       <img
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
         className={`w-full h-full object-cover object-center transition-opacity duration-700 ${
-          loaded ? "opacity-100" : "opacity-0"
+          loaded ? "opacity-100 cursor-pointer" : "opacity-0"
         }`}
       />
     </div>
