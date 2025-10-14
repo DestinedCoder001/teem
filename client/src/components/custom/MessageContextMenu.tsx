@@ -9,12 +9,12 @@ import {
 import type { MessageProps } from "@/lib/types";
 import { Copy, PenLine, Trash2 } from "lucide-react";
 import { useUserStore } from "@/lib/store/userStore";
-import { toast } from "sonner";
 
 type Props = {
   message: MessageProps;
   isDeleting: boolean;
   children: React.ReactNode;
+  handleCopy: () => void;
   handleDelete: () => void;
   handleEdit: () => void;
 };
@@ -23,16 +23,13 @@ const MessageContextMenu = ({
   message,
   isDeleting,
   children,
+  handleCopy,
   handleDelete,
   handleEdit,
 }: Props) => {
   const user = useUserStore((state) => state.user);
   const isSender = user?._id === message.sender?._id;
   const shouldShowMenu = message.content || isSender;
-  const handleCopy = () => {
-    if (message.content) navigator.clipboard.writeText(message.content);
-    toast("Text copied to clipboard", { position: "top-center" });
-  };
 
   if (!shouldShowMenu) {
     return <>{children}</>;

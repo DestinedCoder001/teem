@@ -11,6 +11,7 @@ import useDeleteChatmsg from "@/lib/hooks/useDeleteChatMsg";
 import { useParams } from "react-router-dom";
 import MessageContextMenu from "./MessageContextMenu";
 import ShimmerImage from "./ShimmerImage";
+import { toast } from "sonner";
 
 type MessageBubbleProps = {
   message: MessageProps;
@@ -44,6 +45,11 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
       setIsDeleted(true);
     }
   }, [message]);
+
+  const handleCopy = () => {
+    if (msgContent) navigator.clipboard.writeText(msgContent);
+    toast("Text copied to clipboard", { position: "top-center" });
+  };
 
   const handleEdit = () => {
     setEditing(true);
@@ -151,6 +157,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                   <MessageContextMenu
                     message={message}
                     isDeleting={disableDropdown}
+                    handleCopy={handleCopy}
                     handleDelete={handleDelete}
                     handleEdit={handleEdit}
                   >
@@ -165,6 +172,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                 <MessageContextMenu
                   message={message}
                   isDeleting={disableDropdown}
+                  handleCopy={handleCopy}
                   handleDelete={handleDelete}
                   handleEdit={handleEdit}
                 >
@@ -242,6 +250,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
               <MessageContextMenu
                 message={message}
                 isDeleting={disableDropdown}
+                handleCopy={handleCopy}
                 handleDelete={handleDelete}
                 handleEdit={handleEdit}
               >
@@ -255,6 +264,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
               <MessageContextMenu
                 message={message}
                 isDeleting={disableDropdown}
+                handleCopy={handleCopy}
                 handleDelete={handleDelete}
                 handleEdit={handleEdit}
               >
@@ -274,6 +284,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
             <MessageContextMenu
               message={message}
               isDeleting={disableDropdown}
+              handleCopy={handleCopy}
               handleDelete={handleDelete}
               handleEdit={handleEdit}
             >
