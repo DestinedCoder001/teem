@@ -71,9 +71,10 @@ const Chat = () => {
   }, [chatId, me?._id, wsUsers]);
 
   const name = receiverData?.firstName + " " + receiverData?.lastName;
-
+  const isNameAvailable = !name.includes("undefined");
+  
   useMeta({
-    title: `${name || "Chat"} | Teem`,
+    title: `${isNameAvailable ? name : "Chat"} | Teem`,
     description: `Chat with ${name || "User"}`,
     ogTitle: `${name || "Chat"} | Teem`,
     ogDescription: `Chat with ${name || "User"}`,

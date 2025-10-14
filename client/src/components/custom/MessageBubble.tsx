@@ -278,7 +278,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
               handleEdit={handleEdit}
             >
               <div
-                className={`px-4 py-2 text-base lg:text-[0.9rem] break-all whitespace-pre-wrap select-none ${
+                className={`px-4 py-2 text-base lg:text-[0.9rem] break-words select-none ${
                   isSender
                     ? "rounded-t-lg rounded-bl-lg bg-primary text-white"
                     : "rounded-t-lg rounded-br-lg border border-slate-300 dark:border-neutral-600 text-slate-700 dark:text-slate-200 dark:bg-neutral-900"

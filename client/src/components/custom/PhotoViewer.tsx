@@ -7,10 +7,19 @@ const PhotoViewer = () => {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false, "");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
+      window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "auto";
     };
-  }, []);
+  }, [isOpen, setOpen]);
 
   if (!isOpen) {
     return null;
@@ -21,10 +30,12 @@ const PhotoViewer = () => {
       className="fixed inset-0 bg-black/80 flex items-center justify-center z-200 w-[100dvw] h-[100dvh]"
       onClick={() => setOpen(false, "")}
     >
-      <X
+      <div
+        className="p-1 absolute top-4 right-4 text-white text-3xl font-light hover:bg-neutral-600 dark:hover:bg-neutral-700 cursor-pointer rounded-full"
         onClick={() => setOpen(false, "")}
-        className="absolute top-4 right-4 text-white text-3xl font-light"
-      />
+      >
+        <X size={20} strokeWidth={1.5} className="" />
+      </div>
 
       <img
         src={image}

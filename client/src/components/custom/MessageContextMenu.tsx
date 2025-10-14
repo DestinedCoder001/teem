@@ -50,7 +50,7 @@ const MessageContextMenu = ({
         {message.content && (
           <>
             <ContextMenuItem
-              className="cursor-pointer group py-1 px-2 rounded-none"
+              className="cursor-pointer group py-1 px-2 rounded-none text-base lg:text-sm"
               disabled={isDeleting}
               onClick={handleCopy}
             >
@@ -61,7 +61,7 @@ const MessageContextMenu = ({
               <>
                 <ContextMenuSeparator className="my-0" />
                 <ContextMenuItem
-                  className="cursor-pointer group py-1 px-2 rounded-none"
+                  className="cursor-pointer group py-1 px-2 rounded-none text-base lg:text-sm"
                   disabled={isDeleting}
                   onClick={handleEdit}
                 >
@@ -76,7 +76,7 @@ const MessageContextMenu = ({
 
         {isSender && (
           <ContextMenuItem
-            className="cursor-pointer group py-1 px-2 rounded-none"
+            className="cursor-pointer group py-1 px-2 rounded-none text-base lg:text-sm"
             disabled={isDeleting}
             onClick={handleDelete}
           >
