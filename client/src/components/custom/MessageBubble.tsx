@@ -3,7 +3,7 @@ import type { MessageProps } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatMessageTime } from "@/utils/formatMsgTime";
 import Attachment from "./Attachment";
-import { photoViewer, useEditingMessage } from "@/lib/store/uiStore";
+import { useEditingMessage } from "@/lib/store/uiStore";
 import { useEffect, useState } from "react";
 import useDeleteMessage from "@/lib/hooks/useDeleteMessage";
 import { getSocket } from "@/lib/socket";
@@ -23,7 +23,6 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
   const [edited, setEdited] = useState(message.edited);
   const [msgContent, setMsgContent] = useState(message.content);
   const userId = useUserStore((state) => state.user?._id);
-  const { setOpen } = photoViewer((state) => state);
   const { mutate: deleteMessage, isPending: isDeleting } = useDeleteMessage();
   const { mutate: deleteChatMsg, isPending: isChatDeleting } =
     useDeleteChatmsg();
@@ -176,10 +175,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                   handleDelete={handleDelete}
                   handleEdit={handleEdit}
                 >
-                  <div
-                    className="size-52 cursor-pointer"
-                    onClick={() => setOpen(true, message.attachment.url)}
-                  >
+                  <div className="size-52">
                     <ShimmerImage
                       src={message.attachment.url}
                       className="w-full h-full rounded-lg"
@@ -268,10 +264,7 @@ const MessageBubble = ({ message, isChat }: MessageBubbleProps) => {
                 handleDelete={handleDelete}
                 handleEdit={handleEdit}
               >
-                <div
-                  className="size-52"
-                  onClick={() => setOpen(true, message.attachment.url)}
-                >
+                <div className="size-52">
                   <ShimmerImage
                     className="rounded-lg w-full h-full"
                     src={message.attachment.url}

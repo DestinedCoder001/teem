@@ -126,7 +126,7 @@ const WsSwitch = () => {
             <div key={ws._id}>
               <DropdownMenuItem
                 onClick={() => handleToggle(ws._id, ws.name)}
-                className="focus:bg-slate-100 cursor-pointer flex items-center space-x-2 dark:hover:bg-neutral-950"
+                className="cursor-pointer flex items-center space-x-2 dark:hover:bg-neutral-950"
               >
                 <Avatar
                   className={`h-8 w-8 rounded-md border ${

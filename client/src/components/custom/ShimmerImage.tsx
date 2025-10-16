@@ -1,3 +1,4 @@
+import { photoViewer } from "@/lib/store/uiStore";
 import { useState } from "react";
 
 type ShimmerImageProps = {
@@ -8,16 +9,11 @@ type ShimmerImageProps = {
 
 const ShimmerImage = ({ src, alt, className }: ShimmerImageProps) => {
   const [loaded, setLoaded] = useState(false);
+  const { setOpen } = photoViewer((state) => state);
 
   return (
     <div className={`relative overflow-hidden ${className || ""}`}>
-      {!loaded && (
-        <div
-          className="absolute inset-0 shimmer"
-          // prevent opening image if not loaded
-          onClick={(e) => e.stopPropagation()}
-        ></div>
-      )}
+      {!loaded && <div className="absolute inset-0 shimmer"></div>}
 
       <img
         src={src}
@@ -26,6 +22,7 @@ const ShimmerImage = ({ src, alt, className }: ShimmerImageProps) => {
         className={`w-full h-full object-cover object-center transition-opacity duration-700 ${
           loaded ? "opacity-100 cursor-pointer" : "opacity-0"
         }`}
+        onClick={() => setOpen(true, src)}
       />
     </div>
   );
