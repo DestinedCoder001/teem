@@ -30,12 +30,14 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 const dirname = path.resolve();
 
-app.use(express.static(path.join(dirname, "..", "client", "dist")));
+const isProd = process.env.NODE_ENV === "production";
+if (isProd) {
+  app.use(express.static(path.join(dirname, "..", "client", "dist")));
 
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(dirname, "../client/dist/index.html"));
-});
-
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.join(dirname, "..", "client", "dist", "index.html"));
+  });
+}
 
 app.use("/api/health", (_, res) => {
   res.send("Ping " + new Date());

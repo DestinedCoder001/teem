@@ -50,3 +50,4 @@ coverage/
 *.bak
 *.tmp
 test.html
+.vercel
