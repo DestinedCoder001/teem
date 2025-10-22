@@ -22,7 +22,9 @@ const ShimmerImage = ({ src, alt, className }: ShimmerImageProps) => {
         className={`w-full h-full object-cover object-center transition-opacity duration-700 ${
           loaded ? "opacity-100 cursor-pointer" : "opacity-0"
         }`}
-        onClick={() => setOpen(true, src)}
+        onClick={() => {
+          if (loaded) setOpen(true, src);
+        }}
       />
     </div>
   );
