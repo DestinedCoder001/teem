@@ -1,0 +1,23 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render servers
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          RENDER_URL: ${{ secrets.RENDER_URL }}
+        run: |
+          echo "Pinging $BACKEND_URL..."
+          curl -s "$BACKEND_URL" > /dev/null
+          echo "Ping 1 sent at $(date)"
+
+          echo "Pinging $RENDER_URL..."
+          curl -s "$RENDER_URL" > /dev/null
+          echo "Ping 2 sent at $(date)"
