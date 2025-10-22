@@ -9,6 +9,17 @@
     />
     <link rel="icon" type="image/x-icon" href="./src/assets/favicon.ico" />
 
+    <script>
+      const theme = localStorage.getItem("teem-ui-theme") || "system";
+      if (
+        theme === "dark" ||
+        (theme === "system" &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
+
     <title>Teem - Team Collaboration Platform</title>
     <meta
       name="description"
@@ -19,7 +30,6 @@
       content="Teem, collaboration, remote, teams, real-time, communication"
     />
 
-    <!-- Open Graph -->
     <meta property="og:title" content="Teem - Team Collaboration Platform" />
     <meta
       property="og:description"
@@ -32,7 +42,6 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Teem" />
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Teem - Team Collaboration Platform" />
     <meta
@@ -45,16 +54,6 @@
     />
   </head>
   <body>
-    <script>
-      const theme = localStorage.getItem("teem-ui-theme") || "system";
-      if (
-        theme === "dark" ||
-        (theme === "system" &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
-        document.documentElement.classList.add("dark");
-      }
-    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

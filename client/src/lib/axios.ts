@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useAuthStore } from "@/lib/store/authStore";
 
+const baseURL = import.meta.env.MODE === "development" ? `${import.meta.env.VITE_BACKEND_URL}/api` : "/api"
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
+  baseURL,
   withCredentials: true,
 });
 
@@ -25,7 +26,7 @@ api.interceptors.response.use(
       original._retry = true;
       try {
         const { data } = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/auth/refresh`,
+          `${baseURL}/auth/refresh`,
           {},
           { withCredentials: true }
         );

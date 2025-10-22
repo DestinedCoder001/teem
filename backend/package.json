@@ -34,7 +34,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.1",
     "password-generator": "^2.3.2",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "teem": "file:.."
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
