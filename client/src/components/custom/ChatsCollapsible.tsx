@@ -94,7 +94,7 @@ const ChatsCollapsible = () => {
                     "hover:text-slate-600 dark:hover:text-slate-50",
                     !isSidebarOpen ? "lg:hidden" : "",
                     isActive
-                      ? "bg-slate-100 dark:bg-neutral-700 dark:hover:bg-slate-800"
+                      ? "bg-slate-100 dark:bg-neutral-700"
                       : "hover:bg-slate-100 dark:hover:bg-neutral-800"
                   )
                 }

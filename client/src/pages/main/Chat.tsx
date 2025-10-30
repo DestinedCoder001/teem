@@ -254,7 +254,7 @@ const Chat = () => {
       <div className="h-[calc(100dvh-50px)] overflow-hidden">
         <div className="flex flex-col relative h-full">
           <div
-            className={`p-2 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
+            className={`chat-ui-element p-2 border-b dark:border-neutral-700 fixed top-[49px] w-full lg:transition-[width] duration-300 ${
               isSidebarOpen
                 ? "lg:w-[calc(100%-220px)]"
                 : "lg:w-[calc(100%-4.5rem)]"
@@ -359,7 +359,7 @@ const Chat = () => {
           {!isNearBottom && (
             <div
               onClick={handleAutoScroll}
-              className={`bg-white/80 dark:bg-black/60 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${
+              className={`chat-ui-element bg-white/80 dark:bg-black/60 backdrop-blur-sm fixed bottom-[100px] border w-max left-1/2 lg:transition-transform lg:duration-300 ${
                 isSidebarOpen ? "lg:translate-x-[110px]" : "lg:translate-x-0"
               } -translate-x-1/2 rounded-full p-1 cursor-pointer`}
             >
@@ -371,7 +371,7 @@ const Chat = () => {
           )}
 
           <div
-            className={`bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed -bottom-1 w-full lg:transition-[width] duration-300 ${
+            className={`chat-ui-element bg-white/80 dark:bg-black/80 backdrop-blur-sm dark:border-t fixed -bottom-1 w-full lg:transition-[width] duration-300 ${
               isSidebarOpen
                 ? "lg:w-[calc(100%-220px)]"
                 : "lg:w-[calc(100%-4.5rem)]"

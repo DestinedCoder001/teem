@@ -158,7 +158,7 @@ const WsSwitch = () => {
         {workspaces.length < 3 && (
           <DropdownMenuItem
             onClick={() => setOpen(true)}
-            className="focus:bg-slate-100 dark:hover:bg-neutral-950 dark:text-slate-100 cursor-pointer flex items-center justify-center space-x-2"
+            className="dark:hover:bg-neutral-950 dark:text-slate-100 cursor-pointer flex items-center justify-center space-x-2"
           >
             <Plus strokeWidth={3} />
             <span>New workspace</span>
@@ -170,7 +170,7 @@ const WsSwitch = () => {
             <DropdownMenuSeparator className="bg-slate-200 dark:bg-slate-700" />
             <DropdownMenuItem
               id="sign-out"
-              className="focus:bg-slate-100 dark:text-slate-100 dark:hover:bg-neutral-950 cursor-pointer flex items-center space-x-2 group"
+              className="dark:text-slate-100 dark:hover:bg-neutral-950 cursor-pointer flex items-center space-x-2 group"
               onClick={() => handleSignOut()}
             >
               <LogOut className="h-4 w-4 text-red-400 group-hover:translate-x-1 transition-transform duration-200" />
