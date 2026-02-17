@@ -20,7 +20,7 @@ router.post("/google-login", loginValidation, (req: Request, res: Response) => {
   googleLogin(req, res);
 });
 
-router.get("/logout", (_, res: Response) => {
+router.post("/logout", (_, res: Response) => {
   signOut(res);
 });
 
