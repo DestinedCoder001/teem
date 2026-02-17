@@ -20,7 +20,7 @@ export const UserIconDropdown = () => {
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.setItem("teem-show-tip", "true");
-    api.get("/auth/logout").then(() => {
+    api.post("/auth/logout").then(() => {
       setAccessToken(null);
       window.location.href = "/login";
     });
